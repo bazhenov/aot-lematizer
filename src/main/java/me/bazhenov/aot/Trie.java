@@ -1,19 +1,28 @@
 package me.bazhenov.aot;
 
-import java.util.HashMap;
+import java.io.Serializable;
 import java.util.Map;
+import java.util.TreeMap;
 
-public class Trie<T> {
+public class Trie<T extends Serializable> implements Serializable {
 
 	private final TrieNode<T> root = new TrieNode<T>();
 
 	public void add(String word, T value) {
+		set(word, value, true);
+	}
+
+	public void replace(String word, T value) {
+		set(word, value, false);
+	}
+
+	private void set(String word, T value, boolean forbidReplace) {
 		TrieNode<T> iNode = root;
 		for (int i = 0; i < word.length(); i++) {
 			Character c = word.charAt(i);
 			iNode = iNode.getOrCreateChild(c);
 		}
-		if (iNode.hasValue()) {
+		if (forbidReplace && iNode.hasValue()) {
 			throw new IllegalArgumentException("Value already present in trie");
 		}
 		iNode.setValue(value);
@@ -29,10 +38,10 @@ public class Trie<T> {
 	}
 }
 
-class TrieNode<T> {
+class TrieNode<T extends Serializable> implements Serializable {
 
 	private T value;
-	private final Map<Character, TrieNode<T>> children = new HashMap<Character, TrieNode<T>>();
+	private final Map<Character, TrieNode<T>> children = new TreeMap<Character, TrieNode<T>>();
 
 	TrieNode() {
 		this(null);

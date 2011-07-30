@@ -19,6 +19,25 @@ public class Dictionary {
 		loadDictionary(mrdInputStream, tabInputStream);
 	}
 
+	public static void buildTrie(InputStream mrd, InputStream tab, OutputStream out) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(mrd));
+		List<List<Flexion>> allFlexions = readSection(reader, new FlexionMapper());
+		readSection(reader, new NullMapper()); // accentual models
+		readSection(reader, new NullMapper()); // user sessions
+		readSection(reader, new NullMapper()); // prefix sets
+		List<Lemma> lemmas = readSection(reader, new LemmaMapper());
+		Trie<String> trie = new Trie<String>();
+		for (Lemma l : lemmas) {
+			List<String> variations = buildAllVariations(l, allFlexions);
+			String norm = variations.get(0);
+			for (String word : variations) {
+				trie.replace(word, norm);
+			}
+		}
+		ObjectOutputStream os = new ObjectOutputStream(out);
+		os.writeObject(trie);
+	}
+
 	private void loadDictionary(InputStream mrdInputStream, InputStream tabInputStream) throws IOException {
 		BufferedInputStream is = new BufferedInputStream(mrdInputStream);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -29,7 +48,7 @@ public class Dictionary {
 		lemmas = readSection(reader, new LemmaMapper());
 		norms = new TreeMap<String, Set<String>>();
 		for (Lemma l : lemmas) {
-			List<String> variations = buildAllVariations(l);
+			List<String> variations = buildAllVariations(l, allFlexions);
 			String norm = variations.get(0);
 			for (String word : variations) {
 				Set<String> normList = norms.get(word);
@@ -42,7 +61,7 @@ public class Dictionary {
 		}
 	}
 
-	private <O> List<O> readSection(BufferedReader reader, Mapper<String, O> mapper) throws IOException {
+	private static <O> List<O> readSection(BufferedReader reader, Mapper<String, O> mapper) throws IOException {
 		int sectionLength = parseInt(reader.readLine());
 
 		List<O> output = new ArrayList<O>(sectionLength);
@@ -67,8 +86,8 @@ public class Dictionary {
 		return lemmas;
 	}
 
-	public List<String> buildAllVariations(Lemma lemma) {
-		List<Flexion> flexions = allFlexions.get(lemma.getFlexionIndex());
+	public static List<String> buildAllVariations(Lemma lemma, List<List<Flexion>> knownFlexions) {
+		List<Flexion> flexions = knownFlexions.get(lemma.getFlexionIndex());
 		List<String> variations = new LinkedList<String>();
 		if (lemma.getLemma().equals("#")) {
 			for (Flexion flexion : flexions) {
