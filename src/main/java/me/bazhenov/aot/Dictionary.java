@@ -11,7 +11,9 @@ public class Dictionary {
 	private final InputStream tabInputStream;
 	private List<List<Flexion>> allFlexions;
 	private List<Lemma> lemmas;
-	private Map<String, Set<String>> norms;
+	private Map<String, Set<Variation>> norms;
+	private List<Variation> variations = new ArrayList<Variation>();
+	private Map<String, GramInfo> grammInfo = new HashMap<String, GramInfo>();
 
 	public Dictionary(InputStream mrdInputStream, InputStream tabInputStream) throws IOException {
 		this.mrdInputStream = mrdInputStream;
@@ -19,23 +21,29 @@ public class Dictionary {
 		loadDictionary(mrdInputStream, tabInputStream);
 	}
 
-	public static void buildTrie(InputStream mrd, InputStream tab, OutputStream out) throws IOException {
+	public static TernarySearchTree buildTrie(InputStream mrd, InputStream tab, OutputStream out)
+		throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(mrd));
 		List<List<Flexion>> allFlexions = readSection(reader, new FlexionMapper());
 		readSection(reader, new NullMapper()); // accentual models
 		readSection(reader, new NullMapper()); // user sessions
 		readSection(reader, new NullMapper()); // prefix sets
 		List<Lemma> lemmas = readSection(reader, new LemmaMapper());
-		Trie<String> trie = new Trie<String>();
+		TernarySearchTree tree = new TernarySearchTree();
+		List<String> allVariations = new ArrayList<String>();
 		for (Lemma l : lemmas) {
-			List<String> variations = buildAllVariations(l, allFlexions);
-			String norm = variations.get(0);
-			for (String word : variations) {
-				trie.replace(word, norm);
-			}
+			List<Variation> variations = buildAllVariations(l, allFlexions.get(l.getFlexionIndex()));
+			/*Variation v = new Variation(variations.remove(0), 0);
+			allVariations.addAll(variations);*/
 		}
-		ObjectOutputStream os = new ObjectOutputStream(out);
-		os.writeObject(trie);
+
+		for (int i = allVariations.size() - 1; i >= 0; i--) {
+			tree.insert(allVariations.get(i), 1);
+		}
+
+		DataOutputStream os = new DataOutputStream(out);
+		tree.writeTo(os);
+		return tree;
 	}
 
 	private void loadDictionary(InputStream mrdInputStream, InputStream tabInputStream) throws IOException {
@@ -46,17 +54,45 @@ public class Dictionary {
 		readSection(reader, new NullMapper()); // user sessions
 		readSection(reader, new NullMapper()); // prefix sets
 		lemmas = readSection(reader, new LemmaMapper());
-		norms = new TreeMap<String, Set<String>>();
+		reader.close();
+		is.close();
+
+		is = new BufferedInputStream(tabInputStream);
+		reader = new BufferedReader(new InputStreamReader(is));
+		String line;
+		while((line = reader.readLine()) != null) {
+			line = line.trim();
+			if (line.startsWith("//") || line.isEmpty()) {
+				continue;
+			}
+			String parts[] = line.split(" ", 2);
+			String grammIndex = parts[0];
+			String grammDescription = parts[1];
+
+			grammInfo.put(grammIndex, new GramInfo(grammDescription));
+		}
+		reader.close();
+		is.close();
+
+
+		norms = new TreeMap<String, Set<Variation>>();
 		for (Lemma l : lemmas) {
-			List<String> variations = buildAllVariations(l, allFlexions);
-			String norm = variations.get(0);
-			for (String word : variations) {
-				Set<String> normList = norms.get(word);
-				if (normList == null) {
-					normList = new TreeSet<String>();
-					norms.put(word, normList);
+			List<Variation> variations = buildAllVariations(l, allFlexions.get(l.getFlexionIndex()));
+			Variation lemmaVariation = variations.remove(0);
+
+			this.variations.add(lemmaVariation);
+			int lemmaIndex = this.variations.size() - 1;
+
+			for (Variation v : variations) {
+				v.setLemmaIndex(lemmaIndex);
+				this.variations.add(v);
+				if (norms.containsKey(v.getWord())) {
+					norms.get(v.getWord()).add(v);
+				} else {
+					Set<Variation> wordLemmas = new HashSet<Variation>();
+					wordLemmas.add(v);
+					norms.put(v.getWord(), wordLemmas);
 				}
-				normList.add(norm);
 			}
 		}
 	}
@@ -71,31 +107,39 @@ public class Dictionary {
 		return output;
 	}
 
-	public GramInfo getGramInfo(String word) {
-		return null;
+	public List<GramInfo> getGramInfo(String word) {
+		List<GramInfo> info = new ArrayList<GramInfo>();
+		for (Variation v : norms.get(word.toLowerCase())) {
+			info.add(grammInfo.get(v.getAncode()));
+		}
+		return info;
 	}
 
-	public Set<String> getWordNorm(String word) {
-		Set<String> list = norms.get(word.toLowerCase());
-		return list == null
-			? Collections.<String>emptySet()
-			: list;
+	public Set<Variation> getWordNorm(String word) {
+		Set<Variation> wordNorms = new HashSet<Variation>();
+		for (Variation v : norms.get(word.toLowerCase())) {
+			if (v.isLemma()) {
+				wordNorms.add(v);
+			} else {
+				wordNorms.add(variations.get(v.getLemmaIndex()));
+			}
+		}
+		return wordNorms;
 	}
 
 	public List<Lemma> getLemmas() {
 		return lemmas;
 	}
 
-	public static List<String> buildAllVariations(Lemma lemma, List<List<Flexion>> knownFlexions) {
-		List<Flexion> flexions = knownFlexions.get(lemma.getFlexionIndex());
-		List<String> variations = new LinkedList<String>();
+	public static List<Variation> buildAllVariations(Lemma lemma, List<Flexion> flexions) {
+		List<Variation> variations = new LinkedList<Variation>();
 		if (lemma.getLemma().equals("#")) {
 			for (Flexion flexion : flexions) {
-				variations.add(flexion.getEnding());
+				variations.add(new Variation(flexion.getEnding(), flexion.getAncode()));
 			}
 		} else {
 			for (Flexion flexion : flexions) {
-				variations.add(lemma.getLemma() + flexion.getEnding());
+				variations.add(new Variation(lemma.getLemma() + flexion.getEnding(), flexion.getAncode()));
 			}
 		}
 		return variations;
