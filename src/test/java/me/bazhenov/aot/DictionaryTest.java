@@ -18,24 +18,15 @@ public class DictionaryTest {
 	}
 
 	@Test
-	public void buildDictionary() throws IOException, InterruptedException {
-		System.gc();
-		long before = Runtime.getRuntime().freeMemory();
-		BufferedOutputStream os = new BufferedOutputStream(new GZIPOutputStream(new FileOutputStream("tree")));
-		TernarySearchTree tree = Dictionary.buildTrie(new FileInputStream("mrd"), new FileInputStream("tab"),
-			os);
-		os.close();
-		System.gc();
-		long after = Runtime.getRuntime().freeMemory();
-		System.out.print(((after - before) / 1024 / 1024) + "M");
-		assertThat(tree.get("автомобиль"), greaterThan(0));
-	}
-
-	@Test
 	public void buildDictionarySmall() throws IOException, InterruptedException {
+		System.gc();
+		Runtime rt = Runtime.getRuntime();
+		long before = rt.totalMemory() - rt.freeMemory();
 		Dictionary d = new Dictionary(new FileInputStream("mrd-small"), new FileInputStream("tab"));
+		long after = rt.totalMemory() - rt.freeMemory();
+		//System.out.println((after - before) / 1024 / 1024);
 
-		System.out.println(d.getWordNorm("красную"));
+		System.out.println(d.getWordNorm("железными"));
 		System.out.println(d.getGramInfo("красную"));
 		System.out.println(d.getGramInfo("красных"));
 	}
