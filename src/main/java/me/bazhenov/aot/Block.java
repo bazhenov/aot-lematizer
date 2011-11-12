@@ -1,5 +1,6 @@
 package me.bazhenov.aot;
 
+import com.google.common.base.Predicate;
 import com.google.common.primitives.Ints;
 
 import java.io.*;
@@ -8,8 +9,9 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.collect.Iterables.get;
+import static com.google.common.collect.Iterables.*;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newArrayListWithCapacity;
 import static com.google.common.io.ByteStreams.readFully;
@@ -20,25 +22,29 @@ public final class Block {
 	private final byte[] words;
 	private static final Charset CHARSET = forName("utf8");
 
-	public Block(Collection<Variation> variations) {
+	public Block(byte[] words) {
+		checkNotNull(words);
+		this.words = words;
+	}
+
+	public static Block fromWordList(Collection<Variation> variations) {
 		checkArgument(!variations.isEmpty());
 
 		String commonPrefix = getCommonPrefix(variations);
 		try {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			byte[] bytes = commonPrefix.getBytes(CHARSET);
 			new Header(variations.size(), commonPrefix).writeTo(out);
 
 			for (Variation v : variations) {
 				writeVariation(out, v, commonPrefix);
 			}
-			words = out.toByteArray();
+			return new Block(out.toByteArray());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	private void writeVariation(OutputStream out, Variation v, String commonPrefix) throws IOException {
+	private static void writeVariation(OutputStream out, Variation v, String commonPrefix) throws IOException {
 		String originalWord = v.getWord();
 		String word = commonPrefix.isEmpty()
 			? originalWord
@@ -158,6 +164,22 @@ public final class Block {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public List<Variation> getVariations(final String word) {
+		return newArrayList(filter(getAllVariations(), new Predicate<Variation>() {
+			public boolean apply(Variation input) {
+				return input.getWord().equalsIgnoreCase(word);
+			}
+		}));
+	}
+
+	public Variation getVariation(final int id) {
+		return find(getAllVariations(), new Predicate<Variation>() {
+			public boolean apply(Variation input) {
+				return input.getId() == id;
+			}
+		});
 	}
 
 	static private class Header {

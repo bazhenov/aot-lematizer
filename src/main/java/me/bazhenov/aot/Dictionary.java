@@ -78,7 +78,7 @@ public class Dictionary {
 		String previosWord = null;
 		for (Variation v : allTheWords) {
 			if (words.size() >= BLOCK_SIZE && (previosWord != null && !v.getWord().equalsIgnoreCase(previosWord))) {
-				Block block = new Block(words);
+				Block block = Block.fromWordList(words);
 
 				blocks.add(block);
 				words = new ArrayList<Variation>(BLOCK_SIZE);
@@ -87,7 +87,7 @@ public class Dictionary {
 			words.add(v);
 			previosWord = v.getWord();
 		}
-		Block block = new Block(words);
+		Block block = Block.fromWordList(words);
 		blocks.add(block);
 
 		for (int blockOffset : idIndex) {

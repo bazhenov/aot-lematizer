@@ -24,6 +24,9 @@ public class BlockTest {
 		assertThat(b.getAllVariations(), hasItems(variation("красного", 1), variation("красному", 2),
 			variation("красный", 3), variation("красный", 4), variation("красных", 5)));
 
+		assertThat(b.getVariations("красный"), hasItems(variation("красный", 3), variation("красный", 4)));
+		assertThat(b.getVariation(5), equalTo(variation("красных", 5)));
+
 		assertThat(b.size(), equalTo(5));
 	}
 
@@ -34,12 +37,12 @@ public class BlockTest {
 				return variation(input, id.getAndIncrement());
 			}
 		}));
-		return new Block(variations);
+		return Block.fromWordList(variations);
 	}
 
 	private static Variation variation(String word, int id) {
 		Variation variation = new Variation(word, "ае", id);
-		variation.setLemmaIndex(8);
+		variation.setLemmaIndex(1);
 		return variation;
 	}
 }
