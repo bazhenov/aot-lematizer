@@ -1,5 +1,8 @@
 package me.bazhenov.aot;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class Variation {
 
 	private final String word;
@@ -9,6 +12,9 @@ public class Variation {
 	private static final int LEMMA_INDEX = -1;
 
 	public Variation(String word, String ancode, int id) {
+		checkNotNull(ancode);
+		checkNotNull(ancode);
+		checkArgument(id > 0, "Id should be positive number");
 		this.word = word;
 		this.ancode = ancode;
 		this.id = id;
@@ -35,6 +41,9 @@ public class Variation {
 	public String toString() {
 		return "Variation{" +
 			"word='" + word + '\'' +
+			", ancode='" + ancode + '\'' +
+			", id=" + id +
+			", lemmaIndex=" + lemmaIndex +
 			'}';
 	}
 
@@ -53,18 +62,16 @@ public class Variation {
 
 		Variation variation = (Variation) o;
 
-		if (id != variation.id) return false;
-		if (lemmaIndex != variation.lemmaIndex) return false;
-		if (ancode != null ? !ancode.equals(variation.ancode) : variation.ancode != null) return false;
-		if (word != null ? !word.equals(variation.word) : variation.word != null) return false;
-
-		return true;
+		return id == variation.id
+			&& lemmaIndex == variation.lemmaIndex
+			&& ancode.equals(variation.ancode)
+			&& word.equals(variation.word);
 	}
 
 	@Override
 	public int hashCode() {
-		int result = word != null ? word.hashCode() : 0;
-		result = 31 * result + (ancode != null ? ancode.hashCode() : 0);
+		int result = word.hashCode();
+		result = 31 * result + ancode.hashCode();
 		result = 31 * result + id;
 		result = 31 * result + lemmaIndex;
 		return result;

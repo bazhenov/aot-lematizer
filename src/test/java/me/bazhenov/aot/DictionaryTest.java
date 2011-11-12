@@ -22,13 +22,13 @@ public class DictionaryTest {
 		System.gc();
 		Runtime rt = Runtime.getRuntime();
 		long before = rt.totalMemory() - rt.freeMemory();
-		Dictionary d = new Dictionary(new FileInputStream("mrd-small"), new FileInputStream("tab"));
+		Dictionary d = new Dictionary(new FileInputStream("mrd"), new FileInputStream("tab"));
 		long after = rt.totalMemory() - rt.freeMemory();
 		//System.out.println((after - before) / 1024 / 1024);
 
 		System.out.println(d.getWordNorm("железными"));
-		System.out.println(d.getGramInfo("красную"));
-		System.out.println(d.getGramInfo("красных"));
+		System.out.println(d.getWordNorm("керосина"));
+		System.out.println(d.getWordNorm("красных"));
 	}
 
 	@Test

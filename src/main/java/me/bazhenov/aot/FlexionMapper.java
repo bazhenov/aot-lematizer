@@ -12,7 +12,7 @@ public class FlexionMapper implements Mapper<String, List<Flexion>> {
 				continue;
 			}
 			String[] parts = flexion.split("\\*");
-			flexions.add(new Flexion(parts[0].toLowerCase().replace("ё", "е"), parts[1]));
+			flexions.add(new Flexion(parts[0].toLowerCase().replace("ё", "е"), parts[1].substring(0, 2)));
 		}
 		return flexions;
 	}
