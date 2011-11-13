@@ -136,15 +136,8 @@ public class Dictionary {
 		return output;
 	}
 
-	public List<GramInfo> getGramInfo(String word) {
-		for (int i = 0; i < blocks.size(); i++) {
-			Block b = blocks.get(0);
-			if (b.getFirstWord().compareToIgnoreCase(word) > 0) {
-				continue;
-			}
-			return null;//findVariation(blocks.get(i-1), word);
-		}
-		return newArrayList();
+	public GramInfo getGramInfo(String gram) {
+		return grammInfo.get(gram);
 	}
 
 	private List<Variation> findVariations(Block block, String word) {
@@ -176,18 +169,19 @@ public class Dictionary {
 			Block block = blocks.get(mid);
 
 			comparsionResult = block.compareFirstWord(word);
-			if (comparsionResult < 0)
+			if (comparsionResult < 0) {
 				low = mid + 1;
-			else if (comparsionResult > 0)
+			} else if (comparsionResult > 0) {
 				high = mid - 1;
-			else
+			} else {
 				return block;
+			}
 		}
 		if (comparsionResult > 0) {
 			return mid > 0
 				? blocks.get(mid - 1)
 				: null;
-		}else{
+		} else {
 			return blocks.get(mid);
 		}
 	}

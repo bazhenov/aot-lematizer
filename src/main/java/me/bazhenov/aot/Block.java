@@ -14,6 +14,7 @@ import static com.google.common.collect.Iterables.*;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newArrayListWithCapacity;
 import static com.google.common.io.ByteStreams.readFully;
+import static com.google.common.primitives.Chars.concat;
 import static java.nio.charset.Charset.forName;
 
 public final class Block {
@@ -24,7 +25,7 @@ public final class Block {
 	private char[] commonPrefix;
 	private int[] ids;
 	private int[] lemmaIds;
-	private String[] postfixes;
+	private char[][] postfixes;
 	private String[] ancodes;
 
 	public Block(byte[] words) {
@@ -64,9 +65,10 @@ public final class Block {
 
 		int i = 0;
 		for (Variation v : variations) {
-			postfixes[i] = commonPrefix.length <= 0
+			String postfix = commonPrefix.length <= 0
 				? v.getWord()
 				: v.getWord().substring(commonPrefix.length);
+			postfixes[i] = postfix.toCharArray();
 			ids[i] = v.getId();
 			lemmaIds[i] = v.getLemmaIndex();
 			ancodes[i] = v.getAncode();
@@ -78,21 +80,19 @@ public final class Block {
 
 	private void interFields() {
 		for(int i=0; i<size; i++) {
-			//postfixes[i] = postfixes[i].intern();
 			ancodes[i] = ancodes[i].intern();
 		}
-		//commonPrefix = commonPrefix.intern();
 	}
 
 	private void allocateFields() {
 		ids = new int[size];
 		lemmaIds = new int[size];
-		postfixes = new String[size];
+		postfixes = new char[size][];
 		ancodes = new String[size];
 	}
 
 	private void writeVariation(OutputStream out, int index) throws IOException {
-		byte[] postfix = postfixes[index].getBytes(CHARSET);
+		byte[] postfix = new String(postfixes[index]).getBytes(CHARSET);
 		int id = ids[index];
 		int lemmaId = lemmaIds[index];
 		byte[] ancode = ancodes[index].getBytes(CHARSET);
@@ -125,7 +125,7 @@ public final class Block {
 		ids[index] = id;
 		lemmaIds[index] = lemmaId;
 		ancodes[index] = new String(ancode, CHARSET);
-		postfixes[index] = new String(w, CHARSET);
+		postfixes[index] = new String(w, CHARSET).toCharArray();
 	}
 
 	/**
@@ -169,7 +169,7 @@ public final class Block {
 
 	private Variation createVariation(int index) {
 		checkState(index < size);
-		Variation variation = new Variation(new String(commonPrefix) + postfixes[index], ancodes[index], ids[index]);
+		Variation variation = new Variation(new String(concat(commonPrefix, postfixes[index])), ancodes[index], ids[index]);
 		variation.setLemmaIndex(lemmaIds[index]);
 		return variation;
 	}
@@ -195,7 +195,7 @@ public final class Block {
 	}
 
 	public String getFirstWord() {
-		return new String(commonPrefix) + postfixes[0];
+		return new String(concat(commonPrefix, postfixes[0]));
 	}
 
 	public int size() {
@@ -219,7 +219,7 @@ public final class Block {
 	}
 
 	public int compareFirstWord(String word) {
-		return (new String(commonPrefix) + postfixes[0]).compareTo(word);
+		return new String(concat(commonPrefix, postfixes[0])).compareTo(word);
 	}
 
 	static private class Header {

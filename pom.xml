@@ -31,4 +31,27 @@
 			<version>r07</version>
 		</dependency>
 	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>console</id>
+			<properties>
+				<out>./test-data</out>
+				<count>0</count>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.2</version>
+						<configuration>
+							<mainClass>me.bazhenov.aot.Main</mainClass>
+							<classpathScope>test</classpathScope>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

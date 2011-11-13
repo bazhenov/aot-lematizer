@@ -57,8 +57,6 @@ public class DictionaryTest {
 		assertThat(norm.get(0).getWord(), equalTo("керосин"));
 
 		System.out.println(d.getWordNorm("красных"));
-
-		Thread.sleep(100000);
 	}
 
 	@Test
