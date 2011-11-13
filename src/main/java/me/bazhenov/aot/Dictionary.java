@@ -7,55 +7,57 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Lists.newArrayListWithCapacity;
+import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
+import static com.google.common.io.ByteStreams.readFully;
+import static com.google.common.io.Closeables.closeQuietly;
 import static java.lang.Integer.parseInt;
 
 public class Dictionary {
 
-	private static final int BLOCK_SIZE = 8;
-	private final InputStream mrdInputStream;
-	private final InputStream tabInputStream;
-	private List<List<Flexion>> allFlexions;
-	private List<Lemma> lemmas;
-	private TernarySearchTree norms;
+	private static final int BLOCK_SIZE = 16;
 	private Map<String, GramInfo> grammInfo = new HashMap<String, GramInfo>();
 	private int[] idIndex;
 	private List<Block> blocks;
 
-	public Dictionary(InputStream mrdInputStream, InputStream tabInputStream) throws IOException {
-		this.mrdInputStream = mrdInputStream;
-		this.tabInputStream = tabInputStream;
-		loadDictionary(mrdInputStream, tabInputStream);
+	public Dictionary(InputStream dictionary, InputStream tabInputStream) throws IOException {
+		grammInfo = buildGramInfo(tabInputStream);
+		int length = readInt(dictionary);
+		blocks = newArrayListWithCapacity(length);
+		while (length-- > 0) {
+			blocks.add(Block.readFrom(dictionary));
+		}
+
+		length = readInt(dictionary);
+		idIndex = new int[length];
+		for (int i = 0; i < length; i++) {
+			idIndex[i] = readInt(dictionary);
+		}
 	}
 
-	private void loadDictionary(InputStream mrdInputStream, InputStream tabInputStream) throws IOException {
+	public static int readInt(InputStream dictionary) throws IOException {
+		byte length[] = new byte[4];
+		readFully(dictionary, length);
+		return Ints.fromByteArray(length);
+	}
+
+	public static void writeInt(OutputStream out, int length) throws IOException {
+		out.write(Ints.toByteArray(length));
+	}
+
+	public static void compileDictionary(InputStream mrdInputStream, OutputStream out)
+		throws IOException {
 		BufferedInputStream is = new BufferedInputStream(mrdInputStream);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-		allFlexions = readSection(reader, new FlexionMapper());
+		List<List<Flexion>> allFlexions = readSection(reader, new FlexionMapper());
 		readSection(reader, new NullMapper()); // accentual models
 		readSection(reader, new NullMapper()); // user sessions
 		readSection(reader, new NullMapper()); // prefix sets
-		lemmas = readSection(reader, new LemmaMapper());
+		List<Lemma> lemmas = readSection(reader, new LemmaMapper());
 		reader.close();
 		is.close();
 
-		is = new BufferedInputStream(tabInputStream);
-		reader = new BufferedReader(new InputStreamReader(is));
-		String line;
-		while ((line = reader.readLine()) != null) {
-			line = line.trim();
-			if (line.startsWith("//") || line.isEmpty()) {
-				continue;
-			}
-			String parts[] = line.split(" ", 2);
-			String grammIndex = parts[0];
-			String grammDescription = parts[1];
-
-			grammInfo.put(grammIndex, new GramInfo(grammDescription));
-		}
-		reader.close();
-		is.close();
-		Writer os = new PrintWriter(new FileOutputStream("dict.result"));
 
 		AtomicInteger sequence = new AtomicInteger(1);
 		List<Variation> allTheWords = newArrayList();
@@ -71,14 +73,13 @@ public class Dictionary {
 		Collections.sort(allTheWords, new VariationComparator());
 
 		List<Variation> words = new ArrayList<Variation>(BLOCK_SIZE);
-		blocks = newArrayList();
-		OutputStream result = new BufferedOutputStream(new FileOutputStream("result"));
-		idIndex = new int[allTheWords.size() + 1];
+		List<Block> blocks = newArrayList();
+		int[] idIndex = new int[allTheWords.size() + 1];
 
 		String previosWord = null;
 		for (Variation v : allTheWords) {
 			if (words.size() >= BLOCK_SIZE && (previosWord != null && !v.getWord().equalsIgnoreCase(previosWord))) {
-				Block block = Block.fromWordList(words);
+				Block block = new Block(words);
 
 				blocks.add(block);
 				words = new ArrayList<Variation>(BLOCK_SIZE);
@@ -87,13 +88,42 @@ public class Dictionary {
 			words.add(v);
 			previosWord = v.getWord();
 		}
-		Block block = Block.fromWordList(words);
+		Block block = new Block(words);
 		blocks.add(block);
 
-		for (int blockOffset : idIndex) {
-			result.write(Ints.toByteArray(blockOffset));
+		writeInt(out, blocks.size());
+		for (Block b : blocks) {
+			b.writeTo(out);
 		}
-		result.close();
+
+		writeInt(out, idIndex.length);
+		for (int blockOffset : idIndex) {
+			writeInt(out, blockOffset);
+		}
+	}
+
+	private static Map<String, GramInfo> buildGramInfo(InputStream is) throws IOException {
+		Map<String, GramInfo> grammInfo = newHashMap();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		try {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				line = line.trim();
+				if (line.startsWith("//") || line.isEmpty()) {
+					continue;
+				}
+				String parts[] = line.split(" ", 2);
+				String grammIndex = parts[0];
+				String grammDescription = parts[1];
+
+				grammInfo.put(grammIndex, new GramInfo(grammDescription));
+			}
+		} finally {
+			closeQuietly(reader);
+			closeQuietly(is);
+		}
+
+		return grammInfo;
 	}
 
 	private static <O> List<O> readSection(BufferedReader reader, Mapper<String, O> mapper) throws IOException {
@@ -119,43 +149,47 @@ public class Dictionary {
 
 	private List<Variation> findVariations(Block block, String word) {
 		List<Variation> info = new ArrayList<Variation>();
-		for (int i = 0; i < block.size(); i++) {
-			Variation variation = block.getVariationAtOffset(i);
-			if (variation.getWord().equalsIgnoreCase(word)) {
-				int lemmaIndex = variation.getLemmaIndex();
-				info.add(findVariation(blocks.get(idIndex[lemmaIndex]), lemmaIndex));
-			}
+		for (Variation v : block.getVariations(word)) {
+			int lemmaIndex = v.getLemmaIndex();
+			info.add(findVariation(blocks.get(idIndex[lemmaIndex]), lemmaIndex));
 		}
 		return info;
 	}
 
 	private Variation findVariation(Block block, int id) {
-		for (int i = 0; i < block.size(); i++) {
-			Variation variation = block.getVariationAtOffset(i);
-			if (variation.getId() == id) {
-				return variation;
-			}
-		}
-		throw new RuntimeException("Ooops");
+		return block.getVariation(id);
 	}
 
-	public Set<Variation> getWordNorm(String word) {
+	public List<Variation> getWordNorm(String word) {
 		Block block = findPossibleBlockByWord(word);
-		return block != null ? newHashSet(findVariations(block, word)) : null;
+		return block != null ? newArrayList(newHashSet(findVariations(block, word))) : null;
 	}
 
 	private Block findPossibleBlockByWord(String word) {
-		for (int i = 0; i < blocks.size(); i++) {
-			Block b = blocks.get(i);
-			int comparsionResult = b.getFirstWord().compareToIgnoreCase(word);
-			if (comparsionResult == 0) {
-				return b;
-			}else if (comparsionResult < 0) {
-				continue;
-			}
-			return (i > 0) ? blocks.get(i - 1) : null;
+		int low = 0;
+		int high = blocks.size() - 1;
+		int mid = 0;
+		int comparsionResult = 0;
+
+		while (low <= high) {
+			mid = (low + high) >>> 1;
+			Block block = blocks.get(mid);
+
+			comparsionResult = block.compareFirstWord(word);
+			if (comparsionResult < 0)
+				low = mid + 1;
+			else if (comparsionResult > 0)
+				high = mid - 1;
+			else
+				return block;
 		}
-		return blocks.get(blocks.size() - 1);
+		if (comparsionResult > 0) {
+			return mid > 0
+				? blocks.get(mid - 1)
+				: null;
+		}else{
+			return blocks.get(mid);
+		}
 	}
 
 	public static List<Variation> buildAllVariations(Lemma lemma, List<Flexion> flexions, AtomicInteger sequence) {

@@ -2,15 +2,14 @@ package me.bazhenov.aot;
 
 import com.google.common.base.Predicate;
 import com.google.common.primitives.Ints;
+import com.google.common.primitives.Shorts;
 
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Preconditions.*;
 import static com.google.common.collect.Iterables.*;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newArrayListWithCapacity;
@@ -19,51 +18,95 @@ import static java.nio.charset.Charset.forName;
 
 public final class Block {
 
-	private final byte[] words;
 	private static final Charset CHARSET = forName("utf8");
+
+	private int size;
+	private char[] commonPrefix;
+	private int[] ids;
+	private int[] lemmaIds;
+	private String[] postfixes;
+	private String[] ancodes;
 
 	public Block(byte[] words) {
 		checkNotNull(words);
-		this.words = words;
-	}
-
-	public static Block fromWordList(Collection<Variation> variations) {
-		checkArgument(!variations.isEmpty());
-
-		String commonPrefix = getCommonPrefix(variations);
+		ByteArrayInputStream is = new ByteArrayInputStream(words);
 		try {
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			new Header(variations.size(), commonPrefix).writeTo(out);
+			Header header = Header.fromInputStream(is);
+			size = header.size;
 
-			for (Variation v : variations) {
-				writeVariation(out, v, commonPrefix);
+			allocateFields();
+
+			commonPrefix = header.commonPrefix.toCharArray();
+
+			for (int i = 0; i < size; i++) {
+				readVariation(is, i);
 			}
-			return new Block(out.toByteArray());
+
+			interFields();
+			/*try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}*/
+
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	private static void writeVariation(OutputStream out, Variation v, String commonPrefix) throws IOException {
-		String originalWord = v.getWord();
-		String word = commonPrefix.isEmpty()
-			? originalWord
-			: originalWord.substring(commonPrefix.length());
-		byte[] wordBytes = word.getBytes(CHARSET);
-		int id = v.getId();
-		int lemmaId = v.getLemmaIndex();
-		byte[] ancode = v.getAncode().getBytes(CHARSET);
+	public Block(Collection<Variation> variations) {
+		checkArgument(!variations.isEmpty());
+
+		commonPrefix = getCommonPrefix(variations).toCharArray();
+		size = variations.size();
+
+		allocateFields();
+
+		int i = 0;
+		for (Variation v : variations) {
+			postfixes[i] = commonPrefix.length <= 0
+				? v.getWord()
+				: v.getWord().substring(commonPrefix.length);
+			ids[i] = v.getId();
+			lemmaIds[i] = v.getLemmaIndex();
+			ancodes[i] = v.getAncode();
+			i++;
+		}
+
+		interFields();
+	}
+
+	private void interFields() {
+		for(int i=0; i<size; i++) {
+			//postfixes[i] = postfixes[i].intern();
+			ancodes[i] = ancodes[i].intern();
+		}
+		//commonPrefix = commonPrefix.intern();
+	}
+
+	private void allocateFields() {
+		ids = new int[size];
+		lemmaIds = new int[size];
+		postfixes = new String[size];
+		ancodes = new String[size];
+	}
+
+	private void writeVariation(OutputStream out, int index) throws IOException {
+		byte[] postfix = postfixes[index].getBytes(CHARSET);
+		int id = ids[index];
+		int lemmaId = lemmaIds[index];
+		byte[] ancode = ancodes[index].getBytes(CHARSET);
 		checkState(ancode.length == 4);
-		checkState(wordBytes.length <= 255);
+		checkState(postfix.length <= 255);
 
 		out.write(Ints.toByteArray(id));
 		out.write(Ints.toByteArray(lemmaId));
 		out.write(ancode);
-		out.write(wordBytes.length);
-		out.write(wordBytes);
+		out.write(postfix.length);
+		out.write(postfix);
 	}
 
-	private Variation readVariation(String commonPrefix, InputStream is) throws IOException {
+	private void readVariation(InputStream is, int index) throws IOException {
 		byte[] word = new byte[4];
 
 		readFully(is, word);
@@ -79,9 +122,10 @@ public final class Block {
 		byte[] w = new byte[wLength];
 		readFully(is, w);
 
-		Variation var = new Variation(commonPrefix + new String(w, CHARSET), new String(ancode, CHARSET), id);
-		var.setLemmaIndex(lemmaId);
-		return var;
+		ids[index] = id;
+		lemmaIds[index] = lemmaId;
+		ancodes[index] = new String(ancode, CHARSET);
+		postfixes[index] = new String(w, CHARSET);
 	}
 
 	/**
@@ -112,58 +156,50 @@ public final class Block {
 	}
 
 	public String getCommonPrefix() {
-		ByteArrayInputStream is = new ByteArrayInputStream(words);
-		try {
-			return Header.fromInputStream(is).commonPrefix;
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public Variation getVariationAtOffset(int offset) {
-		checkArgument(offset < words.length);
-		ByteArrayInputStream is = new ByteArrayInputStream(words);
-		Variation v = null;
-		try {
-			String commonPrefix = Header.fromInputStream(is).commonPrefix;
-			while (offset-- >= 0) {
-				v = readVariation(commonPrefix, is);
-			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		return v;
+		return new String(commonPrefix);
 	}
 
 	public List<Variation> getAllVariations() {
-		try {
-			InputStream stream = new ByteArrayInputStream(words);
-			Header header = Header.fromInputStream(stream);
-			String commonPrefix = header.commonPrefix;
-			List<Variation> variations = newArrayListWithCapacity(header.size);
-			for (int i=0; i<header.size; i++) {
-				variations.add(readVariation(commonPrefix, stream));
-			}
-			return variations;
-		} catch (IOException e) {
-			throw new RuntimeException(e);
+		List<Variation> variations = newArrayListWithCapacity(size);
+		for (int i = 0; i < size; i++) {
+			variations.add(createVariation(i));
 		}
+		return variations;
+	}
+
+	private Variation createVariation(int index) {
+		checkState(index < size);
+		Variation variation = new Variation(new String(commonPrefix) + postfixes[index], ancodes[index], ids[index]);
+		variation.setLemmaIndex(lemmaIds[index]);
+		return variation;
 	}
 
 	public void writeTo(OutputStream result) throws IOException {
-		result.write(words);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		new Header(size, new String(commonPrefix)).writeTo(out);
+		for (int i = 0; i < size; i++) {
+			writeVariation(out, i);
+		}
+		byte[] payload = out.toByteArray();
+		result.write(Shorts.toByteArray(Shorts.checkedCast(payload.length)));
+		result.write(payload);
+	}
+
+	public static Block readFrom(InputStream input) throws IOException {
+		byte[] len = new byte[2];
+		readFully(input, len);
+		int length = Shorts.fromByteArray(len);
+		byte[] block = new byte[length];
+		readFully(input, block);
+		return new Block(block);
 	}
 
 	public String getFirstWord() {
-		return getVariationAtOffset(0).getWord();
+		return new String(commonPrefix) + postfixes[0];
 	}
 
 	public int size() {
-		try {
-			return Header.fromInputStream(new ByteArrayInputStream(words)).size;
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		return size;
 	}
 
 	public List<Variation> getVariations(final String word) {
@@ -182,7 +218,12 @@ public final class Block {
 		});
 	}
 
+	public int compareFirstWord(String word) {
+		return (new String(commonPrefix) + postfixes[0]).compareTo(word);
+	}
+
 	static private class Header {
+
 		private final int size;
 		private final String commonPrefix;
 

@@ -3,6 +3,9 @@ package me.bazhenov.aot;
 import com.google.common.base.Function;
 import org.testng.annotations.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -28,6 +31,22 @@ public class BlockTest {
 		assertThat(b.getVariation(5), equalTo(variation("красных", 5)));
 
 		assertThat(b.size(), equalTo(5));
+
+		assertThat(b.compareFirstWord("красного"), equalTo("красного".compareTo("красного")));
+		assertThat(b.compareFirstWord("красн"), equalTo("красного".compareTo("красн")));
+		assertThat(b.compareFirstWord("красна"), equalTo("красного".compareTo("красна")));
+		assertThat(b.compareFirstWord("краса"), equalTo("красного".compareTo("краса")));
+		assertThat(b.compareFirstWord("красны"), equalTo("красного".compareTo("красны")));
+	}
+
+	@Test
+	public void blockCouldBeWrittenToOutputStream() throws IOException {
+		Block b = createBlock("машина", "машинный");
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		b.writeTo(out);
+		Block blockCopy = Block.readFrom(new ByteArrayInputStream(out.toByteArray()));
+		assertThat(blockCopy.getAllVariations(), hasItems(variation("машина", 1), variation("машинный", 2)));
+		assertThat(blockCopy.size(), equalTo(2));
 	}
 
 	private Block createBlock(String... words) {
@@ -37,7 +56,7 @@ public class BlockTest {
 				return variation(input, id.getAndIncrement());
 			}
 		}));
-		return Block.fromWordList(variations);
+		return new Block(variations);
 	}
 
 	private static Variation variation(String word, int id) {
