@@ -16,7 +16,6 @@ import static java.lang.Integer.parseInt;
 
 public class Dictionary {
 
-	private static final int BLOCK_SIZE = 16;
 	private Map<String, GramInfo> grammInfo = new HashMap<String, GramInfo>();
 	private int[] idIndex;
 	private List<Block> blocks;
@@ -42,65 +41,7 @@ public class Dictionary {
 		return Ints.fromByteArray(length);
 	}
 
-	public static void writeInt(OutputStream out, int length) throws IOException {
-		out.write(Ints.toByteArray(length));
-	}
 
-	public static void compileDictionary(InputStream mrdInputStream, OutputStream out)
-		throws IOException {
-		BufferedInputStream is = new BufferedInputStream(mrdInputStream);
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-		List<List<Flexion>> allFlexions = readSection(reader, new FlexionMapper());
-		readSection(reader, new NullMapper()); // accentual models
-		readSection(reader, new NullMapper()); // user sessions
-		readSection(reader, new NullMapper()); // prefix sets
-		List<Lemma> lemmas = readSection(reader, new LemmaMapper());
-		reader.close();
-		is.close();
-
-
-		AtomicInteger sequence = new AtomicInteger(1);
-		List<Variation> allTheWords = newArrayList();
-		for (Lemma l : lemmas) {
-			List<Variation> lemmaVariations = buildAllVariations(l, allFlexions.get(l.getFlexionIndex()), sequence);
-			Variation lemmaVariation = lemmaVariations.get(0);
-
-			for (Variation v : lemmaVariations) {
-				v.setLemmaIndex(lemmaVariation.getId());
-				allTheWords.add(v);
-			}
-		}
-		Collections.sort(allTheWords, new VariationComparator());
-
-		List<Variation> words = new ArrayList<Variation>(BLOCK_SIZE);
-		List<Block> blocks = newArrayList();
-		int[] idIndex = new int[allTheWords.size() + 1];
-
-		String previosWord = null;
-		for (Variation v : allTheWords) {
-			if (words.size() >= BLOCK_SIZE && (previosWord != null && !v.getWord().equalsIgnoreCase(previosWord))) {
-				Block block = new Block(words);
-
-				blocks.add(block);
-				words = new ArrayList<Variation>(BLOCK_SIZE);
-			}
-			idIndex[v.getId()] = blocks.size();
-			words.add(v);
-			previosWord = v.getWord();
-		}
-		Block block = new Block(words);
-		blocks.add(block);
-
-		writeInt(out, blocks.size());
-		for (Block b : blocks) {
-			b.writeTo(out);
-		}
-
-		writeInt(out, idIndex.length);
-		for (int blockOffset : idIndex) {
-			writeInt(out, blockOffset);
-		}
-	}
 
 	private static Map<String, GramInfo> buildGramInfo(InputStream is) throws IOException {
 		Map<String, GramInfo> grammInfo = newHashMap();
@@ -124,16 +65,6 @@ public class Dictionary {
 		}
 
 		return grammInfo;
-	}
-
-	private static <O> List<O> readSection(BufferedReader reader, Mapper<String, O> mapper) throws IOException {
-		int sectionLength = parseInt(reader.readLine());
-
-		List<O> output = new ArrayList<O>(sectionLength);
-		for (int i = 0; i < sectionLength; i++) {
-			output.add(mapper.map(reader.readLine()));
-		}
-		return output;
 	}
 
 	public GramInfo getGramInfo(String gram) {
@@ -184,19 +115,5 @@ public class Dictionary {
 		} else {
 			return blocks.get(mid);
 		}
-	}
-
-	public static List<Variation> buildAllVariations(Lemma lemma, List<Flexion> flexions, AtomicInteger sequence) {
-		List<Variation> variations = new LinkedList<Variation>();
-		if (lemma.getLemma().equals("#")) {
-			for (Flexion flexion : flexions) {
-				variations.add(new Variation(flexion.getEnding(), flexion.getAncode(), sequence.getAndIncrement()));
-			}
-		} else {
-			for (Flexion flexion : flexions) {
-				variations.add(new Variation(lemma.getLemma() + flexion.getEnding(), flexion.getAncode(), sequence.getAndIncrement()));
-			}
-		}
-		return variations;
 	}
 }

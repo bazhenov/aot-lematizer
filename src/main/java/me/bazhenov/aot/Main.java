@@ -8,7 +8,7 @@ public class Main {
 
 	public static void main(String[] args) throws IOException {
 		System.out.println("Loading dictionary...");
-		Dictionary d = new Dictionary(new BufferedInputStream(new FileInputStream("result")), new FileInputStream("tab"));
+		Dictionary d = new Dictionary(new BufferedInputStream(new FileInputStream("test.dict")), new FileInputStream("tab"));
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, Charset.forName("utf8")));
 		String line;
 		while ((line = read(reader)) != null) {
