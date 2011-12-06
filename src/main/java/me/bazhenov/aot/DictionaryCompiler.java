@@ -2,16 +2,20 @@ package me.bazhenov.aot;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.google.common.io.ByteStreams;
 import com.google.common.primitives.Ints;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Lists.newLinkedList;
+import static com.google.common.io.ByteStreams.copy;
 import static com.google.common.io.Closeables.close;
 import static com.google.common.io.Closeables.closeQuietly;
 import static java.lang.Integer.parseInt;
@@ -24,26 +28,30 @@ public class DictionaryCompiler {
 	@Parameter(names = "-mrd", description = "Path to MRD file")
 	public String mrd;
 
+	@Parameter(names = "-tab", description = "Path to TAB file")
+	public String tab;
+
 	@Parameter(names = "-out", description = "Path to output file")
 	public String out;
 
 	public static void main(String[] args) throws IOException {
 		DictionaryCompiler compiler = new DictionaryCompiler();
 		new JCommander(compiler, args);
-		FileInputStream input = new FileInputStream(compiler.mrd);
+		InputStream mrd = new BufferedInputStream(new FileInputStream(compiler.mrd));
+		InputStream tab = new BufferedInputStream(new FileInputStream(compiler.tab));
 		BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(compiler.out));
 		try {
-			compiler.compileDictionary(input, output);
+			compiler.compileDictionary(mrd, tab, output);
 		} finally {
-			closeQuietly(input);
+			closeQuietly(mrd);
+			closeQuietly(tab);
 			close(output, false);
 		}
-
 	}
 
-	public void compileDictionary(InputStream mrdInputStream, OutputStream out)
-		throws IOException {
-		BufferedInputStream is = new BufferedInputStream(mrdInputStream);
+	public void compileDictionary(InputStream mrd, InputStream tab, OutputStream out) throws IOException {
+		ZipOutputStream zip = new ZipOutputStream(out);
+		BufferedInputStream is = new BufferedInputStream(mrd);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 		List<List<Flexion>> allFlexions = readSection(reader, new FlexionMapper());
 		readSection(reader, new NullMapper()); // accentual models
@@ -52,7 +60,6 @@ public class DictionaryCompiler {
 		List<Lemma> lemmas = readSection(reader, new LemmaMapper());
 		reader.close();
 		is.close();
-
 
 		AtomicInteger sequence = new AtomicInteger(1);
 		List<Variation> allTheWords = newArrayList();
@@ -86,19 +93,26 @@ public class DictionaryCompiler {
 		Block block = new Block(words);
 		blocks.add(block);
 
-		writeInt(out, blocks.size());
+		zip.putNextEntry(new ZipEntry("mrd"));
+
+		writeInt(zip, blocks.size());
 		for (Block b : blocks) {
-			b.writeTo(out);
+			b.writeTo(zip);
 		}
 
-		writeInt(out, idIndex.length);
+		writeInt(zip, idIndex.length);
 		for (int blockOffset : idIndex) {
-			writeInt(out, blockOffset);
+			writeInt(zip, blockOffset);
 		}
+
+		zip.putNextEntry(new ZipEntry("tab"));
+		copy(tab, zip);
+
+		zip.close();
 	}
 
 	public static List<Variation> buildAllVariations(Lemma lemma, List<Flexion> flexions, AtomicInteger sequence) {
-		List<Variation> variations = new LinkedList<Variation>();
+		List<Variation> variations = newLinkedList();
 		if (lemma.getLemma().equals("#")) {
 			for (Flexion flexion : flexions) {
 				variations.add(new Variation(flexion.getEnding(), flexion.getAncode(), sequence.getAndIncrement()));

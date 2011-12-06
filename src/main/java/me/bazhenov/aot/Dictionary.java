@@ -3,8 +3,11 @@ package me.bazhenov.aot;
 import com.google.common.primitives.Ints;
 
 import java.io.*;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipFile;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newArrayListWithCapacity;
@@ -12,7 +15,6 @@ import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 import static com.google.common.io.ByteStreams.readFully;
 import static com.google.common.io.Closeables.closeQuietly;
-import static java.lang.Integer.parseInt;
 
 public class Dictionary {
 
@@ -20,18 +22,22 @@ public class Dictionary {
 	private int[] idIndex;
 	private List<Block> blocks;
 
-	public Dictionary(InputStream dictionary, InputStream tabInputStream) throws IOException {
-		grammInfo = buildGramInfo(tabInputStream);
-		int length = readInt(dictionary);
+	public Dictionary(File location) throws IOException {
+		ZipFile dict = new ZipFile(location);
+		InputStream mrd = dict.getInputStream(dict.getEntry("mrd"));
+		InputStream tab = dict.getInputStream(dict.getEntry("tab"));
+
+		grammInfo = buildGramInfo(tab);
+		int length = readInt(mrd);
 		blocks = newArrayListWithCapacity(length);
 		while (length-- > 0) {
-			blocks.add(Block.readFrom(dictionary));
+			blocks.add(Block.readFrom(mrd));
 		}
 
-		length = readInt(dictionary);
+		length = readInt(mrd);
 		idIndex = new int[length];
 		for (int i = 0; i < length; i++) {
-			idIndex[i] = readInt(dictionary);
+			idIndex[i] = readInt(mrd);
 		}
 	}
 
@@ -40,8 +46,6 @@ public class Dictionary {
 		readFully(dictionary, length);
 		return Ints.fromByteArray(length);
 	}
-
-
 
 	private static Map<String, GramInfo> buildGramInfo(InputStream is) throws IOException {
 		Map<String, GramInfo> grammInfo = newHashMap();

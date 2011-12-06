@@ -14,7 +14,7 @@ public class DictionaryTest {
 
 	@Test
 	public void dictionaryStem() throws IOException {
-		Dictionary d = new Dictionary(new FileInputStream("mrd"), new FileInputStream("tab"));
+		Dictionary d = new Dictionary(new File("test.dict"));
 		System.out.println(d.getWordNorm("люди"));
 	}
 
@@ -22,7 +22,7 @@ public class DictionaryTest {
 	public void readDictionary2() throws IOException, InterruptedException {
 		System.gc();
 		long mem0 = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-		Dictionary d = new Dictionary(new BufferedInputStream(new FileInputStream("result")), new FileInputStream("tab"));
+		Dictionary d = new Dictionary(new File("test.dict"));
 		System.gc();
 		long mem1 = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 
