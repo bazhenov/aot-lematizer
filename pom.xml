@@ -40,10 +40,6 @@
 	<profiles>
 		<profile>
 			<id>console</id>
-			<properties>
-				<out>./test-data</out>
-				<count>0</count>
-			</properties>
 			<build>
 				<plugins>
 					<plugin>
@@ -51,8 +47,26 @@
 						<artifactId>exec-maven-plugin</artifactId>
 						<version>1.2</version>
 						<configuration>
+							<commandlineArgs>${basedir}/target/aot.dict</commandlineArgs>
 							<mainClass>me.bazhenov.aot.Main</mainClass>
 							<classpathScope>test</classpathScope>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>compiler</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.2</version>
+						<configuration>
+							<mainClass>me.bazhenov.aot.DictionaryCompiler</mainClass>
+							<commandlineArgs>-mrd ${basedir}/src/main/resources/mrd -tab ${basedir}/src/main/resources/tab -out ${basedir}/target/aot.dict</commandlineArgs>
 						</configuration>
 					</plugin>
 				</plugins>
