@@ -3,10 +3,7 @@ package me.bazhenov.aot;
 import com.google.common.primitives.Ints;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.ZipFile;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -16,11 +13,11 @@ import static com.google.common.collect.Sets.newHashSet;
 import static com.google.common.io.ByteStreams.readFully;
 import static com.google.common.io.Closeables.closeQuietly;
 
-public class Dictionary {
+public class Dictionary implements Iterable<Variation> {
 
 	private Map<String, GramInfo> grammInfo = new HashMap<String, GramInfo>();
 	private int[] idIndex;
-	private List<Block> blocks;
+	private final List<Block> blocks;
 
 	public Dictionary(File location) throws IOException {
 		ZipFile dict = new ZipFile(location);
@@ -79,9 +76,13 @@ public class Dictionary {
 		List<Variation> info = new ArrayList<Variation>();
 		for (Variation v : block.getVariations(word)) {
 			int lemmaIndex = v.getLemmaIndex();
-			info.add(findVariation(blocks.get(idIndex[lemmaIndex]), lemmaIndex));
+			info.add(getVariation(lemmaIndex));
 		}
 		return info;
+	}
+
+	public Variation getVariation(int index) {
+		return findVariation(blocks.get(idIndex[index]), index);
 	}
 
 	private Variation findVariation(Block block, int id) {
@@ -118,6 +119,36 @@ public class Dictionary {
 				: null;
 		} else {
 			return blocks.get(mid);
+		}
+	}
+
+	public Iterator<Variation> iterator() {
+		return new DictionaryIterator();
+	}
+
+	private class DictionaryIterator implements Iterator<Variation> {
+
+		private List<Variation> variations = newArrayList();
+		private int variationIndex = 0;
+		private int blockIndex = 0;
+
+		public DictionaryIterator() {
+		}
+
+		public boolean hasNext() {
+			return blockIndex < blocks.size() || variationIndex < variations.size();
+		}
+
+		public Variation next() {
+			if (variationIndex >= variations.size()) {
+				variations = blocks.get(blockIndex++).getAllVariations();
+				variationIndex = 0;
+			}
+			return variations.get(variationIndex++);
+		}
+
+		public void remove() {
+			throw new UnsupportedOperationException();
 		}
 	}
 }

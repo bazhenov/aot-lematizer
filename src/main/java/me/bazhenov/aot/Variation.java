@@ -1,5 +1,9 @@
 package me.bazhenov.aot;
 
+import com.google.common.base.Function;
+
+import javax.annotation.Nullable;
+
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -10,6 +14,11 @@ public class Variation {
 	private final int id;
 	private int lemmaIndex;
 	private static final int LEMMA_INDEX = -1;
+	public static final Function<Variation, String> retrieveWord = new Function<Variation, String>() {
+		public String apply(@Nullable Variation input) {
+			return input == null ? null : input.getWord();
+		}
+	};
 
 	public Variation(String word, String ancode, int id) {
 		checkNotNull(ancode);

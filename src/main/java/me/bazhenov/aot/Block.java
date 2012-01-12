@@ -44,11 +44,6 @@ public final class Block {
 			}
 
 			interFields();
-			/*try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				throw new RuntimeException(e);
-			}*/
 
 		} catch (IOException e) {
 			throw new RuntimeException(e);
