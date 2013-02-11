@@ -44,7 +44,7 @@ public class Dictionary implements Iterable<Variation> {
 		return Ints.fromByteArray(length);
 	}
 
-	private static Map<String, GramInfo> buildGramInfo(InputStream is) throws IOException {
+	public static Map<String, GramInfo> buildGramInfo(InputStream is) throws IOException {
 		Map<String, GramInfo> grammInfo = newHashMap();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 		try {
@@ -75,7 +75,7 @@ public class Dictionary implements Iterable<Variation> {
 	private List<Variation> findVariations(Block block, String word) {
 		List<Variation> info = new ArrayList<Variation>();
 		for (Variation v : block.getVariations(word)) {
-			int lemmaIndex = v.getLemmaIndex();
+			int lemmaIndex = v.getLemmaId();
 			info.add(getVariation(lemmaIndex));
 		}
 		return info;

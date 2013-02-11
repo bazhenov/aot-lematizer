@@ -65,7 +65,7 @@ public final class Block {
 				: v.getWord().substring(commonPrefix.length);
 			postfixes[i] = postfix.toCharArray();
 			ids[i] = v.getId();
-			lemmaIds[i] = v.getLemmaIndex();
+			lemmaIds[i] = v.getLemmaId();
 			ancodes[i] = v.getAncode();
 			i++;
 		}

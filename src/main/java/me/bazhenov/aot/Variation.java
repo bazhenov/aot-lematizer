@@ -42,7 +42,7 @@ public class Variation {
 		return word;
 	}
 
-	public int getLemmaIndex() {
+	public int getLemmaId() {
 		return lemmaIndex;
 	}
 
