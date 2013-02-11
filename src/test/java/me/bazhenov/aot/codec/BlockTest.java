@@ -2,6 +2,7 @@ package me.bazhenov.aot.codec;
 
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -10,7 +11,7 @@ import static org.hamcrest.Matchers.*;
 public class BlockTest {
 
 	@Test
-	public void pageObjectShouldBeAbleToReadWriteResultsFromByteBuffer() {
+	public void pageObjectShouldBeAbleToReadWriteResultsFromByteBuffer() throws IOException {
 		BlockLine[] lines = new BlockLine[]{
 			new BlockLine("ая",
 				new BlockLine.MorphRef(1, new short[]{1, 2, 3}),

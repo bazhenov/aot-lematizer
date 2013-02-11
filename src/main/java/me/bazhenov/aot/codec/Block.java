@@ -7,6 +7,24 @@ import java.nio.ByteBuffer;
 import static com.google.common.base.Preconditions.checkState;
 import static me.bazhenov.aot.codec.BlockLine.CHARSET;
 
+/**
+ * Бинарная структура блока:
+ * <pre>
+ *   +----+----+----+-------+----+------+----+----+
+ *   | BL | LL | AL | Affix | LS | LIDi | AS | Ai |
+ *   +----+----+----+-------+----+------+----+----+
+ * </pre>
+ * <ol>
+ * <li>{@code BL} (1 байт) – количество аффиксов в блоке</li>
+ * <li>{@code LL} (1 байт) – длина линии блока, описывающей аффикс</li>
+ * <li>{@code AL} (1 байт) – длина аффикса в байтах</li>
+ * <li>{@code Affix} – аффикс в кодировке windows-1251</li>
+ * <li>{@code LS} (1 байт) – количество лемм соответствующих данному аффиксу</li>
+ * <li>{@code LIDi} (3 байта) – идентификатор леммы</li>
+ * <li>{@code AS} (1 байт) – количество анкодов соответствующих данной паре аффикс + лемма</li>
+ * <li>{@code Ai} (2 байта) – анкод</li>
+ * </ol>
+ */
 public class Block {
 
 	public static void writeTo(ByteBuffer buffer, BlockLine[] lines) {
