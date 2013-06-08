@@ -5,6 +5,7 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import static me.bazhenov.aot.codec.Block.lookupAffix;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -26,24 +27,24 @@ public class BlockTest {
 		buffer.flip();
 
 		buffer.mark();
-		assertThat(Block.lookupAffix(buffer, "ный"), equalTo(new BlockLine.MorphRef[]{
+		assertThat(lookupAffix(buffer, "ный"), equalTo(new BlockLine.MorphRef[]{
 			new BlockLine.MorphRef(3, new short[]{7, 8, 9})
 		}));
 
 		buffer.reset();
-		assertThat(Block.lookupAffix(buffer, "ая"), equalTo(new BlockLine.MorphRef[]{
+		assertThat(lookupAffix(buffer, "ая"), equalTo(new BlockLine.MorphRef[]{
 			new BlockLine.MorphRef(1, new short[]{1, 2, 3}),
 			new BlockLine.MorphRef(2, new short[]{4, 5, 6})
 		}));
 
 		buffer.reset();
-		assertThat(Block.lookupAffix(buffer, "аа"), nullValue());
+		assertThat(lookupAffix(buffer, "аа"), nullValue());
 
 		buffer.reset();
-		assertThat(Block.lookupAffix(buffer, "ная"), nullValue());
+		assertThat(lookupAffix(buffer, "ная"), nullValue());
 
 		buffer.reset();
-		assertThat(Block.lookupAffix(buffer, "няя"), nullValue());
+		assertThat(lookupAffix(buffer, "няя"), nullValue());
 	}
 
 	@Test

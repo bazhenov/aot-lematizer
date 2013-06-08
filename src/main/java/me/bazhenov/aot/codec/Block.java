@@ -1,11 +1,12 @@
 package me.bazhenov.aot.codec;
 
-import com.google.common.primitives.Ints;
+import com.google.common.collect.Multimap;
 
 import java.nio.ByteBuffer;
 
 import static com.google.common.base.Preconditions.checkState;
 import static me.bazhenov.aot.codec.BlockLine.CHARSET;
+import static me.bazhenov.aot.codec.BlockLine.readMorphRefs;
 
 /**
  * Бинарная структура блока:
@@ -56,28 +57,12 @@ public class Block {
 			if (cmp > 0) {
 				return null;
 			} else if (cmp == 0) {
-				return readLemmaRef(buffer);
+				return readMorphRefs(buffer);
 			} else {
 				buffer.position(lineStart + lineLength);
 			}
 		}
 		return null;
-	}
-
-	private static BlockLine.MorphRef[] readLemmaRef(ByteBuffer buffer) {
-		byte lemmaCount = buffer.get();
-		BlockLine.MorphRef[] refs = new BlockLine.MorphRef[lemmaCount];
-		for (int i = 0; i < lemmaCount; i++) {
-			byte[] lemmaId = new byte[4];
-			buffer.get(lemmaId, 1, 3);
-			byte ancodeSz = buffer.get();
-			short[] ancodes = new short[ancodeSz];
-			for (int j = 0; j < ancodeSz; j++) {
-				ancodes[j] = buffer.getShort();
-			}
-			refs[i] = new BlockLine.MorphRef(Ints.fromByteArray(lemmaId), ancodes);
-		}
-		return refs;
 	}
 
 	/**
@@ -104,5 +89,9 @@ public class Block {
 		} else {
 			return 0;
 		}
+	}
+
+	public void addInfo(String word, Multimap<Integer, Short> info) {
+
 	}
 }
