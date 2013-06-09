@@ -8,13 +8,13 @@ import java.io.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-public class DictionaryTest {
+public class DictionaryImplTest {
 
-	private Dictionary dictionary;
+	private DictionaryImpl dictionary;
 
 	@BeforeClass
 	protected void setUp() throws Exception {
-		dictionary = new Dictionary(new File("target/aot.dict"));
+		dictionary = new DictionaryImpl(new File("target/aot.dict"));
 	}
 
 	@Test

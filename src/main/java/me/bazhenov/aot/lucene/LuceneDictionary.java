@@ -2,6 +2,7 @@ package me.bazhenov.aot.lucene;
 
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Shorts;
+import me.bazhenov.aot.Dictionary;
 import me.bazhenov.aot.PartOfSpeech;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
@@ -22,7 +23,7 @@ import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Sets.newHashSet;
 import static me.bazhenov.aot.PartOfSpeech.Unknown;
 
-public class LuceneDictionary {
+public class LuceneDictionary implements Dictionary {
 
 	public static final String ANCODES_FILE = "ancodes.json";
 	private final IndexReader reader;
@@ -60,20 +61,25 @@ public class LuceneDictionary {
 		ancodes = new ObjectMapper().readValue(new File(file, ANCODES_FILE), Map.class);
 	}
 
-	public Set<Morph> lookupLemmas(String word) throws IOException {
-		Term term = new Term("word", word);
-		TermDocs termDocs = reader.termDocs(term);
-		Set<Morph> result = newHashSet();
-		while (termDocs.next()) {
-			Document document = reader.document(termDocs.doc());
-			if (document.getBinaryValue("id") != null) {
-				result.add(createMorph(document, word));
-			} else {
-				int lemmaId = Ints.fromByteArray(document.getBinaryValue("lemmaId"));
-				result.add(createMorph(lookupDocumentByLemmaId(lemmaId), null));
+	@Override
+	public Set<Morph> lookupLemmas(String word) {
+		try {
+			Term term = new Term("word", word);
+			TermDocs termDocs = reader.termDocs(term);
+			Set<Morph> result = newHashSet();
+			while (termDocs.next()) {
+				Document document = reader.document(termDocs.doc());
+				if (document.getBinaryValue("id") != null) {
+					result.add(createMorph(document, word));
+				} else {
+					int lemmaId = Ints.fromByteArray(document.getBinaryValue("lemmaId"));
+					result.add(createMorph(lookupDocumentByLemmaId(lemmaId), null));
+				}
 			}
+			return result;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
-		return result;
 	}
 
 	private Morph createMorph(Document document, String word) {
@@ -96,14 +102,19 @@ public class LuceneDictionary {
 		return reader.document(termDocs.doc());
 	}
 
-	public Collection<Morph> lookup(String word) throws IOException {
-		Term term = new Term("word", word);
-		TermDocs termDocs = reader.termDocs(term);
-		Set<Morph> result = newHashSet();
-		while (termDocs.next()) {
-			Document document = reader.document(termDocs.doc());
-			result.add(createMorph(document, word));
+	@Override
+	public Collection<Morph> lookup(String word) {
+		try {
+			Term term = new Term("word", word);
+			TermDocs termDocs = reader.termDocs(term);
+			Set<Morph> result = newHashSet();
+			while (termDocs.next()) {
+				Document document = reader.document(termDocs.doc());
+				result.add(createMorph(document, word));
+			}
+			return result;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
-		return result;
 	}
 }

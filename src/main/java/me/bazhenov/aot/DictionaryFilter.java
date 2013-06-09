@@ -16,14 +16,14 @@ import static com.google.common.collect.Sets.newHashSet;
 
 public class DictionaryFilter extends TokenFilter {
 
-	private final Dictionary dictionary;
+	private final DictionaryImpl dictionary;
 	private final SnowballProgram stemmer;
 
 	private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
 	private final KeywordAttribute keywordAttr = addAttribute(KeywordAttribute.class);
 	private Queue<String> queue = new LinkedBlockingQueue<String>();
 
-	public DictionaryFilter(TokenStream input, Dictionary dictionary, SnowballProgram stemmer) {
+	public DictionaryFilter(TokenStream input, DictionaryImpl dictionary, SnowballProgram stemmer) {
 		super(input);
 		this.dictionary = dictionary;
 		this.stemmer = stemmer;

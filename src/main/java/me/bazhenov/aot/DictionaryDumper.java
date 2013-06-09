@@ -50,7 +50,7 @@ public class DictionaryDumper {
 		reader.close();
 		is.close();
 
-		Map<String, GramInfo> grams = Dictionary.buildGramInfo(tab);
+		Map<String, GramInfo> grams = DictionaryImpl.buildGramInfo(tab);
 		tab.close();
 
 		AtomicInteger sequence = new AtomicInteger(1);

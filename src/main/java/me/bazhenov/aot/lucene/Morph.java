@@ -5,7 +5,6 @@ import me.bazhenov.aot.PartOfSpeech;
 
 import javax.annotation.Nonnull;
 
-import static com.google.common.base.Objects.toStringHelper;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Morph {
@@ -35,7 +34,6 @@ public final class Morph {
 		Morph morph = (Morph) o;
 
 		return pos == morph.pos && word.equals(morph.word);
-
 	}
 
 	@Override
