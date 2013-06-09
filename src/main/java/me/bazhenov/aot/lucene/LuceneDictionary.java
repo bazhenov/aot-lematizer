@@ -13,6 +13,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -59,23 +60,23 @@ public class LuceneDictionary {
 		ancodes = new ObjectMapper().readValue(new File(file, ANCODES_FILE), Map.class);
 	}
 
-	public Set<Morph> lookup(String word) throws IOException {
+	public Set<Morph> lookupLemmas(String word) throws IOException {
 		Term term = new Term("word", word);
 		TermDocs termDocs = reader.termDocs(term);
 		Set<Morph> result = newHashSet();
 		while (termDocs.next()) {
 			Document document = reader.document(termDocs.doc());
 			if (document.getBinaryValue("id") != null) {
-				result.add(createMorph(document));
+				result.add(createMorph(document, word));
 			} else {
 				int lemmaId = Ints.fromByteArray(document.getBinaryValue("lemmaId"));
-				result.add(createMorph(lookupDocumentByLemmaId(lemmaId)));
+				result.add(createMorph(lookupDocumentByLemmaId(lemmaId), null));
 			}
 		}
 		return result;
 	}
 
-	private Morph createMorph(Document document) {
+	private Morph createMorph(Document document, String word) {
 		int ancodeId = Shorts.fromByteArray(document.getBinaryValue("ancode"));
 		String ancode = ancodes.get(Integer.toString(ancodeId));
 		int firstSpace = ancode.indexOf(' ') + 1;
@@ -84,7 +85,8 @@ public class LuceneDictionary {
 			? posTags.get(posDesc)
 			: Unknown;
 
-		return new Morph(document.get("word"), pos);
+		String w = (word == null) ? document.get("word") : word;
+		return new Morph(w, pos);
 	}
 
 	private Document lookupDocumentByLemmaId(int lemmaId) throws IOException {
@@ -92,5 +94,16 @@ public class LuceneDictionary {
 		TermDocs termDocs = reader.termDocs(term);
 		checkState(termDocs.next());
 		return reader.document(termDocs.doc());
+	}
+
+	public Collection<Morph> lookup(String word) throws IOException {
+		Term term = new Term("word", word);
+		TermDocs termDocs = reader.termDocs(term);
+		Set<Morph> result = newHashSet();
+		while (termDocs.next()) {
+			Document document = reader.document(termDocs.doc());
+			result.add(createMorph(document, word));
+		}
+		return result;
 	}
 }

@@ -23,10 +23,13 @@ public class LuceneDictionaryTest {
 		indexer.index();
 
 		LuceneDictionary d = new LuceneDictionary(indexDir);
-		Collection<Morph> result = d.lookup("анархистах");
+		Collection<Morph> result = d.lookupLemmas("анархистах");
 		assertThat(result, contains(new Morph("анархист", Noun)));
 
-		result = d.lookup("анархистским");
+		result = d.lookupLemmas("анархистским");
 		assertThat(result, contains(new Morph("анархистский", Adjective)));
+
+		result = d.lookup("неанархистскую");
+		assertThat(result, contains(new Morph("неанархистскую", Adjective)));
 	}
 }
