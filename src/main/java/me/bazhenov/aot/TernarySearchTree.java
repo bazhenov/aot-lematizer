@@ -5,68 +5,94 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-final public class TernarySearchTree {
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newHashMap;
 
-	private final List<TNode> buffer;
+final public class TernarySearchTree<T> {
+
+	private final List<TNode<T>> buffer;
 
 	public TernarySearchTree() {
-		buffer = new ArrayList<TNode>();
-		buffer.add(new TNode('*', 0, buffer));
+		buffer = newArrayList();
+		buffer.add(new TNode<T>('*', null, buffer));
 	}
 
-	public TernarySearchTree(List<TNode> buffer) {
+	public TernarySearchTree(List<TNode<T>> buffer) {
 		this.buffer = buffer;
 	}
 
-	public void insert(String s, int value) {
-		if (s == null || s.equals("")) {
-			throw new IllegalArgumentException();
-		}
-
+	public void insert(String s, T value) {
 		root().insert(s, value);
 	}
 
-	private TNode root() {
+	private TNode<T> root() {
 		return buffer.get(0);
 	}
 
-	public int get(String key) {
-		if (key == null || key.equals("")) throw new IllegalArgumentException();
-
+	public T get(String key) {
 		int pos = 0;
-		TNode node = root();
+		TNode<T> node = root();
+		if (key.isEmpty()) {
+			return node.value;
+		}
 		while (node != null) {
 			char c = key.charAt(pos);
 			if (c < node.character) {
-				node = buffer.get(node.left);
+				node = node.left > 0 ? buffer.get(node.left) : null;
 			} else if (c > node.character) {
-				node = buffer.get(node.right);
+				node = node.right > 0 ? buffer.get(node.right) : null;
 			} else {
-				if (++pos == key.length()) {
+				if (++pos >= key.length()) {
 					return node.value;
 				}
-				node = buffer.get(node.center);
+				node = node.center > 0 ? buffer.get(node.center) : null;
 			}
 		}
 
-		return 0;
+		return null;
+	}
+
+	public Map<String, T> findAllInPath(String prefix) {
+		int pos = 0;
+		TNode<T> node = root();
+		Map<String, T> result = newHashMap();
+		if (node.value != null) {
+			result.put("", node.value);
+		}
+		while (node != null && pos < prefix.length()) {
+			char c = prefix.charAt(pos);
+			if (c < node.character) {
+				node = node.left > 0 ? buffer.get(node.left) : null;
+			} else if (c > node.character) {
+				node = node.right > 0 ? buffer.get(node.right) : null;
+			} else {
+				pos++;
+				if (node.value != null) {
+					result.put(prefix.substring(0, pos), node.value);
+				}
+				node = node.center > 0 ? buffer.get(node.center) : null;
+			}
+		}
+
+		return result;
 	}
 
 	public void writeTo(DataOutputStream os) throws IOException {
 		os.writeInt(buffer.size());
-		for (TNode node : buffer) {
+		for (TNode<T> node : buffer) {
 			node.writeTo(os);
 		}
 	}
 
-	public static TernarySearchTree readFrom(DataInputStream is) throws IOException {
+	public static <T> TernarySearchTree<T> readFrom(DataInputStream is) throws IOException {
 		int size = is.readInt();
-		List<TNode> buffer = new ArrayList<TNode>();
-		for (int i=0; i<size; i++) {
+		List<TNode<T>> buffer = new ArrayList<TNode<T>>();
+		for (int i = 0; i < size; i++) {
 			TNode.readFrom(is, buffer);
 		}
-		return new TernarySearchTree(buffer);
+		return new TernarySearchTree<T>(buffer);
 	}
 
 	@Override
@@ -74,7 +100,7 @@ final public class TernarySearchTree {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		TernarySearchTree that = (TernarySearchTree) o;
+		TernarySearchTree<T> that = (TernarySearchTree<T>) o;
 
 		if (buffer != null ? !buffer.equals(that.buffer) : that.buffer != null) return false;
 
@@ -87,20 +113,20 @@ final public class TernarySearchTree {
 	}
 }
 
-final class TNode {
+final class TNode<T> {
 
 	final char character;
 	int left, right, center;
-	int value;
-	private final List<TNode> buffer;
+	T value;
+	private final List<TNode<T>> buffer;
 
-	public TNode(char character, int value, List<TNode> buffer) {
+	public TNode(char character, T value, List<TNode<T>> buffer) {
 		this.character = character;
 		this.value = value;
 		this.buffer = buffer;
 	}
 
-	public TNode(char character, int value, List<TNode> buffer, int left, int center, int right) {
+	public TNode(char character, T value, List<TNode<T>> buffer, int left, int center, int right) {
 		this.character = character;
 		this.value = value;
 		this.buffer = buffer;
@@ -109,8 +135,9 @@ final class TNode {
 		this.right = right;
 	}
 
-	void insert(String key, int value) {
+	void insert(String key, T value) {
 		if (key.isEmpty()) {
+			this.value = value;
 			return;
 		}
 		char c = key.charAt(0);
@@ -118,13 +145,13 @@ final class TNode {
 
 		if (c < character) {
 			if (left == 0) {
-				left = createNode(buffer, c, substr.isEmpty() ? value : 0);
+				left = createNode(buffer, c, substr.isEmpty() ? value : null);
 			}
 			buffer.get(left).insert(key, value);
 
 		} else if (c > character) {
 			if (right == 0) {
-				right = createNode(buffer, c, substr.isEmpty() ? value : 0);
+				right = createNode(buffer, c, substr.isEmpty() ? value : null);
 			}
 			buffer.get(right).insert(key, value);
 		} else {
@@ -132,16 +159,16 @@ final class TNode {
 				this.value = value;
 			} else {
 				if (center == 0) {
-					center = createNode(buffer, substr.charAt(0), 0);
+					center = createNode(buffer, substr.charAt(0), null);
 				}
 				buffer.get(center).insert(substr, value);
 			}
 		}
 	}
 
-	private int createNode(List<TNode> buffer, char ch, int value) {
+	private int createNode(List<TNode<T>> buffer, char ch, T value) {
 		int newIndex = buffer.size();
-		TNode node = new TNode(ch, value, buffer);
+		TNode<T> node = new TNode<T>(ch, value, buffer);
 		buffer.add(node);
 		return newIndex;
 	}
@@ -151,17 +178,10 @@ final class TNode {
 		os.writeInt(left);
 		os.writeInt(center);
 		os.writeInt(right);
-		os.writeInt(value);
 	}
 
-	static void readFrom(DataInputStream is, List<TNode> buffer) throws IOException {
-		char character = is.readChar();
-		int left = is.readInt();
-		int center = is.readInt();
-		int right = is.readInt();
-		int value = is.readInt();
-		TNode node = new TNode(character, value, buffer, left, center, right);
-		buffer.add(node);
+	static <T> void readFrom(DataInputStream is, List<TNode<T>> buffer) throws IOException {
+
 	}
 
 	@Override
@@ -169,7 +189,7 @@ final class TNode {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		TNode tNode = (TNode) o;
+		TNode<T> tNode = (TNode<T>) o;
 
 		if (center != tNode.center) return false;
 		if (character != tNode.character) return false;

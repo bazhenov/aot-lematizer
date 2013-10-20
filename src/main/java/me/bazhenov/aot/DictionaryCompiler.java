@@ -129,7 +129,7 @@ public class DictionaryCompiler {
 		out.write(Ints.toByteArray(length));
 	}
 
-	private static <O> List<O> readSection(BufferedReader reader, Mapper<String, O> mapper) throws IOException {
+	public static <O> List<O> readSection(BufferedReader reader, Mapper<String, O> mapper) throws IOException {
 		int sectionLength = parseInt(reader.readLine());
 
 		List<O> output = new ArrayList<O>(sectionLength);
