@@ -1,9 +1,5 @@
 package me.bazhenov.aot;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,10 +13,6 @@ final public class TernarySearchTree<T> {
 	public TernarySearchTree() {
 		buffer = newArrayList();
 		buffer.add(new TNode<T>('*', null, buffer));
-	}
-
-	public TernarySearchTree(List<TNode<T>> buffer) {
-		this.buffer = buffer;
 	}
 
 	public void insert(String s, T value) {
@@ -79,22 +71,6 @@ final public class TernarySearchTree<T> {
 		return result;
 	}
 
-	public void writeTo(DataOutputStream os) throws IOException {
-		os.writeInt(buffer.size());
-		for (TNode<T> node : buffer) {
-			node.writeTo(os);
-		}
-	}
-
-	public static <T> TernarySearchTree<T> readFrom(DataInputStream is) throws IOException {
-		int size = is.readInt();
-		List<TNode<T>> buffer = new ArrayList<TNode<T>>();
-		for (int i = 0; i < size; i++) {
-			TNode.readFrom(is, buffer);
-		}
-		return new TernarySearchTree<T>(buffer);
-	}
-
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -124,15 +100,6 @@ final class TNode<T> {
 		this.character = character;
 		this.value = value;
 		this.buffer = buffer;
-	}
-
-	public TNode(char character, T value, List<TNode<T>> buffer, int left, int center, int right) {
-		this.character = character;
-		this.value = value;
-		this.buffer = buffer;
-		this.left = left;
-		this.center = center;
-		this.right = right;
 	}
 
 	void insert(String key, T value) {
@@ -171,17 +138,6 @@ final class TNode<T> {
 		TNode<T> node = new TNode<T>(ch, value, buffer);
 		buffer.add(node);
 		return newIndex;
-	}
-
-	void writeTo(DataOutputStream os) throws IOException {
-		os.writeChar(character);
-		os.writeInt(left);
-		os.writeInt(center);
-		os.writeInt(right);
-	}
-
-	static <T> void readFrom(DataInputStream is, List<TNode<T>> buffer) throws IOException {
-
 	}
 
 	@Override
