@@ -1,10 +1,11 @@
 package me.bazhenov.aot;
 
+import com.google.common.collect.Iterables;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 
 import static me.bazhenov.aot.TernaryTreeDict.mergeIntersect;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -14,11 +15,9 @@ public class TernaryTreeDictTest {
 
 	@Test
 	public void lookup() throws IOException, InterruptedException {
-//		Thread.sleep(15000);
 		TernaryTreeDict d = new TernaryTreeDict();
-		List<Lem> lemmas = d.lookup("умывальниками");
-		System.out.println(lemmas);
-//		Thread.sleep(20000);
+		Set<Lem> lemmas = d.lookupWord("убегаешь");
+		System.out.println(Iterables.getFirst(lemmas, null).getPosTag());
 	}
 
 	@Test

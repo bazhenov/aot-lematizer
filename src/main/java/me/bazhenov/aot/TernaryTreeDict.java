@@ -24,7 +24,7 @@ import static com.google.common.io.Resources.getResource;
 import static com.google.common.io.Resources.readLines;
 import static java.lang.Integer.parseInt;
 
-public class TernaryTreeDict {
+public class TernaryTreeDict implements Dictionary {
 
 	private final TernarySearchTree<IntArrayList> postfixTree = new TernarySearchTree<IntArrayList>();
 	private final TernarySearchTree<IntArrayList> prefixTree = new TernarySearchTree<IntArrayList>();
@@ -88,11 +88,12 @@ public class TernaryTreeDict {
 		return new StringBuffer(s).reverse().toString();
 	}
 
-	public List<Lem> lookup(String word) {
+	@Override
+	public Set<Lem> lookupWord(String word) {
 		Map<String, IntArrayList> prefixLookup = prefixTree.findAllInPath(word);
 		Map<String, IntArrayList> postfixLookup = postfixTree.findAllInPath(reverse(word));
 
-		List<Lem> result = newArrayList();
+		Set<Lem> result = newHashSet();
 
 		for (Map.Entry<String, IntArrayList> i : prefixLookup.entrySet()) {
 			String affix = reverse(word.substring(i.getKey().length()));
