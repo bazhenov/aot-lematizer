@@ -24,14 +24,14 @@ import static com.google.common.io.Resources.getResource;
 import static com.google.common.io.Resources.readLines;
 import static java.lang.Integer.parseInt;
 
-public class TernaryTreeDict implements Dictionary {
+public class TernaryTreeDictionary implements Dictionary {
 
 	private final TernarySearchTree<IntArrayList> postfixTree = new TernarySearchTree<IntArrayList>();
 	private final TernarySearchTree<IntArrayList> prefixTree = new TernarySearchTree<IntArrayList>();
-	private final List<Lem> lemmas = newArrayList();
+	private final List<Lemma> lemmas = newArrayList();
 	private final List<List<Flexion>> allFlexions;
 
-	public TernaryTreeDict() throws IOException {
+	private TernaryTreeDictionary() throws IOException {
 		InputStream is = getClass().getResourceAsStream("/mrd");
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
@@ -62,7 +62,7 @@ public class TernaryTreeDict implements Dictionary {
 				int wordId = refId.getAndIncrement();
 				prefixVariations.add(wordId);
 
-				Lem l = new Lem(prefix + flexions.get(0).getEnding(), flexions);
+				Lemma l = new Lemma(prefix, flexions);
 				lemmas.add(l);
 				checkState(lemmas.size() == wordId + 1);
 
@@ -84,16 +84,20 @@ public class TernaryTreeDict implements Dictionary {
 		reader.close();
 	}
 
+	public static TernaryTreeDictionary loadDictionary() throws IOException {
+		return new TernaryTreeDictionary();
+	}
+
 	private static String reverse(String s) {
 		return new StringBuffer(s).reverse().toString();
 	}
 
 	@Override
-	public Set<Lem> lookupWord(String word) {
+	public Set<Lemma> lookupWord(String word) {
 		Map<String, IntArrayList> prefixLookup = prefixTree.findAllInPath(word);
 		Map<String, IntArrayList> postfixLookup = postfixTree.findAllInPath(reverse(word));
 
-		Set<Lem> result = newHashSet();
+		Set<Lemma> result = newHashSet();
 
 		for (Map.Entry<String, IntArrayList> i : prefixLookup.entrySet()) {
 			String affix = reverse(word.substring(i.getKey().length()));

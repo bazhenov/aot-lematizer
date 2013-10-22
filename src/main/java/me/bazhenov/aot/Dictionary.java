@@ -4,5 +4,5 @@ import java.util.Set;
 
 public interface Dictionary {
 
-	Set<Lem> lookupWord(String word);
+	Set<Lemma> lookupWord(String word);
 }
