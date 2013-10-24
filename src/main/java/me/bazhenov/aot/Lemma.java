@@ -33,7 +33,11 @@ public class Lemma {
 	}
 
 	public String getWord() {
-		return base + flexions.get(0).getEnding();
+		return getWord(flexions.get(0));
+	}
+
+	public String getWord(Flexion f) {
+		return f.getPrefix() + base + f.getEnding();
 	}
 
 	public PartOfSpeech getPosTag() {
