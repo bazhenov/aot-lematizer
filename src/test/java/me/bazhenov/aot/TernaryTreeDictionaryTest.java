@@ -1,29 +1,45 @@
 package me.bazhenov.aot;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
+import static com.google.common.collect.FluentIterable.from;
 import static com.google.common.collect.Iterables.getFirst;
+import static me.bazhenov.aot.Lemma.retireveWord;
 import static me.bazhenov.aot.PartOfSpeech.Noun;
+import static me.bazhenov.aot.TernaryTreeDictionary.loadDictionary;
 import static me.bazhenov.aot.TernaryTreeDictionary.mergeIntersect;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 public class TernaryTreeDictionaryTest {
 
+	private TernaryTreeDictionary dictionary;
+
+	@BeforeClass
+	public void setUp() throws Exception {
+		dictionary = loadDictionary();
+	}
+
 	@Test
 	public void lookup() throws IOException, InterruptedException {
-		Dictionary d = TernaryTreeDictionary.loadDictionary();
-		Set<Lemma> lemmas = d.lookupWord("люди");
+		Set<Lemma> lemmas = dictionary.lookupWord("люди");
 		Lemma l = getFirst(lemmas, null);
 		assertThat(l.getPosTag(), is(Noun));
 		Set<String> derivations = l.derivate("ед", "вн");
 		assertThat(derivations, hasSize(1));
 		assertThat(derivations, hasItem("человека"));
+	}
 
+	@Test
+	public void prefixesShouldBeResolved() {
+		List<String> lemmas = from(dictionary.lookupWord("полезай")).transform(retireveWord).toList();
+		assertThat(lemmas, hasItem("лезть"));
 	}
 
 	@Test

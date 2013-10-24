@@ -49,39 +49,41 @@ public class TernaryTreeDictionary implements Dictionary {
 			@Override
 			public Void apply(String input) {
 				String[] parts = input.split(" ");
-				String prefix = parts[0].toLowerCase().replace("ё", "е").replace("#", "");
+				String base = parts[0].toLowerCase().replace("ё", "е").replace("#", "");
 				int flexionIndex = parseInt(parts[1]);
 				List<Flexion> flexions = allFlexions.get(flexionIndex);
 
-				IntArrayList prefixVariations = prefixTree.get(prefix);
-				if (prefixVariations == null) {
-					prefixVariations = new IntArrayList(1);
-					prefixTree.insert(prefix, prefixVariations);
-				}
-
 				int wordId = refId.getAndIncrement();
-				prefixVariations.add(wordId);
+				addToTree(prefixTree, base, wordId);
 
-				Lemma l = new Lemma(prefix, flexions);
+				Lemma l = new Lemma(base, flexions);
 				lemmas.add(l);
 				checkState(lemmas.size() == wordId + 1);
 
 				Set<String> visitedAffixes = newHashSet();
+				Set<String> visitedPrefixes = newHashSet();
 				for (Flexion f : flexions) {
 					String affix = reverse(f.getEnding());
 					if (visitedAffixes.add(affix)) {
-						IntArrayList affixPostingList = postfixTree.get(affix);
-						if (affixPostingList == null) {
-							affixPostingList = new IntArrayList(1);
-							postfixTree.insert(affix, affixPostingList);
-						}
-						affixPostingList.add(wordId);
+						addToTree(postfixTree, affix, wordId);
+					}
+					if (!f.getPrefix().isEmpty() && visitedPrefixes.add(f.getPrefix())) {
+						addToTree(prefixTree, f.getPrefix() + base, wordId);
 					}
 				}
 				return null;
 			}
 		});
 		reader.close();
+	}
+
+	private static void addToTree(TernarySearchTree<IntArrayList> tree, String word, int wordId) {
+		IntArrayList prefixVariations = tree.get(word);
+		if (prefixVariations == null) {
+			prefixVariations = new IntArrayList(1);
+			tree.insert(word, prefixVariations);
+		}
+		prefixVariations.add(wordId);
 	}
 
 	public static TernaryTreeDictionary loadDictionary() throws IOException {
@@ -94,6 +96,7 @@ public class TernaryTreeDictionary implements Dictionary {
 
 	@Override
 	public Set<Lemma> lookupWord(String word) {
+		word = word.toLowerCase();
 		Map<String, IntArrayList> prefixLookup = prefixTree.findAllInPath(word);
 		Map<String, IntArrayList> postfixLookup = postfixTree.findAllInPath(reverse(word));
 
@@ -168,7 +171,10 @@ class FlexionFunction implements Function<String, List<Flexion>> {
 			String[] parts = flexion.split("\\*");
 			String ancode = parts[1].substring(0, 2);
 			String morhTag = tabDescriptors.get(tabDescriptorsMapping.get(ancode));
-			flexions.add(new Flexion(parts[0].toLowerCase().replace("ё", "е"), morhTag));
+			String prefix = parts.length > 2 ? parts[2].toLowerCase().replace("ё", "е") : "";
+			String affix = parts[0].toLowerCase().replace("ё", "е");
+			Flexion f = new Flexion(affix, prefix, morhTag);
+			flexions.add(f);
 		}
 		return flexions;
 	}
