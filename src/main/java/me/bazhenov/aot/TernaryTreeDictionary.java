@@ -36,7 +36,7 @@ public class TernaryTreeDictionary implements Dictionary {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
 		TabFileReader tabReader = new TabFileReader();
-		List<String> tabDescriptors = readLines(getResource("tab"), UTF_8, tabReader);
+		List<String> tabDescriptors = readLines(getClass().getResource("/tab"), UTF_8, tabReader);
 		Map<String, Integer> tabDescriptorsMapping = tabReader.getMapping();
 
 		allFlexions = readSection(reader, new FlexionFunction(tabDescriptors, tabDescriptorsMapping));
