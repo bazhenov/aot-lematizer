@@ -20,7 +20,6 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newArrayListWithCapacity;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
-import static com.google.common.io.Resources.getResource;
 import static com.google.common.io.Resources.readLines;
 import static java.lang.Integer.parseInt;
 
@@ -109,12 +108,21 @@ public class TernaryTreeDictionary implements Dictionary {
 				IntArrayList b = postfixLookup.get(affix);
 				IntArrayList merged = mergeIntersect(a, b);
 				for (int lemmaId : merged.toIntArray()) {
-					result.add(lemmas.get(lemmaId));
+					Lemma candidate = lemmas.get(lemmaId);
+					if (candidateContains(candidate, word))
+						result.add(candidate);
 				}
 			}
 		}
 
 		return result;
+	}
+
+	private static boolean candidateContains(Lemma candidate, String word) {
+		for (Flexion f : candidate.getFlexions())
+			if (candidate.getWord(f).equals(word))
+				return true;
+		return false;
 	}
 
 	public static IntArrayList mergeIntersect(IntArrayList a, IntArrayList b) {

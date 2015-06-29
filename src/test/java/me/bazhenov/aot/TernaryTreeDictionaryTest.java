@@ -43,6 +43,12 @@ public class TernaryTreeDictionaryTest {
 	}
 
 	@Test
+	public void foo() {
+		Set<Lemma> lemmas = dictionary.lookupWord("покос");
+		assertThat(lemmas, hasSize(1));
+	}
+
+	@Test
 	public void intersect() {
 		IntArrayList a = new IntArrayList(new int[]{1, 2, 4, 6});
 		IntArrayList b = new IntArrayList(new int[]{0, 2, 5, 6});
