@@ -21,6 +21,7 @@ import static com.google.common.collect.Lists.newArrayListWithCapacity;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 import static com.google.common.io.Resources.readLines;
+import static it.unimi.dsi.fastutil.ints.IntArrays.binarySearch;
 import static java.lang.Integer.parseInt;
 
 public class TernaryTreeDictionary implements Dictionary {
@@ -126,6 +127,12 @@ public class TernaryTreeDictionary implements Dictionary {
 	}
 
 	public static IntArrayList mergeIntersect(IntArrayList a, IntArrayList b) {
+		if (Math.min(a.size(), b.size()) <= 50) {
+			if (a.size() < b.size())
+				return intersectByBinarySearch(a, b);
+			else
+				return intersectByBinarySearch(b, a);
+		}
 		IntArrayList result = new IntArrayList();
 
 		int iA = 0, iB = 0;
@@ -139,6 +146,17 @@ public class TernaryTreeDictionary implements Dictionary {
 				iA++;
 				iB++;
 			}
+		}
+		return result;
+	}
+
+	public static IntArrayList intersectByBinarySearch(IntArrayList small, IntArrayList big) {
+		IntArrayList result = new IntArrayList();
+		int[] elements = big.elements();
+		for (int i = 0; i < small.size(); i++) {
+			int key = small.get(i);
+			if (binarySearch(elements, key) >= 0)
+				result.add(key);
 		}
 		return result;
 	}
