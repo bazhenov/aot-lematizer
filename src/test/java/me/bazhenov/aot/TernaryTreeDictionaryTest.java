@@ -44,6 +44,9 @@ public class TernaryTreeDictionaryTest {
 	public void prefixesShouldBeResolved() {
 		List<String> lemmas = from(dictionary.lookupWord("полезай")).transform(retireveWord).toList();
 		assertThat(lemmas, hasItem("лезть"));
+
+		lemmas = from(dictionary.lookupWord("продам")).transform(retireveWord).toList();
+		assertThat(lemmas, hasItem("продать"));
 	}
 
 	@Test

@@ -153,9 +153,10 @@ public class TernaryTreeDictionary implements Dictionary {
 	public static IntArrayList intersectByBinarySearch(IntArrayList small, IntArrayList big) {
 		IntArrayList result = new IntArrayList();
 		int[] elements = big.elements();
+		int size = big.size();
 		for (int i = 0; i < small.size(); i++) {
 			int key = small.get(i);
-			if (binarySearch(elements, key) >= 0)
+			if (binarySearch(elements, 0, size, key) >= 0)
 				result.add(key);
 		}
 		return result;
