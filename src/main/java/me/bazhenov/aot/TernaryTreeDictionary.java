@@ -33,7 +33,7 @@ public class TernaryTreeDictionary implements Dictionary {
 
 	private TernaryTreeDictionary() throws IOException {
 		InputStream is = getClass().getResourceAsStream("/mrd");
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is, UTF_8));
 
 		TabFileReader tabReader = new TabFileReader();
 		List<String> tabDescriptors = readLines(getClass().getResource("/tab"), UTF_8, tabReader);
