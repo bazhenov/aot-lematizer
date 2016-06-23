@@ -1,5 +1,6 @@
 package me.bazhenov.aot.measure;
 
+import me.bazhenov.aot.MapDictionary;
 import me.bazhenov.aot.TernaryTreeDictionary;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -12,9 +13,6 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by wannabe on 23.06.16.
- */
 public class LoadDictionaryBenchmark {
 
 	public static void main(String[] args) throws RunnerException {
@@ -31,5 +29,11 @@ public class LoadDictionaryBenchmark {
 	@BenchmarkMode(Mode.AverageTime)
 	public void measureTernaryTreeDictionaryLoad() throws IOException {
 		TernaryTreeDictionary.loadDictionary();
+	}
+
+	@Benchmark
+	@BenchmarkMode(Mode.AverageTime)
+	public void measureMapDictionaryLoad() throws IOException {
+		MapDictionary.loadDictionary();
 	}
 }

@@ -3,6 +3,7 @@ package me.bazhenov.aot;
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +21,8 @@ public class Lemma {
 	private final String base;
 	private final List<Flexion> flexions;
 	private final PartOfSpeech posTag;
+	private Set<String> prefixes = new HashSet<>();
+	private Set<String> endings = new HashSet<>();
 
 	public Lemma(String base, List<Flexion> flexions) {
 		this.base = base;
@@ -72,5 +75,23 @@ public class Lemma {
 			if (!f.getAncode().contains(t))
 				return false;
 		return true;
+	}
+
+	public Set<String> getEndings() {
+		return endings;
+	}
+
+	public Lemma setEndings(Set<String> endings) {
+		this.endings = endings;
+		return this;
+	}
+
+	public Set<String> getPrefixes() {
+		return prefixes;
+	}
+
+	public Lemma setPrefixes(Set<String> prefixes) {
+		this.prefixes = prefixes;
+		return this;
 	}
 }
