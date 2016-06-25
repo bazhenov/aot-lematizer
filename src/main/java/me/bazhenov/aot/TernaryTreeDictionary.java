@@ -32,7 +32,7 @@ public class TernaryTreeDictionary implements Dictionary {
 	private final List<List<Flexion>> allFlexions;
 
 	private TernaryTreeDictionary() throws IOException {
-		InputStream is = getClass().getResourceAsStream("/mrd");
+		InputStream is = getClass().getResourceAsStream("/mrd_old");
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is, UTF_8));
 
 		TabFileReader tabReader = new TabFileReader();

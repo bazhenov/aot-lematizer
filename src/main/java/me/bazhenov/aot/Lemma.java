@@ -35,6 +35,16 @@ public class Lemma {
 		}
 	}
 
+	public Lemma(String base, List<Flexion> flexions, String posCode) {
+		this.base = base;
+		this.flexions = flexions;
+		try {
+			posTag = PosTag.fromString(posCode);
+		} catch (Exception e) {
+			throw new RuntimeException("Invalid POS: " + base + "/" + posCode, e);
+		}
+	}
+
 	public String getWord() {
 		return getWord(flexions.get(0));
 	}

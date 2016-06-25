@@ -12,9 +12,7 @@ import static me.bazhenov.aot.Lemma.retireveWord;
 import static me.bazhenov.aot.PartOfSpeech.Adjective;
 import static me.bazhenov.aot.PartOfSpeech.Noun;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class MapDictionaryTest {
 
@@ -28,6 +26,18 @@ public class MapDictionaryTest {
 	@Test
 	public void testLookupSimpleWord() {
 		Set<Lemma> lemmas = dict.lookupWord("курица");
+		assertThat(lemmas, hasSize(1));
+	}
+
+	@Test
+	public void testNotExistingWord() {
+		Set<Lemma> lemmas = dict.lookupWord("серобуромалиновый");
+		assertThat(lemmas, empty());
+	}
+
+	@Test
+	public void testLookupWrongCaseWord() {
+		Set<Lemma> lemmas = dict.lookupWord("КУриЦА");
 		assertThat(lemmas, hasSize(1));
 	}
 

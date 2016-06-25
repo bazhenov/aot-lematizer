@@ -9,7 +9,14 @@ import java.util.stream.Collectors;
  */
 public class LemmaRepository {
 
-	private final Map<String, Set<Lemma>> lemmas = new HashMap<>();
+	/**
+	 * Наборы лемм, сгруппированые по первой букве основания
+	 */
+	private final Map<Character, Map<String, Set<Lemma>>> lemmas = new HashMap<>();
+
+	public static char firstChar(String s) {
+		return s.isEmpty() ? Character.MIN_VALUE : s.charAt(0);
+	}
 
 	/**
 	 * @param bases основы лемм
@@ -17,8 +24,8 @@ public class LemmaRepository {
 	 */
 	public Set<Lemma> findByBaseIn(Set<String> bases) {
 		return bases.stream()
-			.filter(lemmas::containsKey)
-			.map(lemmas::get)
+			.filter(base -> lemmas.getOrDefault(firstChar(base), new HashMap<>()).containsKey(base))
+			.map(base -> lemmas.get(firstChar(base)).get(base))
 			.flatMap(Collection::stream)
 			.collect(Collectors.toSet());
 	}
@@ -29,8 +36,10 @@ public class LemmaRepository {
 	 * @param lemma Лемма для вставки
 	 */
 	public void insert(Lemma lemma) {
-		lemmas.putIfAbsent(lemma.getBase(), new HashSet<>());
-		Set<Lemma> sameBaseLemmas = lemmas.get(lemma.getBase());
+		String base = lemma.getBase();
+		lemmas.putIfAbsent(firstChar(base), new HashMap<>());
+		lemmas.get(firstChar(base)).putIfAbsent(base, new HashSet<>());
+		Set<Lemma> sameBaseLemmas = lemmas.get(firstChar(base)).get(base);
 		if (sameBaseLemmas.contains(lemma)) {
 			throw new IllegalArgumentException("Данная лемма уже присутствует в репозитории");
 		}

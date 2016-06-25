@@ -17,7 +17,7 @@ public class LoadDictionaryBenchmark {
 
 	public static void main(String[] args) throws RunnerException {
 		Options opt = new OptionsBuilder()
-			.mode(Mode.AverageTime)
+			.mode(Mode.SingleShotTime)
 			.include(".*" + LoadDictionaryBenchmark.class.getSimpleName() + ".*")
 			.forks(1)
 			.timeUnit(TimeUnit.SECONDS)
