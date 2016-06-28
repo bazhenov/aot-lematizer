@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.google.common.base.Charsets.UTF_8;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
@@ -23,6 +22,7 @@ import static com.google.common.collect.Sets.newHashSet;
 import static com.google.common.io.Resources.readLines;
 import static it.unimi.dsi.fastutil.ints.IntArrays.binarySearch;
 import static java.lang.Integer.parseInt;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class TernaryTreeDictionary implements Dictionary {
 

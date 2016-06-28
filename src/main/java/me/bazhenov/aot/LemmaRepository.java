@@ -1,7 +1,12 @@
 package me.bazhenov.aot;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkState;
+import static java.util.Collections.emptyMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * Обеспечивает хранение лемм и их выборку по ключу {@link Lemma#base}<br />
@@ -24,26 +29,22 @@ public class LemmaRepository {
 	 */
 	public Set<Lemma> findByBaseIn(Set<String> bases) {
 		return bases.stream()
-			.filter(base -> lemmas.getOrDefault(firstChar(base), new HashMap<>()).containsKey(base))
-			.map(base -> lemmas.get(firstChar(base)).get(base))
+			.map(base -> lemmas.getOrDefault(firstChar(base), emptyMap()).get(base))
+			.filter(i -> i != null)
 			.flatMap(Collection::stream)
-			.collect(Collectors.toSet());
+			.collect(toSet());
 	}
 
 	/**
-	 * Пороизводит вставку указанной леммы в репозиторий. <br />
-	 * При наличии данной леммы до вставки бросится исключение.
-	 * @param lemma Лемма для вставки
+	 * Пороизводит вставку указанной леммы в репозиторий. При наличии данной леммы до вставки бросится исключение.
+	 *
+	 * @param lemma лемма для вставки
 	 */
 	public void insert(Lemma lemma) {
 		String base = lemma.getBase();
-		lemmas.putIfAbsent(firstChar(base), new HashMap<>());
-		lemmas.get(firstChar(base)).putIfAbsent(base, new HashSet<>());
-		Set<Lemma> sameBaseLemmas = lemmas.get(firstChar(base)).get(base);
-		if (sameBaseLemmas.contains(lemma)) {
-			throw new IllegalArgumentException("Данная лемма уже присутствует в репозитории");
-		}
-		sameBaseLemmas.add(lemma);
-	}
+		Set<Lemma> sameBaseLemmas = lemmas.computeIfAbsent(firstChar(base), c -> new HashMap<>())
+			.computeIfAbsent(base, b -> new HashSet<>());
 
+		checkState(sameBaseLemmas.add(lemma), "Lemma already in repository");
+	}
 }

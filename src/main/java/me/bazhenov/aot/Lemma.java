@@ -1,6 +1,5 @@
 package me.bazhenov.aot;
 
-import com.google.common.base.Function;
 import com.google.common.base.Objects;
 
 import java.util.HashSet;
@@ -11,18 +10,11 @@ import static com.google.common.collect.Sets.newHashSet;
 
 public class Lemma {
 
-	public static Function<Lemma, String> retireveWord = new Function<Lemma, String>() {
-		@Override
-		public String apply(Lemma lemma) {
-			return lemma.getWord();
-		}
-	};
-
 	private final String base;
 	private final List<Flexion> flexions;
 	private final PartOfSpeech posTag;
-	private Set<String> prefixes = new HashSet<>();
-	private Set<String> endings = new HashSet<>();
+	private final Set<String> prefixes = new HashSet<>();
+	private final Set<String> endings = new HashSet<>();
 
 	public Lemma(String base, List<Flexion> flexions) {
 		this.base = base;
@@ -30,7 +22,7 @@ public class Lemma {
 		String posCode = flexions.get(0).getAncode().split(" ", 3)[1];
 		try {
 			posTag = PosTag.fromString(posCode);
-		} catch (Exception e) {
+		} catch (RuntimeException e) {
 			throw new RuntimeException("Invalid POS: " + base + "/" + posCode, e);
 		}
 	}
@@ -40,7 +32,7 @@ public class Lemma {
 		this.flexions = flexions;
 		try {
 			posTag = PosTag.fromString(posCode);
-		} catch (Exception e) {
+		} catch (RuntimeException e) {
 			throw new RuntimeException("Invalid POS: " + base + "/" + posCode, e);
 		}
 	}
@@ -92,7 +84,8 @@ public class Lemma {
 	}
 
 	public Lemma setEndings(Set<String> endings) {
-		this.endings = endings;
+		this.endings.clear();
+		this.endings.addAll(endings);
 		return this;
 	}
 
@@ -101,7 +94,8 @@ public class Lemma {
 	}
 
 	public Lemma setPrefixes(Set<String> prefixes) {
-		this.prefixes = prefixes;
+		this.prefixes.clear();
+		this.prefixes.addAll(prefixes);
 		return this;
 	}
 }
