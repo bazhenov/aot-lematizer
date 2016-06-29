@@ -8,26 +8,27 @@ import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import static com.google.common.base.Charsets.UTF_8;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.Integer.parseInt;
-import static java.lang.Thread.currentThread;
-import static java.util.Collections.*;
-import static org.apache.commons.lang3.StringUtils.replaceOnce;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Collections.singleton;
+import static java.util.Collections.unmodifiableMap;
+import static java.util.stream.Collectors.toSet;
+import static java.util.stream.IntStream.range;
+import static java.util.stream.IntStream.rangeClosed;
 
 /**
  * Имплементация словаря на основе хранения лексем в нескольких {@link HashMap}
  * с использованием избыточной информации (такие как все основы словаря) для обеспечения быстрой выборки. <br />
- *
+ * <p>
  * Данный класс использует следующий формат словаря: <br />
  * <ol>
- *   <li>
- *     <b>Секция склонений</b><br />
- *     В начале данной секции идет число n - количество склонений в секции, далее идет
- *     n блоков вида
- *     <pre>
+ * <li>
+ * <b>Секция склонений</b><br />
+ * В начале данной секции идет число n - количество склонений в секции, далее идет
+ * n блоков вида
+ * <pre>
  *       m
  *       posTag
  *       f1
@@ -38,16 +39,16 @@ import static org.apache.commons.lang3.StringUtils.replaceOnce;
  *       fm
  *       ancodem
  *     </pre>
- *     где m - количество склонений, posTag - один из ключей {@link PosTag#posTags },
- *     общий для всей парадигмы, fi - склонение, которое представлено либо в виде
- *     *%s*%s, где первая строка - это префикс, а вторая - суффикс, либо просто буквенной строкой %s (в таком случае
- *     префикс считается равным пустой строке). Также для каждого склонения на следующей за ним строке идет его ancode.
- *   </li>
- *   <li>
- *     <b>Секция лемм</b><br />
- *     Данная секция также начинается с количества блоков n. Эти блоки группируют основания
- *     лемм по индексу парадигмы. Формат блоков следующий
- *     <pre>
+ * где m - количество склонений, posTag - один из ключей {@link PosTag#posTags},
+ * общий для всей парадигмы, fi - склонение, которое представлено либо в виде
+ * *%s*%s, где первая строка - это префикс, а вторая - суффикс, либо просто буквенной строкой %s (в таком случае
+ * префикс считается равным пустой строке). Также для каждого склонения на следующей за ним строке идет его ancode.
+ * </li>
+ * <li>
+ * <b>Секция лемм</b><br />
+ * Данная секция также начинается с количества блоков n. Эти блоки группируют основания
+ * лемм по индексу парадигмы. Формат блоков следующий
+ * <pre>
  *       paradigm
  *       m
  *       base1
@@ -55,9 +56,9 @@ import static org.apache.commons.lang3.StringUtils.replaceOnce;
  *       ...
  *       basem
  *     </pre>
- *     Где paradigm - номер парадигмы склонения (индекс блока из секции склонений),
- *     m - количество оснований, basei - основание леммы, у которой номер парадигмы равен paradigm
- *   </li>
+ * Где paradigm - номер парадигмы склонения (индекс блока из секции склонений),
+ * m - количество оснований, basei - основание леммы, у которой номер парадигмы равен paradigm
+ * </li>
  * </ol>
  * Также стоит обратить внимание на то, что данная имплементация не использует tab-файл, храня вместо этого его
  * в памяти в {@link MapDictionary#tabDescriptors}
@@ -886,11 +887,10 @@ public class MapDictionary implements Dictionary {
 
 	@Override
 	public Set<Lemma> lookupWord(String word) {
+		String lowercaseWord = word.toLowerCase().replace('ё', 'е');
 		try {
 			loadLock.lock();
-
-			String lowercaseWord = replaceOnce(word.toLowerCase(), "ё", "е");
-			return IntStream.range(0, word.length())
+			return range(0, word.length())
 				.boxed()
 				.filter(i -> i == 0 || allPrefixes.contains(lowercaseWord.substring(0, i)))
 				.map(i -> lookupWithoutPrefix(lowercaseWord.substring(0, i), lowercaseWord.substring(i, word.length())))
@@ -925,18 +925,17 @@ public class MapDictionary implements Dictionary {
 	}
 
 	private Set<Lemma> lookupWithoutPrefix(String preffix, String sufix) {
-		Map<String, String> prefixesPostfixes = IntStream.rangeClosed(0, sufix.length())
+		Map<String, String> prefixesPostfixes = rangeClosed(0, sufix.length())
 			.boxed()
 			.filter(i -> allEndings.contains(sufix.substring(i, sufix.length())))
 			.collect(Collectors.toMap(
 				index -> sufix.substring(0, index),
-				index -> sufix.substring(index, sufix.length())
-			));
+				index -> sufix.substring(index, sufix.length())));
+
 		Set<Lemma> byBaseIn = lemmaRepository.findByBaseIn(prefixesPostfixes.keySet());
 		return byBaseIn.stream()
 			.filter(l -> (isNullOrEmpty(preffix) || l.getPrefixes().contains(preffix)) &&
 				l.getEndings().contains(prefixesPostfixes.get(l.getBase())))
-			.collect(Collectors.toSet());
+			.collect(toSet());
 	}
-
 }

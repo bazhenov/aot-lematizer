@@ -4,7 +4,7 @@
 
 	<groupId>me.bazhenov.aot</groupId>
 	<artifactId>aot-lematizer</artifactId>
-	<version>1.0.5</version>
+	<version>1.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>aot-lematizer</name>
@@ -26,29 +26,9 @@
 			<version>15.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.beust</groupId>
-			<artifactId>jcommander</artifactId>
-			<version>1.20</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-analyzers</artifactId>
-			<version>3.5.0</version>
-		</dependency>
-		<dependency>
 			<groupId>it.unimi.dsi</groupId>
 			<artifactId>fastutil</artifactId>
 			<version>6.5.9</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-core</artifactId>
-			<version>3.6.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.9.5</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.openjdk.jmh/jmh-core -->
 		<dependency>
@@ -63,12 +43,6 @@
 			<version>1.12</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.4</version>
-		</dependency>
-
 	</dependencies>
 
 	<build>

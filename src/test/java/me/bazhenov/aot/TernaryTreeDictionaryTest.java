@@ -14,7 +14,6 @@ import static com.google.common.collect.FluentIterable.from;
 import static com.google.common.collect.Iterables.getFirst;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static java.util.regex.Pattern.*;
-import static me.bazhenov.aot.Lemma.retireveWord;
 import static me.bazhenov.aot.PartOfSpeech.Noun;
 import static me.bazhenov.aot.TernaryTreeDictionary.loadDictionary;
 import static me.bazhenov.aot.TernaryTreeDictionary.mergeIntersect;
@@ -42,10 +41,10 @@ public class TernaryTreeDictionaryTest {
 
 	@Test
 	public void prefixesShouldBeResolved() {
-		List<String> lemmas = from(dictionary.lookupWord("полезай")).transform(retireveWord).toList();
+		List<String> lemmas = from(dictionary.lookupWord("полезай")).transform(Lemma::getWord).toList();
 		assertThat(lemmas, hasItem("лезть"));
 
-		lemmas = from(dictionary.lookupWord("продам")).transform(retireveWord).toList();
+		lemmas = from(dictionary.lookupWord("продам")).transform(Lemma::getWord).toList();
 		assertThat(lemmas, hasItem("продать"));
 	}
 

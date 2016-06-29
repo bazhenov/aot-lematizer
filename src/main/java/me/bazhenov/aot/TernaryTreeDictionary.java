@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.google.common.base.Charsets.UTF_8;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
@@ -23,6 +22,7 @@ import static com.google.common.collect.Sets.newHashSet;
 import static com.google.common.io.Resources.readLines;
 import static it.unimi.dsi.fastutil.ints.IntArrays.binarySearch;
 import static java.lang.Integer.parseInt;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class TernaryTreeDictionary implements Dictionary {
 
@@ -94,31 +94,6 @@ public class TernaryTreeDictionary implements Dictionary {
 		return new StringBuffer(s).reverse().toString();
 	}
 
-	@Override
-	public Set<Lemma> lookupWord(String word) {
-		word = word.toLowerCase();
-		Map<String, IntArrayList> prefixLookup = prefixTree.findAllInPath(word);
-		Map<String, IntArrayList> postfixLookup = postfixTree.findAllInPath(reverse(word));
-
-		Set<Lemma> result = newHashSet();
-
-		for (Map.Entry<String, IntArrayList> i : prefixLookup.entrySet()) {
-			String affix = reverse(word.substring(i.getKey().length()));
-			if (postfixLookup.containsKey(affix)) {
-				IntArrayList a = i.getValue();
-				IntArrayList b = postfixLookup.get(affix);
-				IntArrayList merged = mergeIntersect(a, b);
-				for (int lemmaId : merged.toIntArray()) {
-					Lemma candidate = lemmas.get(lemmaId);
-					if (candidateContains(candidate, word))
-						result.add(candidate);
-				}
-			}
-		}
-
-		return result;
-	}
-
 	private static boolean candidateContains(Lemma candidate, String word) {
 		for (Flexion f : candidate.getFlexions())
 			if (candidate.getWord(f).equals(word))
@@ -177,6 +152,31 @@ public class TernaryTreeDictionary implements Dictionary {
 			}
 			return null;
 		}
+	}
+
+	@Override
+	public Set<Lemma> lookupWord(String word) {
+		word = word.toLowerCase();
+		Map<String, IntArrayList> prefixLookup = prefixTree.findAllInPath(word);
+		Map<String, IntArrayList> postfixLookup = postfixTree.findAllInPath(reverse(word));
+
+		Set<Lemma> result = newHashSet();
+
+		for (Map.Entry<String, IntArrayList> i : prefixLookup.entrySet()) {
+			String affix = reverse(word.substring(i.getKey().length()));
+			if (postfixLookup.containsKey(affix)) {
+				IntArrayList a = i.getValue();
+				IntArrayList b = postfixLookup.get(affix);
+				IntArrayList merged = mergeIntersect(a, b);
+				for (int lemmaId : merged.toIntArray()) {
+					Lemma candidate = lemmas.get(lemmaId);
+					if (candidateContains(candidate, word))
+						result.add(candidate);
+				}
+			}
+		}
+
+		return result;
 	}
 }
 
