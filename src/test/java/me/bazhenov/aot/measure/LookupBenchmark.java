@@ -23,7 +23,11 @@ public class LookupBenchmark {
 	static {
 		try {
 			TERNARY_TREE_DICTIONARY = loadDictionary();
+			long before = System.currentTimeMillis();
 			MAP_DICTIONARY = MapDictionary.loadDictionary();
+			long after = System.currentTimeMillis();
+
+			System.out.println("\n\nTime taken: " + (after - before));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
