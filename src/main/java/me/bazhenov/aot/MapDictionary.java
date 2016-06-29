@@ -5,12 +5,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.google.common.base.Charsets.UTF_8;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.Integer.parseInt;
+import static java.lang.Thread.currentThread;
+import static java.util.Collections.*;
 import static org.apache.commons.lang3.StringUtils.replaceOnce;
 
 /**
@@ -34,7 +38,7 @@ import static org.apache.commons.lang3.StringUtils.replaceOnce;
  *       fm
  *       ancodem
  *     </pre>
- *     где m - количество склонений, posTag - один из ключей {@link PosTag.posTags },
+ *     где m - количество склонений, posTag - один из ключей {@link PosTag#posTags },
  *     общий для всей парадигмы, fi - склонение, которое представлено либо в виде
  *     *%s*%s, где первая строка - это префикс, а вторая - суффикс, либо просто буквенной строкой %s (в таком случае
  *     префикс считается равным пустой строке). Также для каждого склонения на следующей за ним строке идет его ancode.
@@ -56,7 +60,7 @@ import static org.apache.commons.lang3.StringUtils.replaceOnce;
  *   </li>
  * </ol>
  * Также стоит обратить внимание на то, что данная имплементация не использует tab-файл, храня вместо этого его
- * в памяти в {@link MapDictionary.tabDescriptors}
+ * в памяти в {@link MapDictionary#tabDescriptors}
  * <p>
  * {@link #lookupWord(String)} не модифицирует состояние внутренних объектов, и как следствие потокобезопасный.
  */
@@ -788,18 +792,34 @@ public class MapDictionary implements Dictionary {
 			tabs.put("Хб", "a * лок,опч,");
 			tabs.put("яю", "F С мр,жр,ср,ед,им,рд,дт,вн,тв,пр");
 			tabs.put("яя", "F С мр,жр,ср,,ед,мн,им,рд,дт,вн,тв,пр");
-			tabDescriptors = Collections.unmodifiableMap(tabs);
+			tabDescriptors = unmodifiableMap(tabs);
 		}
 	}
 
 	private final Set<String> allPrefixes = new HashSet<>();
 	private final Set<String> allEndings = new HashSet<>();
 	private final LemmaRepository lemmaRepository;
+	private final Lock loadLock = new ReentrantLock();
 
-	private MapDictionary() throws IOException {
+	private MapDictionary(String filepath) throws IOException {
 		this.lemmaRepository = new LemmaRepository();
+		load(filepath);
+	}
 
-		InputStream is = getClass().getResourceAsStream("/mrd");
+	public static MapDictionary loadDictionary(String filepath) {
+		try {
+			return new MapDictionary(filepath);
+		} catch (IOException e) {
+			return null;
+		}
+	}
+
+	public static MapDictionary loadDictionary() {
+		return loadDictionary("/mrd");
+	}
+
+	private void load(String filepath) throws IOException {
+		InputStream is = getClass().getResourceAsStream(filepath);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is, UTF_8));
 
 		int sectionLength = parseInt(reader.readLine());
@@ -853,7 +873,7 @@ public class MapDictionary implements Dictionary {
 
 			List<Flexion> flexions = paradigms.get(paradigm);
 			Set<String> endings = paradigmEndings.get(paradigm);
-			Set<String> prefixes = paradigmPrefixes.getOrDefault(paradigm, new HashSet<>(Collections.singleton("")));
+			Set<String> prefixes = paradigmPrefixes.getOrDefault(paradigm, new HashSet<>(singleton("")));
 			for (int j = 0; j < paradigmSize; j++) {
 				String base = reader.readLine();
 				base = base.equals("#") ? "" : base;
@@ -865,24 +885,40 @@ public class MapDictionary implements Dictionary {
 		}
 	}
 
-	public static MapDictionary loadDictionary() {
+	@Override
+	public Set<Lemma> lookupWord(String word) {
 		try {
-			return new MapDictionary();
-		} catch (IOException e) {
-			return null;
+			loadLock.lock();
+
+			String lowercaseWord = replaceOnce(word.toLowerCase(), "ё", "е");
+			return IntStream.range(0, word.length())
+				.boxed()
+				.filter(i -> i == 0 || allPrefixes.contains(lowercaseWord.substring(0, i)))
+				.map(i -> lookupWithoutPrefix(lowercaseWord.substring(0, i), lowercaseWord.substring(i, word.length())))
+				.flatMap(Collection::stream)
+				.collect(Collectors.toSet());
+		} finally {
+			loadLock.unlock();
 		}
 	}
 
-	@Override
-	public Set<Lemma> lookupWord(String word) {
-		String lowercaseWord = replaceOnce(word.toLowerCase(), "ё", "е");
-		return IntStream.range(0, word.length())
-			.boxed()
-			.filter(i -> i == 0 || allPrefixes.contains(lowercaseWord.substring(0, i)))
-			.map(i -> lookupWithoutPrefix(lowercaseWord.substring(0, i), lowercaseWord.substring(i, word.length())))
-			.flatMap(Collection::stream)
-			.collect(Collectors.toSet());
+	/**
+	 * Наполняет данный словарь данными из нового файла
+	 *
+	 * @param filepath путь до файла
+	 * @throws IOException
+	 */
+	public void reload(String filepath) throws IOException {
+		try {
+			loadLock.lock();
 
+			allEndings.clear();
+			allPrefixes.clear();
+			lemmaRepository.clear();
+			load(filepath);
+		} finally {
+			loadLock.unlock();
+		}
 	}
 
 	private Set<Lemma> lookupWithoutPrefix(String preffix, String sufix) {

@@ -46,4 +46,7 @@ public class LemmaRepository {
 		sameBaseLemmas.add(lemma);
 	}
 
+	public void clear() {
+		lemmas.clear();
+	}
 }
