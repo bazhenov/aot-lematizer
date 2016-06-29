@@ -803,7 +803,7 @@ public class MapDictionary implements Dictionary {
 
 	private MapDictionary(String filepath) throws IOException {
 		this.lemmaRepository = new LemmaRepository();
-		load(filepath);
+		load(getClass().getResourceAsStream(filepath));
 	}
 
 	public static MapDictionary loadDictionary(String filepath) {
@@ -818,8 +818,7 @@ public class MapDictionary implements Dictionary {
 		return loadDictionary("/mrd");
 	}
 
-	private void load(String filepath) throws IOException {
-		InputStream is = getClass().getResourceAsStream(filepath);
+	private void load(InputStream is) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is, UTF_8));
 
 		int sectionLength = parseInt(reader.readLine());
@@ -911,11 +910,15 @@ public class MapDictionary implements Dictionary {
 	public void reload(String filepath) throws IOException {
 		try {
 			loadLock.lock();
+			InputStream is = getClass().getResourceAsStream(filepath);
+			if (is == null) {
+				throw new IllegalArgumentException();
+			}
 
 			allEndings.clear();
 			allPrefixes.clear();
 			lemmaRepository.clear();
-			load(filepath);
+			load(is);
 		} finally {
 			loadLock.unlock();
 		}

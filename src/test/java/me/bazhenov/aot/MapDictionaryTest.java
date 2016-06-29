@@ -3,6 +3,8 @@ package me.bazhenov.aot;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -71,5 +73,24 @@ public class MapDictionaryTest {
 			.map(retireveWord::apply)
 			.collect(Collectors.toList());
 		assertThat(lemmas, hasItem("продать"));
+	}
+
+	@Test
+	public void testReload() throws Exception {
+		Set<Lemma> lemmas = dict.lookupWord("серобуромалиновый");
+		assertThat(lemmas, empty());
+		dict.reload("/mrd_dummy");
+		lemmas = dict.lookupWord("серобуромалиновый");
+		assertThat(lemmas, hasSize(1));
+	}
+
+	@Test
+	public void testReloadNotChangedAfterException() throws Exception {
+		try {
+			dict.reload("/iamnotexists");
+		} catch (IllegalArgumentException e) {
+		}
+		Set<Lemma> lemmas = dict.lookupWord("курица");
+		assertThat(lemmas, hasSize(1));
 	}
 }
