@@ -9,6 +9,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.Integer.parseInt;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -911,9 +912,7 @@ public class MapDictionary implements Dictionary {
 		try {
 			loadLock.lock();
 			InputStream is = getClass().getResourceAsStream(filepath);
-			if (is == null) {
-				throw new IllegalArgumentException();
-			}
+			checkArgument(is != null, "Cant open file");
 
 			allEndings.clear();
 			allPrefixes.clear();
