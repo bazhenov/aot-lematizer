@@ -87,4 +87,11 @@ public class MapDictionaryTest {
 		Set<Lemma> lemmas = dict.lookupWord("курица");
 		assertThat(lemmas, hasSize(1));
 	}
+
+	@Test
+	public void testCustomLoad() throws Exception {
+		MapDictionary dict = MapDictionary.loadDictionary("/mrd_dummy");
+		Set<Lemma> lemmas = dict.lookupWord("серобуромалиновый");
+		assertThat(lemmas, hasSize(1));
+	}
 }
