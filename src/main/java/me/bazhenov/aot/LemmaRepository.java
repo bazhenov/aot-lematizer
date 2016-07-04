@@ -47,4 +47,8 @@ public class LemmaRepository {
 
 		checkState(sameBaseLemmas.add(lemma), "Lemma already in repository");
 	}
+
+	public void clear() {
+		lemmas.clear();
+	}
 }

@@ -5,15 +5,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.Integer.parseInt;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singleton;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.stream.Collectors.toSet;
+import static java.util.stream.IntStream.range;
 import static java.util.stream.IntStream.rangeClosed;
 
 /**
@@ -798,11 +801,26 @@ public class MapDictionary implements Dictionary {
 	private final Set<String> allPrefixes = new HashSet<>();
 	private final Set<String> allEndings = new HashSet<>();
 	private final LemmaRepository lemmaRepository;
+	private final Lock loadLock = new ReentrantLock();
 
-	private MapDictionary() throws IOException {
+	private MapDictionary(String filepath) throws IOException {
 		this.lemmaRepository = new LemmaRepository();
+		load(getClass().getResourceAsStream(filepath));
+	}
 
-		InputStream is = getClass().getResourceAsStream("/mrd");
+	public static MapDictionary loadDictionary(String filepath) {
+		try {
+			return new MapDictionary(filepath);
+		} catch (IOException e) {
+			return null;
+		}
+	}
+
+	public static MapDictionary loadDictionary() {
+		return loadDictionary("/mrd");
+	}
+
+	private void load(InputStream is) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is, UTF_8));
 
 		int sectionLength = parseInt(reader.readLine());
@@ -868,25 +886,41 @@ public class MapDictionary implements Dictionary {
 		}
 	}
 
-	public static MapDictionary loadDictionary() {
-		try {
-			return new MapDictionary();
-		} catch (IOException e) {
-			return null;
-		}
-	}
-
 	@Override
 	public Set<Lemma> lookupWord(String word) {
 		String lowercaseWord = word.toLowerCase().replace('ё', 'е');
+		try {
+			loadLock.lock();
+			return range(0, word.length())
+				.boxed()
+				.filter(i -> i == 0 || allPrefixes.contains(lowercaseWord.substring(0, i)))
+				.map(i -> lookupWithoutPrefix(lowercaseWord.substring(0, i), lowercaseWord.substring(i, word.length())))
+				.flatMap(Collection::stream)
+				.collect(Collectors.toSet());
+		} finally {
+			loadLock.unlock();
+		}
+	}
 
-		return IntStream.range(0, word.length())
-			.boxed()
-			.filter(i -> i == 0 || allPrefixes.contains(lowercaseWord.substring(0, i)))
-			.map(i -> lookupWithoutPrefix(lowercaseWord.substring(0, i), lowercaseWord.substring(i, word.length())))
-			.flatMap(Collection::stream)
-			.collect(toSet());
+	/**
+	 * Наполняет данный словарь данными из нового файла
+	 *
+	 * @param filepath путь до файла
+	 * @throws IOException
+	 */
+	public void reload(String filepath) throws IOException {
+		try {
+			loadLock.lock();
+			InputStream is = getClass().getResourceAsStream(filepath);
+			checkArgument(is != null, "Cant open file");
 
+			allEndings.clear();
+			allPrefixes.clear();
+			lemmaRepository.clear();
+			load(is);
+		} finally {
+			loadLock.unlock();
+		}
 	}
 
 	private Set<Lemma> lookupWithoutPrefix(String preffix, String sufix) {

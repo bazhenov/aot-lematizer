@@ -53,4 +53,17 @@ public class LemmaRepositoryTest {
 		Set<Lemma> lemmas = lemmaRepository.findByBaseIn(setFromElems("кур"));
 		assertThat(lemmas, empty());
 	}
+
+	@Test
+	public void testClear() throws Exception {
+		Lemma lemma2 = new Lemma("крас", Collections.singletonList(new Flexion("ивая", "", "Г Г Г Г Г")));
+		lemmaRepository.insert(lemma2);
+
+		Set<Lemma> lemmas = lemmaRepository.findByBaseIn(setFromElems("крас"));
+		assertThat(lemmas, hasSize(1));
+
+		lemmaRepository.clear();
+		lemmas = lemmaRepository.findByBaseIn(setFromElems("крас"));
+		assertThat(lemmas, empty());
+	}
 }

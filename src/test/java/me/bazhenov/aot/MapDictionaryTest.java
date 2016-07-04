@@ -66,4 +66,32 @@ public class MapDictionaryTest {
 			.collect(toList());
 		assertThat(lemmas, hasItem("продать"));
 	}
+
+	@Test
+	public void testReload() throws Exception {
+		Set<Lemma> lemmas = dict.lookupWord("серобуромалиновый");
+		assertThat(lemmas, empty());
+		dict.reload("/mrd_dummy");
+		lemmas = dict.lookupWord("серобуромалиновый");
+		assertThat(lemmas, hasSize(1));
+
+		dict.reload("/mrd");
+	}
+
+	@Test
+	public void testReloadNotChangedAfterException() throws Exception {
+		try {
+			dict.reload("/iamnotexists");
+		} catch (IllegalArgumentException e) {
+		}
+		Set<Lemma> lemmas = dict.lookupWord("курица");
+		assertThat(lemmas, hasSize(1));
+	}
+
+	@Test
+	public void testCustomLoad() throws Exception {
+		MapDictionary dict = MapDictionary.loadDictionary("/mrd_dummy");
+		Set<Lemma> lemmas = dict.lookupWord("серобуромалиновый");
+		assertThat(lemmas, hasSize(1));
+	}
 }
