@@ -71,17 +71,17 @@ public class MapDictionaryTest {
 	public void testReload() throws Exception {
 		Set<Lemma> lemmas = dict.lookupWord("серобуромалиновый");
 		assertThat(lemmas, empty());
-		dict.reload("/mrd_dummy");
+		dict.reload(getClass().getResourceAsStream("/mrd_dummy"));
 		lemmas = dict.lookupWord("серобуромалиновый");
 		assertThat(lemmas, hasSize(1));
 
-		dict.reload("/mrd");
+		dict.reload(getClass().getResourceAsStream("/mrd"));
 	}
 
 	@Test
 	public void testReloadNotChangedAfterException() throws Exception {
 		try {
-			dict.reload("/iamnotexists");
+			dict.reload(getClass().getResourceAsStream("/iamnotexists"));
 		} catch (IllegalArgumentException e) {
 		}
 		Set<Lemma> lemmas = dict.lookupWord("курица");
@@ -90,7 +90,7 @@ public class MapDictionaryTest {
 
 	@Test
 	public void testCustomLoad() throws Exception {
-		MapDictionary dict = MapDictionary.loadDictionary("/mrd_dummy");
+		MapDictionary dict = MapDictionary.loadDictionary(getClass().getResourceAsStream("/mrd_dummy"));
 		Set<Lemma> lemmas = dict.lookupWord("серобуромалиновый");
 		assertThat(lemmas, hasSize(1));
 	}
