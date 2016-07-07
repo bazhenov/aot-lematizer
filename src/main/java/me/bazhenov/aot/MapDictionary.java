@@ -803,21 +803,21 @@ public class MapDictionary implements Dictionary {
 	private final LemmaRepository lemmaRepository;
 	private final Lock loadLock = new ReentrantLock();
 
-	private MapDictionary(String filepath) throws IOException {
+	private MapDictionary(InputStream is) throws IOException {
 		this.lemmaRepository = new LemmaRepository();
-		load(getClass().getResourceAsStream(filepath));
+		load(is);
 	}
 
-	public static MapDictionary loadDictionary(String filepath) {
+	public static MapDictionary loadDictionary(InputStream is) {
 		try {
-			return new MapDictionary(filepath);
+			return new MapDictionary(is);
 		} catch (IOException e) {
 			return null;
 		}
 	}
 
 	public static MapDictionary loadDictionary() {
-		return loadDictionary("/mrd");
+		return loadDictionary(MapDictionary.class.getResourceAsStream("/mrd"));
 	}
 
 	private void load(InputStream is) throws IOException {
@@ -905,13 +905,12 @@ public class MapDictionary implements Dictionary {
 	/**
 	 * Наполняет данный словарь данными из нового файла
 	 *
-	 * @param filepath путь до файла
+	 * @param is содержимое нового файла
 	 * @throws IOException
 	 */
-	public void reload(String filepath) throws IOException {
+	public void reload(InputStream is) throws IOException {
 		try {
 			loadLock.lock();
-			InputStream is = getClass().getResourceAsStream(filepath);
 			checkArgument(is != null, "Cant open file");
 
 			allEndings.clear();
