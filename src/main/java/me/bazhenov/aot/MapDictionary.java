@@ -878,9 +878,7 @@ public class MapDictionary implements Dictionary {
 			for (int j = 0; j < paradigmSize; j++) {
 				String base = reader.readLine();
 				base = base.equals("#") ? "" : base;
-				Lemma l = new Lemma(base, flexions, paradigmAncodes.get(paradigm));
-				l.setEndings(endings);
-				l.setPrefixes(prefixes);
+				Lemma l = new Lemma(base, flexions, paradigmAncodes.get(paradigm), prefixes, endings);
 				lemmaRepository.insert(l);
 			}
 		}
