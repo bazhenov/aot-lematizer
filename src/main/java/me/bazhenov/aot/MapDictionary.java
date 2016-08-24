@@ -15,6 +15,7 @@ import static java.lang.Integer.parseInt;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singleton;
 import static java.util.Collections.unmodifiableMap;
+import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.IntStream.range;
 import static java.util.stream.IntStream.rangeClosed;
@@ -924,7 +925,7 @@ public class MapDictionary implements Dictionary {
 		Map<String, String> prefixesPostfixes = rangeClosed(0, sufix.length())
 			.boxed()
 			.filter(i -> allEndings.contains(sufix.substring(i, sufix.length())))
-			.collect(Collectors.toMap(
+			.collect(toMap(
 				index -> sufix.substring(0, index),
 				index -> sufix.substring(index, sufix.length())));
 
@@ -932,6 +933,7 @@ public class MapDictionary implements Dictionary {
 		return byBaseIn.stream()
 			.filter(l -> (isNullOrEmpty(preffix) || l.getPrefixes().contains(preffix)) &&
 				l.getEndings().contains(prefixesPostfixes.get(l.getBase())))
+			.filter(l -> l.hasFlexionBy(preffix, prefixesPostfixes.get(l.getBase())))
 			.collect(toSet());
 	}
 }

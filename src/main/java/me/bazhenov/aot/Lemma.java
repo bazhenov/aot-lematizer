@@ -1,13 +1,10 @@
 package me.bazhenov.aot;
 
-import com.google.common.base.Objects;
-
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import static com.google.common.base.Objects.toStringHelper;
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Collections.emptySet;
 import static java.util.Objects.requireNonNull;
@@ -92,5 +89,12 @@ public class Lemma {
 
 	public Set<String> getPrefixes() {
 		return prefixes;
+	}
+
+	public boolean hasFlexionBy(String preffix, String suffix) {
+		return flexions.stream()
+			.anyMatch(f -> (isNullOrEmpty(preffix) || preffix.equals(f.getPrefix()) &&
+				suffix.equals(f.getEnding())
+			));
 	}
 }
