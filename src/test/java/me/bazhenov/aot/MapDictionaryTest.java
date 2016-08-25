@@ -94,4 +94,10 @@ public class MapDictionaryTest {
 		Set<Lemma> lemmas = dict.lookupWord("серобуромалиновый");
 		assertThat(lemmas, hasSize(1));
 	}
+
+	@Test
+	public void testLookupPreffixAndEndingsFromDifferentFlexion() throws Exception {
+		Set<Lemma> lemmas = dict.lookupWord("поклейка");
+		assertThat(lemmas, empty());
+	}
 }
