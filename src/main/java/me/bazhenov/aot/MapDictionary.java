@@ -5,16 +5,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.Integer.parseInt;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singleton;
 import static java.util.Collections.unmodifiableMap;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.IntStream.range;
@@ -799,13 +799,9 @@ public class MapDictionary implements Dictionary {
 		}
 	}
 
-	private final Set<String> allPrefixes = new HashSet<>();
-	private final Set<String> allEndings = new HashSet<>();
-	private final LemmaRepository lemmaRepository;
-	private final Lock loadLock = new ReentrantLock();
+	private final AtomicReference<DictionaryData> dictionaryDataRef = new AtomicReference<>();
 
 	private MapDictionary(InputStream is) throws IOException {
-		this.lemmaRepository = new LemmaRepository();
 		load(is);
 	}
 
@@ -822,6 +818,10 @@ public class MapDictionary implements Dictionary {
 	}
 
 	private void load(InputStream is) throws IOException {
+		Map<String, Set<Lemma>> lemmas = new HashMap<>();
+		Set<String> allPrefixes = new HashSet<>();
+		Set<String> allEndings = new HashSet<>();
+
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is, UTF_8));
 
 		int sectionLength = parseInt(reader.readLine());
@@ -876,64 +876,86 @@ public class MapDictionary implements Dictionary {
 			List<Flexion> flexions = paradigms.get(paradigm);
 			Set<String> endings = paradigmEndings.get(paradigm);
 			Set<String> prefixes = paradigmPrefixes.getOrDefault(paradigm, new HashSet<>(singleton("")));
+
 			for (int j = 0; j < paradigmSize; j++) {
 				String base = reader.readLine();
 				base = base.equals("#") ? "" : base;
 				Lemma l = new Lemma(base, flexions, paradigmAncodes.get(paradigm), prefixes, endings);
-				lemmaRepository.insert(l);
+				Set<Lemma> sameBaseLemmas = lemmas.computeIfAbsent(base, b -> new HashSet<>());
+				checkState(sameBaseLemmas.add(l), "Lemma already in repository");
 			}
 		}
+		dictionaryDataRef.set(new DictionaryData(allPrefixes, allEndings, lemmas));
 	}
 
 	@Override
 	public Set<Lemma> lookupWord(String word) {
 		String lowercaseWord = word.toLowerCase().replace('ё', 'е');
-		try {
-			loadLock.lock();
-			return range(0, word.length())
-				.boxed()
-				.filter(i -> i == 0 || allPrefixes.contains(lowercaseWord.substring(0, i)))
-				.map(i -> lookupWithoutPrefix(lowercaseWord.substring(0, i), lowercaseWord.substring(i, word.length())))
-				.flatMap(Collection::stream)
-				.collect(Collectors.toSet());
-		} finally {
-			loadLock.unlock();
-		}
+		return range(0, word.length())
+			.boxed()
+			.filter(i -> i == 0 || prefixesContains(lowercaseWord.substring(0, i)))
+			.map(i -> lookupWithoutPrefix(lowercaseWord.substring(0, i), lowercaseWord.substring(i, word.length())))
+			.flatMap(Collection::stream)
+			.collect(Collectors.toSet());
 	}
 
 	/**
 	 * Наполняет данный словарь данными из нового файла
 	 *
 	 * @param is содержимое нового файла
-	 * @throws IOException
 	 */
 	public void reload(InputStream is) throws IOException {
-		try {
-			loadLock.lock();
-			checkArgument(is != null, "Cant open file");
-
-			allEndings.clear();
-			allPrefixes.clear();
-			lemmaRepository.clear();
-			load(is);
-		} finally {
-			loadLock.unlock();
-		}
+		requireNonNull(is, "Cant open file");
+		load(is);
 	}
 
 	private Set<Lemma> lookupWithoutPrefix(String preffix, String sufix) {
 		Map<String, String> prefixesPostfixes = rangeClosed(0, sufix.length())
 			.boxed()
-			.filter(i -> allEndings.contains(sufix.substring(i, sufix.length())))
+			.filter(i -> endingsContains(sufix.substring(i, sufix.length())))
 			.collect(toMap(
 				index -> sufix.substring(0, index),
 				index -> sufix.substring(index, sufix.length())));
 
-		Set<Lemma> byBaseIn = lemmaRepository.findByBaseIn(prefixesPostfixes.keySet());
+		Set<Lemma> byBaseIn = findByBaseIn(prefixesPostfixes.keySet());
 		return byBaseIn.stream()
 			.filter(l -> (isNullOrEmpty(preffix) || l.getPrefixes().contains(preffix)) &&
 				l.getEndings().contains(prefixesPostfixes.get(l.getBase())))
 			.filter(l -> l.hasFlexionBy(preffix, prefixesPostfixes.get(l.getBase())))
 			.collect(toSet());
+	}
+
+	private boolean prefixesContains(String str) {
+		return dictionaryDataRef.get()
+			.allPrefixes
+			.contains(str);
+	}
+
+	private boolean endingsContains(String str) {
+		return dictionaryDataRef.get()
+			.allEndings
+			.contains(str);
+	}
+
+	private Set<Lemma> findByBaseIn(Set<String> bases) {
+		Map<String, Set<Lemma>> lemmas = dictionaryDataRef.get().lemmas;
+		return bases.stream()
+			.map(lemmas::get)
+			.filter(Objects::nonNull)
+			.flatMap(Collection::stream)
+			.collect(toSet());
+	}
+
+	private static class DictionaryData {
+
+		private final Set<String> allPrefixes;
+		private final Set<String> allEndings;
+		private final Map<String, Set<Lemma>> lemmas;
+
+		DictionaryData(Set<String> allPrefixes, Set<String> allEndings, Map<String, Set<Lemma>> lemmas) {
+			this.allPrefixes = allPrefixes;
+			this.allEndings = allEndings;
+			this.lemmas = lemmas;
+		}
 	}
 }

@@ -82,7 +82,7 @@ public class MapDictionaryTest {
 	public void testReloadNotChangedAfterException() throws Exception {
 		try {
 			dict.reload(getClass().getResourceAsStream("/iamnotexists"));
-		} catch (IllegalArgumentException e) {
+		} catch (NullPointerException ignored) {
 		}
 		Set<Lemma> lemmas = dict.lookupWord("курица");
 		assertThat(lemmas, hasSize(1));
