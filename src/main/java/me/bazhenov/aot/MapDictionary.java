@@ -6,19 +6,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static com.google.common.collect.Maps.newHashMap;
+import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.Integer.parseInt;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singleton;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
-import static java.util.stream.IntStream.range;
-import static java.util.stream.IntStream.rangeClosed;
 
 /**
  * Имплементация словаря на основе хранения лексем в нескольких {@link HashMap}
@@ -891,12 +888,13 @@ public class MapDictionary implements Dictionary {
 	@Override
 	public Set<Lemma> lookupWord(String word) {
 		String lowercaseWord = word.toLowerCase().replace('ё', 'е');
-		return range(0, word.length())
-			.boxed()
-			.filter(i -> i == 0 || prefixesContains(lowercaseWord.substring(0, i)))
-			.map(i -> lookupWithoutPrefix(lowercaseWord.substring(0, i), lowercaseWord.substring(i, word.length())))
-			.flatMap(Collection::stream)
-			.collect(Collectors.toSet());
+		Set<Lemma> result = newHashSet();
+		for (int i = 0; i < word.length(); i++) {
+			if (i == 0 || prefixesContains(lowercaseWord.substring(0, i))) {
+				result.addAll(lookupWithoutPrefix(lowercaseWord.substring(0, i), lowercaseWord.substring(i, word.length())));
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -910,19 +908,27 @@ public class MapDictionary implements Dictionary {
 	}
 
 	private Set<Lemma> lookupWithoutPrefix(String preffix, String sufix) {
-		Map<String, String> prefixesPostfixes = rangeClosed(0, sufix.length())
-			.boxed()
-			.filter(i -> endingsContains(sufix.substring(i, sufix.length())))
-			.collect(toMap(
-				index -> sufix.substring(0, index),
-				index -> sufix.substring(index, sufix.length())));
+		Map<String, String> prefixesPostfixes = newHashMap();
+		for (int i = 0; i <= sufix.length(); i++) {
+			if (endingsContains(sufix.substring(i, sufix.length()))) {
+				prefixesPostfixes.put(sufix.substring(0, i), sufix.substring(i, sufix.length()));
+			}
+		}
 
 		Set<Lemma> byBaseIn = findByBaseIn(prefixesPostfixes.keySet());
-		return byBaseIn.stream()
-			.filter(l -> (isNullOrEmpty(preffix) || l.getPrefixes().contains(preffix)) &&
-				l.getEndings().contains(prefixesPostfixes.get(l.getBase())))
-			.filter(l -> l.hasFlexionBy(preffix, prefixesPostfixes.get(l.getBase())))
-			.collect(toSet());
+		Iterator<Lemma> it = byBaseIn.iterator();
+		boolean prefixIsEmpty = isNullOrEmpty(preffix);
+
+		while (it.hasNext()) {
+			Lemma l = it.next();
+			if (!((prefixIsEmpty || l.getPrefixes().contains(preffix))
+				&& l.getEndings().contains(prefixesPostfixes.get(l.getBase())))) {
+				it.remove();
+			} else if (!l.hasFlexionBy(preffix, prefixesPostfixes.get(l.getBase()))) {
+				it.remove();
+			}
+		}
+		return byBaseIn;
 	}
 
 	private boolean prefixesContains(String str) {
@@ -939,11 +945,15 @@ public class MapDictionary implements Dictionary {
 
 	private Set<Lemma> findByBaseIn(Set<String> bases) {
 		Map<String, Set<Lemma>> lemmas = dictionaryDataRef.get().lemmas;
-		return bases.stream()
-			.map(lemmas::get)
-			.filter(Objects::nonNull)
-			.flatMap(Collection::stream)
-			.collect(toSet());
+		Set<Lemma> result = newHashSet();
+
+		for (String b : bases) {
+			Set<Lemma> ls = lemmas.get(b);
+			if (ls != null) {
+				result.addAll(ls);
+			}
+		}
+		return result;
 	}
 
 	private static class DictionaryData {

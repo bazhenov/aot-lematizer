@@ -92,9 +92,12 @@ public class Lemma {
 	}
 
 	public boolean hasFlexionBy(String preffix, String suffix) {
-		return flexions.stream()
-			.anyMatch(f -> (isNullOrEmpty(preffix) || preffix.equals(f.getPrefix()) &&
-				suffix.equals(f.getEnding())
-			));
+		boolean nullOrEmpty = isNullOrEmpty(preffix);
+		for (Flexion flexion : flexions) {
+			if (nullOrEmpty || preffix.equals(flexion.getPrefix()) && suffix.equals(flexion.getEnding())) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
