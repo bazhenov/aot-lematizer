@@ -4,7 +4,7 @@
 
 	<groupId>me.bazhenov.aot</groupId>
 	<artifactId>aot-lematizer</artifactId>
-	<version>1.2.3</version>
+	<version>1.2.4</version>
 	<packaging>jar</packaging>
 
 	<name>aot-lematizer</name>
