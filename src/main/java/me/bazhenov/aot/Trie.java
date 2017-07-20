@@ -16,6 +16,10 @@ public class Trie<T extends Serializable> implements Serializable {
 		set(word, value, false);
 	}
 
+	public TrieNode<T> getRoot() {
+		return root;
+	}
+
 	private void set(String word, T value, boolean forbidReplace) {
 		TrieNode<T> iNode = root;
 		for (int i = 0; i < word.length(); i++) {
@@ -53,6 +57,10 @@ class TrieNode<T extends Serializable> implements Serializable {
 
 	boolean hasValue() {
 		return value != null;
+	}
+
+	public Map<Character, TrieNode<T>> getChildren() {
+		return children;
 	}
 
 	T getValue() {
