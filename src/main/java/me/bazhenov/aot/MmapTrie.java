@@ -16,27 +16,39 @@ public class MmapTrie {
 	}
 
 	public int lookup(String str) {
-		return makeAStep(str, 0, buffer.duplicate());
-	}
-
-	private int makeAStep(String string, int pos, ByteBuffer node) {
-		int sAddr = node.position(); // node start address
-		int cAddr = sAddr + 5; // character lookup block address
-		if (pos >= string.length()) {
-			// returning trie value
-			return node.getInt(sAddr + 1);
-		}
-		byte cnt = node.get(sAddr);
-		int aAddr = cAddr + cnt; // refs block address
-		byte expectedCharacter = safeCastCharacter(string.charAt(pos));
-		for (int i = 0; i < cnt; i++) {
-			byte character = node.get(cAddr + i);
-			if (expectedCharacter == character) {
-				int address = node.getInt(aAddr + i * 4);
-				node.position(address);
-				return makeAStep(string, pos + 1, node);
+		State s = init();
+		for (int i = 0; i < str.length(); i++) {
+			if (!s.step(safeCastCharacter(str.charAt(i)))) {
+				return 0;
 			}
 		}
-		return 0;
+		return s.value();
+	}
+
+	public State init() {
+		return new State();
+	}
+
+	public class State {
+
+		private int sAddr = 0;
+
+		public int value() {
+			return buffer.getInt(sAddr + 1);
+		}
+
+		public boolean step(byte character) {
+			int cAddr = sAddr + 5; // character lookup block address
+			byte cnt = buffer.get(sAddr);
+			int aAddr = cAddr + cnt; // refs block address
+			for (int i = 0; i < cnt; i++) {
+				byte c = buffer.get(cAddr + i);
+				if (c == character) {
+					sAddr = buffer.getInt(aAddr + i * 4);
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 }

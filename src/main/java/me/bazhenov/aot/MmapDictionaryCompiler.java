@@ -20,21 +20,18 @@ public class MmapDictionaryCompiler {
 		try (WritableByteChannel channel = newChannel(new FileOutputStream(dest))) {
 			ByteBuffer buffer;
 
-
-			buffer = writer.write(state.prefixTrie);
-			int prefixBlockSize = buffer.limit();
-			channel.write(buffer);
-
-			buffer = writer.write(state.postfixTrie);
-			int postfixBlockSize = buffer.limit();
-			channel.write(buffer);
-
-			ByteBuffer trailer = ByteBuffer.allocate(8);
-			trailer.putInt(0); // prefixBlockAddress
-			trailer.putInt(prefixBlockSize); // postfixBlockAddress
-			trailer.flip();
-			channel.write(trailer);
+			writeBuffer(channel, writer.write(state.prefixTrie));
+			writeBuffer(channel, writer.write(state.postfixTrie));
 		}
+	}
+
+	private static void writeBuffer(WritableByteChannel channel, ByteBuffer buffer) throws IOException {
+		ByteBuffer header = ByteBuffer.allocate(8);
+		header.putInt(0xDEADC0DE);
+		header.putInt(buffer.limit());
+		header.flip();
+		channel.write(header);
+		channel.write(buffer);
 	}
 
 	private static State prepareDictionaryState() throws IOException {

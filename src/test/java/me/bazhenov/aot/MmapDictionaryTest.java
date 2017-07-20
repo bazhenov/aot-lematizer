@@ -22,6 +22,6 @@ public class MmapDictionaryTest {
 	public void testReadingDictionary() throws IOException {
 		File dictFile = new File("/Users/bazhenov/Desktop/dictionary.dict");
 		MmapDictionary d = new MmapDictionary(dictFile);
-		d.checkExists("мама");
+		d.checkExists("чопорный");
 	}
 }
