@@ -19,7 +19,6 @@ public class MmapTrieTest {
 		TrieWriter writer = new TrieWriter();
 		ByteBuffer buffer = writer.write(source);
 
-		buffer.flip();
 		MmapTrie trie = new MmapTrie(buffer);
 		assertThat(trie.lookup("мама"), is(1));
 		assertThat(trie.lookup("папа"), is(2));

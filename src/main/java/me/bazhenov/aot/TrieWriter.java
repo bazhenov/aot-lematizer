@@ -11,6 +11,7 @@ public class TrieWriter {
 		int size = calculateSize(root);
 		ByteBuffer buffer = ByteBuffer.allocate(size);
 		write(root, buffer);
+		buffer.flip();
 		return buffer;
 	}
 
