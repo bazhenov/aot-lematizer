@@ -11,21 +11,22 @@ import static me.bazhenov.aot.CharacterUtils.safeCastCharacter;
 
 public class MmapDictionary {
 
-	private final MappedByteBuffer prefixBlock;
-	private final MappedByteBuffer postfixBlock;
 	private final MmapTrie prefixTrie;
 	private final MmapTrie postfixTrie;
+	private final MmapIntList prefixPl;
 
 	public MmapDictionary(File dictFile) throws IOException {
 		try (RandomAccessFile f = new RandomAccessFile(dictFile, "r");
 				 FileChannel channel = f.getChannel()) {
 
-			prefixBlock = mapBlock(f, channel);
-			postfixBlock = mapBlock(f, channel);
-		}
+			MappedByteBuffer prefixPostingList = mapBlock(f, channel);
+			MappedByteBuffer prefixBlock = mapBlock(f, channel);
+			MappedByteBuffer postfixBlock = mapBlock(f, channel);
 
-		prefixTrie = new MmapTrie(prefixBlock);
-		postfixTrie = new MmapTrie(postfixBlock);
+			prefixPl = new MmapIntList(prefixPostingList);
+			prefixTrie = new MmapTrie(prefixBlock);
+			postfixTrie = new MmapTrie(postfixBlock);
+		}
 	}
 
 	private MappedByteBuffer mapBlock(RandomAccessFile f, FileChannel channel) throws IOException {
@@ -39,17 +40,29 @@ public class MmapDictionary {
 		return channel.map(READ_ONLY, start, length);
 	}
 
-	public void checkExists(String word) {
+	public boolean checkExists(String word) {
+		boolean found = false;
 		MmapTrie.State state = prefixTrie.init();
 		for (int i = 0; i < word.length(); i++) {
-			if (state.value() != 0) {
+			int prefixPlAddress = state.value();
+			if (prefixPlAddress != 0) {
 				if (lookupPostfixTree(word, i)) {
+					found = true;
 					System.out.printf("Allowed combination: %s-%s\n", word.substring(0, i), word.substring(i, word.length()));
+
+					MmapIntList.IntIterator prefixPlIterator = prefixPl.iterator(prefixPlAddress);
+					while (prefixPlIterator.hasNext()) {
+						System.out.println(prefixPlIterator.next());
+					}
 				}
 			}
+
 			byte c = safeCastCharacter(word.charAt(i));
-			state.step(c);
+			if (!state.step(c)) {
+				break;
+			}
 		}
+		return found;
 	}
 
 	private boolean lookupPostfixTree(String word, int s) {

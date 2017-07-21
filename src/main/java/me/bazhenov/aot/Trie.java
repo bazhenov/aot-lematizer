@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class Trie<T extends Serializable> implements Serializable {
+public final class Trie<T> {
 
 	private final TrieNode<T> root = new TrieNode<T>();
 
@@ -42,7 +42,7 @@ public class Trie<T extends Serializable> implements Serializable {
 	}
 }
 
-class TrieNode<T extends Serializable> implements Serializable {
+final class TrieNode<T> {
 
 	private T value;
 	private final Map<Character, TrieNode<T>> children = new TreeMap<Character, TrieNode<T>>();

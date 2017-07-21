@@ -3,7 +3,6 @@ package me.bazhenov.aot;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import static java.nio.ByteBuffer.allocate;
 import static java.util.Comparator.naturalOrder;
 
 public class MmapIntList {
@@ -17,7 +16,7 @@ public class MmapIntList {
 		this.buffer = buffer;
 	}
 
-	public static ByteBuffer asByteBuffer(List<Integer> ints) {
+	public static void writeToByteBuffer(List<Integer> ints, ByteBuffer buffer) {
 		if (ints.isEmpty()) {
 			throw new IllegalArgumentException("No empty list allowed");
 		}
@@ -26,15 +25,15 @@ public class MmapIntList {
 			throw new IllegalArgumentException("Only positive numbers allowed");
 		}
 
-		ByteBuffer buffer = allocate(ints.size() * 4);
+		if (ints.size() > 128) {
+			throw new IllegalArgumentException("Too big list detected");
+		}
+		buffer.put((byte) ints.size());
 		int previous = 0;
 		for (int value : ints) {
 			writeVInt(buffer, previous, value);
 			previous = value;
 		}
-
-		buffer.flip();
-		return buffer;
 	}
 
 	private static void writeVInt(ByteBuffer buffer, int previous, int value) {
@@ -48,30 +47,42 @@ public class MmapIntList {
 		}
 	}
 
-	public IntIterator iterator() {
-		return new IntIterator();
+	public IntIterator iterator(int offset) {
+		return new IntIterator(offset);
 	}
 
 	public class IntIterator {
 
-		private int position = 0;
-		private int previous = 0;
+		private int offset = 0;
+		private int previousValue = 0;
+		private int left;
+
+		public IntIterator(int offset) {
+			this.left = buffer.get(offset);
+			this.offset = offset + 1;
+		}
+
+		public boolean hasNext() {
+			return left > 0;
+		}
 
 		public int next() {
-			if (position >= buffer.limit()) {
+			if (!hasNext()) {
 				return 0;
 			}
-			int value = buffer.getInt(position);
-			if ((value & 0x80000000) != 0) {
-				// если ведущий бит установлен, то число записно в виде двухбайтового, а н четырехбайтового числа
-				value = (value >>> 16) & 0x7FFF;
-				position += 2;
+			int value = buffer.getShort(offset);
+			if ((value & 0x8000) != 0) {
+				// если ведущий бит установлен, то число записно в виде двухбайтового, а не четырехбайтового числа
+				value = value & 0x7FFF;
+				offset += 2;
 			} else {
-				position += 4;
+				value = buffer.getInt(offset);
+				offset += 4;
 			}
 			// Восстанавливаем дельта-кодирование
-			value += previous;
-			previous = value;
+			value += previousValue;
+			previousValue = value;
+			left--;
 			return value;
 		}
 	}

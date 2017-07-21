@@ -14,9 +14,9 @@ public class MmapTrieTest {
 	@Test
 	public void foo() {
 		MmapTrie trie = prepareTrie(source -> {
-			source.add("мама", 1);
-			source.add("папа", 2);
-			source.add("матрас", 3);
+			source.add("мама", new Addressed<>(1));
+			source.add("папа", new Addressed<>(2));
+			source.add("матрас", new Addressed<>(3));
 		});
 
 		assertThat(trie.lookup("мама"), is(1));
@@ -29,10 +29,10 @@ public class MmapTrieTest {
 	@Test
 	public void iterate() {
 		MmapTrie trie = prepareTrie(source -> {
-			source.add("", 1);
-			source.add("м", 2);
-			source.add("ма", 3);
-			source.add("мама", 4);
+			source.add("", new Addressed<>(1));
+			source.add("м", new Addressed<>(2));
+			source.add("ма", new Addressed<>(3));
+			source.add("мама", new Addressed<>(4));
 		});
 
 		MmapTrie.State state = trie.init();
@@ -55,8 +55,8 @@ public class MmapTrieTest {
 		assertThat(state.value(), is(4));
 	}
 
-	private static MmapTrie prepareTrie(Consumer<Trie<Integer>> init) {
-		Trie<Integer> source = new Trie<>();
+	private static MmapTrie prepareTrie(Consumer<Trie<Addressed<?>>> init) {
+		Trie<Addressed<?>> source = new Trie<>();
 		init.accept(source);
 
 		TrieWriter writer = new TrieWriter();
