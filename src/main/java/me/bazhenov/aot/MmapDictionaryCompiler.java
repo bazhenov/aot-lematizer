@@ -86,6 +86,8 @@ public class MmapDictionaryCompiler {
 				int wordIdx = wordBases.getAndIncrement();
 				String[] parts = line.split(" ");
 				String word = parts[0].toLowerCase();
+				if (word.equals("#")) // слово с пустой неизменяемой основной
+					word = "";
 				int flexionIdx = parseInt(parts[1]);
 
 				if (flexionToWordBasesIndex[flexionIdx] == null)

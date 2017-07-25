@@ -33,18 +33,19 @@ public class MmapDictionary {
 	}
 
 	private MappedByteBuffer mapBlock(RandomAccessFile f, FileChannel channel) throws IOException {
-		int checksum = f.readInt();
-		if (checksum != 0xDEADC0DE) {
-			throw new IllegalStateException("Incorrect block checksum at offset: " + f.getFilePointer());
+		int header = f.readInt();
+		if (header != 0xDEADC0DE) {
+			throw new IllegalStateException("Incorrect block header at offset: " + (f.getFilePointer() - 4));
 		}
 		int length = f.readInt();
 		long start = f.getFilePointer();
+		// по контракту этот метод сдвигает указатель файла на конец блока, который отображается в память
 		f.seek(f.getFilePointer() + length);
 		return channel.map(READ_ONLY, start, length);
 	}
 
-	public boolean checkExists(String word) {
-		boolean found = false;
+	public int countWords(String word) {
+		int found = 0;
 		MmapTrie.State state = prefixTrie.init();
 		for (int i = 0; i < word.length(); i++) {
 			int prefixPlAddress = state.value();
@@ -66,7 +67,7 @@ public class MmapDictionary {
 
 					int wordBaseIdx;
 					while ((wordBaseIdx = postfixPlIterator.nextCommon(prefixPlIterator)) != 0) {
-						found = true;
+						found++;
 						System.out.printf("Allowed combination: %s-%s [%d]\n", word.substring(0, i), word.substring(i, word.length()), wordBaseIdx);
 					}
 				}
