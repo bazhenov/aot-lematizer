@@ -19,6 +19,10 @@ public class MmapDictionaryTest {
 
 		MmapDictionaryCompiler.compile(tempFile);
 		System.out.println(tempFile);
+
+		MmapDictionary d = new MmapDictionary(tempFile);
+		assertThat(d.checkExists("краснеющий"), is(true));
+		assertThat(d.checkExists("фентифлюшка"), is(false));
 	}
 
 	@Test

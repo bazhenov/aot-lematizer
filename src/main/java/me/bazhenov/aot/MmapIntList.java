@@ -25,10 +25,10 @@ public class MmapIntList {
 			throw new IllegalArgumentException("Only positive numbers allowed");
 		}
 
-		if (ints.size() > 128) {
+		if (ints.size() > 8_388_608) { // 2^24
 			throw new IllegalArgumentException("Too big list detected");
 		}
-		buffer.put((byte) ints.size());
+		buffer.putShort((short) ints.size());
 		int previous = 0;
 		for (int value : ints) {
 			writeVInt(buffer, previous, value);
@@ -55,15 +55,38 @@ public class MmapIntList {
 
 		private int offset = 0;
 		private int previousValue = 0;
-		private int left;
+		private short left;
 
 		public IntIterator(int offset) {
-			this.left = buffer.get(offset);
-			this.offset = offset + 1;
+			this.left = buffer.getShort(offset);
+			this.offset = offset + 2;
 		}
 
 		public boolean hasNext() {
 			return left > 0;
+		}
+
+		public int nextCommon(MmapIntList.IntIterator other) {
+			if (!other.hasNext() || !hasNext())
+				return 0;
+			int a = next();
+			int b = other.next();
+			while (a != b) {
+				if (a < b) {
+					while (a < b && hasNext()) {
+						a = next();
+					}
+					if (a < b && !hasNext())
+						return 0;
+				} else {
+					while (b < a && other.hasNext()) {
+						b = other.next();
+					}
+					if (b < a && !other.hasNext())
+						return 0;
+				}
+			}
+			return a;
 		}
 
 		public int next() {

@@ -14,16 +14,19 @@ public class MmapDictionary {
 	private final MmapTrie prefixTrie;
 	private final MmapTrie postfixTrie;
 	private final MmapIntList prefixPl;
+	private final MmapIntList postfixPl;
 
 	public MmapDictionary(File dictFile) throws IOException {
 		try (RandomAccessFile f = new RandomAccessFile(dictFile, "r");
 				 FileChannel channel = f.getChannel()) {
 
 			MappedByteBuffer prefixPostingList = mapBlock(f, channel);
+			MappedByteBuffer postfixPostingList = mapBlock(f, channel);
 			MappedByteBuffer prefixBlock = mapBlock(f, channel);
 			MappedByteBuffer postfixBlock = mapBlock(f, channel);
 
 			prefixPl = new MmapIntList(prefixPostingList);
+			postfixPl = new MmapIntList(postfixPostingList);
 			prefixTrie = new MmapTrie(prefixBlock);
 			postfixTrie = new MmapTrie(postfixBlock);
 		}
@@ -46,13 +49,25 @@ public class MmapDictionary {
 		for (int i = 0; i < word.length(); i++) {
 			int prefixPlAddress = state.value();
 			if (prefixPlAddress != 0) {
-				if (lookupPostfixTree(word, i)) {
-					found = true;
-					System.out.printf("Allowed combination: %s-%s\n", word.substring(0, i), word.substring(i, word.length()));
-
+				MmapIntList.IntIterator postfixPlIterator = lookupPostfixTree(word, i);
+				if (postfixPlIterator != null) {
 					MmapIntList.IntIterator prefixPlIterator = prefixPl.iterator(prefixPlAddress);
-					while (prefixPlIterator.hasNext()) {
+
+					System.out.printf("Combination %s-%s\n", word.substring(0, i), word.substring(i, word.length()));
+
+					/*while (prefixPlIterator.hasNext()) {
 						System.out.println(prefixPlIterator.next());
+					}
+
+					System.out.println("----");
+					while (postfixPlIterator.hasNext()) {
+						System.out.println(postfixPlIterator.next());
+					}*/
+
+					int wordBaseIdx;
+					while ((wordBaseIdx = postfixPlIterator.nextCommon(prefixPlIterator)) != 0) {
+						found = true;
+						System.out.printf("Allowed combination: %s-%s [%d]\n", word.substring(0, i), word.substring(i, word.length()), wordBaseIdx);
 					}
 				}
 			}
@@ -65,13 +80,16 @@ public class MmapDictionary {
 		return found;
 	}
 
-	private boolean lookupPostfixTree(String word, int s) {
+	private MmapIntList.IntIterator lookupPostfixTree(String word, int s) {
 		MmapTrie.State state = postfixTrie.init();
 		for (int i = s; i < word.length(); i++) {
 			byte c = safeCastCharacter(word.charAt(i));
 			if (!state.step(c))
-				return false;
+				return null;
 		}
-		return state.value() != 0;
+		int address = state.value();
+		return address > 0
+			? postfixPl.iterator(address)
+			: null;
 	}
 }

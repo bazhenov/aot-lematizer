@@ -36,6 +36,49 @@ public class MmapIntListTest {
 		assertThat(iterator.next(), is(0));
 	}
 
+	@Test
+	public void merge() {
+		MmapIntList.IntIterator l1 = prepare(l -> {
+			l.add(1);
+			l.add(3);
+			l.add(35);
+			l.add(39);
+		}).iterator(0);
+
+		MmapIntList.IntIterator l2 = prepare(l -> {
+			l.add(1);
+			l.add(5);
+			l.add(18);
+			l.add(39);
+		}).iterator(0);
+
+		assertThat(l1.nextCommon(l2), is(1));
+		assertThat(l1.nextCommon(l2), is(39));
+		assertThat(l1.nextCommon(l2), is(0));
+	}
+
+	@Test
+	public void merge2() {
+		MmapIntList.IntIterator l1 = prepare(l -> {
+			l.add(1);
+			l.add(3);
+			l.add(35);
+			l.add(39);
+		}).iterator(0);
+
+		MmapIntList.IntIterator l2 = prepare(l -> {
+			l.add(3);
+			l.add(5);
+			l.add(18);
+			l.add(19);
+			l.add(35);
+		}).iterator(0);
+
+		assertThat(l1.nextCommon(l2), is(3));
+		assertThat(l1.nextCommon(l2), is(35));
+		assertThat(l1.nextCommon(l2), is(0));
+	}
+
 	private static MmapIntList prepare(Consumer<List<Integer>> consumer) {
 		List<Integer> ints = new ArrayList<>();
 		consumer.accept(ints);
