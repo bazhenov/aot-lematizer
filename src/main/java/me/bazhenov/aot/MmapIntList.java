@@ -28,7 +28,7 @@ public class MmapIntList {
 		if (ints.size() > 8_388_608) { // 2^24
 			throw new IllegalArgumentException("Too big list detected");
 		}
-		buffer.putShort((short) ints.size());
+		buffer.putInt(ints.size());
 		int previous = 0;
 		for (int value : ints) {
 			writeVInt(buffer, previous, value);
@@ -55,11 +55,14 @@ public class MmapIntList {
 
 		private int offset = 0;
 		private int previousValue = 0;
-		private short left;
+		private int left;
 
 		public IntIterator(int offset) {
-			this.left = buffer.getShort(offset);
-			this.offset = offset + 2;
+			this.left = buffer.getInt(offset);
+			if (left <= 0) {
+				throw new IllegalArgumentException("Illegal list length at offset: " + offset);
+			}
+			this.offset = offset + 4;
 		}
 
 		public boolean hasNext() {

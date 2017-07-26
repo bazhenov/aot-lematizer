@@ -849,7 +849,7 @@ public class MapDictionary implements Dictionary {
 					affix = flexion;
 					prefix = "";
 				}
-				flexions.add(new Flexion(affix, prefix, tabDescriptors.get(ancode)));
+				flexions.add(new Flexion(tabDescriptors.get(ancode), affix, prefix));
 				if (!prefix.isEmpty()) {
 					prefixes.add(prefix);
 				}

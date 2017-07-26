@@ -8,10 +8,14 @@ public class Flexion {
 	private final String ancode;
 	private final String prefix;
 
-	public Flexion(String ending, String prefix, String ancode) {
+	public Flexion(String ancode, String ending, String prefix) {
 		this.ending = checkNotNull(ending);
 		this.ancode = checkNotNull(ancode);
 		this.prefix = checkNotNull(prefix);
+	}
+
+	public Flexion(String ancode, String ending) {
+		this(ancode, ending, "");
 	}
 
 	public String getEnding() {

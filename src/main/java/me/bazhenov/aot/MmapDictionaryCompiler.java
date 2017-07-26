@@ -14,6 +14,7 @@ import static java.nio.channels.Channels.newChannel;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static me.bazhenov.aot.MmapIntList.writeToByteBuffer;
 import static me.bazhenov.aot.TernaryTreeDictionary.readSection;
+import static me.bazhenov.aot.Utils.writeAndGetBeforePosition;
 
 public class MmapDictionaryCompiler {
 
@@ -29,10 +30,17 @@ public class MmapDictionaryCompiler {
 			// Выделяем 100 мегабайт чтоб наверняка хватило. Эффективность процесса компиляции словаря не суть важна.
 			ByteBuffer b = ByteBuffer.allocate(100 * 1024 * 1024);
 
+			int[] flexionIndexToOffset = new int[state.flexions.size()];
+
+			pushFlexions(b, state.flexions, flexionIndexToOffset);
+			writeBuffer(channel, b);
+
+			pushWordBaseToFlexionIndex(b, state.wordBaseToFlexionIndex, flexionIndexToOffset);
+			writeBuffer(channel, b);
+
 			pushPostingList(b, state.prefixPostingLists);
 			writeBuffer(channel, b);
 
-			b.clear();
 			pushPostingList(b, state.postfixPostingLists);
 			writeBuffer(channel, b);
 
@@ -41,7 +49,29 @@ public class MmapDictionaryCompiler {
 		}
 	}
 
+	private static void pushFlexions(ByteBuffer b, List<List<Flexion>> flexions, int[] indexToOffset) {
+		b.clear();
+
+		for (int i = 0; i < flexions.size(); i++) {
+			int offset = writeAndGetBeforePosition(b, MmapFlexionList.writeToByteBuffer(flexions.get(i)));
+			indexToOffset[i] = offset;
+		}
+
+		b.flip();
+	}
+
+	private static void pushWordBaseToFlexionIndex(ByteBuffer b, List<Integer> indexes, int[] indexToOffset) {
+		b.clear();
+
+		for (int idx : indexes) {
+			writeAndGetBeforePosition(b, MmapFixedWidthIntBlock.writeToByteBuffer(indexToOffset[idx]));
+		}
+
+		b.flip();
+	}
+
 	private static void pushPostingList(ByteBuffer b, List<Addressed<Set<Integer>>> postingLists) {
+		b.clear();
 		// чтобы ни один адрес в MmapTrie не был нулевым, начинаем запись PL со смещением в один байт
 		b.put((byte) 0xFF);
 
@@ -94,6 +124,7 @@ public class MmapDictionaryCompiler {
 					flexionToWordBasesIndex[flexionIdx] = new TreeSet<>();
 
 				flexionToWordBasesIndex[flexionIdx].add(wordIdx);
+				state.wordBaseToFlexionIndex.add(flexionIdx);
 
 				Addressed<Set<Integer>> existedPostingList = state.prefixTrie.search(word);
 				if (existedPostingList != null) {
@@ -110,20 +141,24 @@ public class MmapDictionaryCompiler {
 
 			for (int i = 0; i < flexions.size(); i++) {
 				String line = flexions.get(i);
+				List<Flexion> flexia = new ArrayList<>();
 				for (String flex : line.split("%")) {
 					if (flex.isEmpty())
 						continue;
 					String[] parts = flex.split("\\*");
-					String affix = parts[0].toLowerCase();
+					String postfix = parts[0].toLowerCase();
+					String ancode = parts[1].toLowerCase();
+					flexia.add(new Flexion(ancode, postfix));
 
-					Addressed<Set<Integer>> existingPl = state.postfixTrie.search(affix);
+					Addressed<Set<Integer>> existingPl = state.postfixTrie.search(postfix);
 					if (existingPl == null) {
 						existingPl = new Addressed<>(new TreeSet<>());
 						state.postfixPostingLists.add(existingPl);
-						state.postfixTrie.add(affix, existingPl);
+						state.postfixTrie.add(postfix, existingPl);
 					}
 					existingPl.getRef().addAll(flexionToWordBasesIndex[i]);
 				}
+				state.flexions.add(flexia);
 			}
 		}
 		return state;
@@ -135,6 +170,8 @@ public class MmapDictionaryCompiler {
 		Trie<Addressed<Set<Integer>>> postfixTrie = new Trie<>();
 		List<Addressed<Set<Integer>>> prefixPostingLists = new ArrayList<>();
 		List<Addressed<Set<Integer>>> postfixPostingLists = new ArrayList<>();
+		List<List<Flexion>> flexions = new ArrayList<>();
+		List<Integer> wordBaseToFlexionIndex = new ArrayList<>();
 	}
 
 }

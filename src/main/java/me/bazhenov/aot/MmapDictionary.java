@@ -5,8 +5,12 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.nio.channels.FileChannel.MapMode.READ_ONLY;
+import static me.bazhenov.aot.CharacterUtils.dictionaryCharset;
 import static me.bazhenov.aot.CharacterUtils.safeCastCharacter;
 
 public class MmapDictionary {
@@ -15,11 +19,15 @@ public class MmapDictionary {
 	private final MmapTrie postfixTrie;
 	private final MmapIntList prefixPl;
 	private final MmapIntList postfixPl;
+	private final MmapFixedWidthIntBlock wordBaseToFlexion;
+	private final MmapFlexionList flexions;
 
 	public MmapDictionary(File dictFile) throws IOException {
 		try (RandomAccessFile f = new RandomAccessFile(dictFile, "r");
 				 FileChannel channel = f.getChannel()) {
 
+			MappedByteBuffer flexionBlock = mapBlock(f, channel);
+			MappedByteBuffer wordBaseToFlexionBlock = mapBlock(f, channel);
 			MappedByteBuffer prefixPostingList = mapBlock(f, channel);
 			MappedByteBuffer postfixPostingList = mapBlock(f, channel);
 			MappedByteBuffer prefixBlock = mapBlock(f, channel);
@@ -29,6 +37,8 @@ public class MmapDictionary {
 			postfixPl = new MmapIntList(postfixPostingList);
 			prefixTrie = new MmapTrie(prefixBlock);
 			postfixTrie = new MmapTrie(postfixBlock);
+			wordBaseToFlexion = new MmapFixedWidthIntBlock(wordBaseToFlexionBlock);
+			flexions = new MmapFlexionList(flexionBlock);
 		}
 	}
 
@@ -45,7 +55,13 @@ public class MmapDictionary {
 	}
 
 	public int countWords(String word) {
-		int found = 0;
+		AtomicInteger found = new AtomicInteger(0);
+		doFind(word, (wordId, l) -> found.incrementAndGet());
+		return found.get();
+	}
+
+	private void doFind(String word, FoundWordsConsumer callback) {
+		//System.out.println("\n\n");
 		MmapTrie.State state = prefixTrie.init();
 		for (int i = 0; i < word.length(); i++) {
 			int prefixPlAddress = state.value();
@@ -54,7 +70,7 @@ public class MmapDictionary {
 				if (postfixPlIterator != null) {
 					MmapIntList.IntIterator prefixPlIterator = prefixPl.iterator(prefixPlAddress);
 
-					System.out.printf("Combination %s-%s\n", word.substring(0, i), word.substring(i, word.length()));
+//					System.out.printf("Combination %s-%s\n", word.substring(0, i), word.substring(i, word.length()));
 
 					/*while (prefixPlIterator.hasNext()) {
 						System.out.println(prefixPlIterator.next());
@@ -67,8 +83,8 @@ public class MmapDictionary {
 
 					int wordBaseIdx;
 					while ((wordBaseIdx = postfixPlIterator.nextCommon(prefixPlIterator)) != 0) {
-						found++;
-						System.out.printf("Allowed combination: %s-%s [%d]\n", word.substring(0, i), word.substring(i, word.length()), wordBaseIdx);
+//						System.out.printf("Allowed combination: %s-%s [%d]\n", word.substring(0, i), word.substring(i, word.length()), wordBaseIdx);
+						callback.foundWord(wordBaseIdx, word.length() - i);
 					}
 				}
 			}
@@ -78,12 +94,23 @@ public class MmapDictionary {
 				break;
 			}
 		}
-		return found;
 	}
 
-	private MmapIntList.IntIterator lookupPostfixTree(String word, int s) {
+	public List<String> getWordNorms(String word) {
+		List<String> norms = new ArrayList<>();
+		doFind(word, (wordId, endingLength) -> {
+			int flexionId = wordBaseToFlexion.getValue(wordId - 1);
+			byte[] bytes = flexions.retrievedNormPostfix(flexionId);
+			//String ending = new String(bytes, dictionaryCharset);
+			String ending = "";
+			norms.add(word.substring(0, word.length() - endingLength) + ending);
+		});
+		return norms;
+	}
+
+	private MmapIntList.IntIterator lookupPostfixTree(String word, int start) {
 		MmapTrie.State state = postfixTrie.init();
-		for (int i = s; i < word.length(); i++) {
+		for (int i = start; i < word.length(); i++) {
 			byte c = safeCastCharacter(word.charAt(i));
 			if (!state.step(c))
 				return null;
@@ -92,5 +119,10 @@ public class MmapDictionary {
 		return address > 0
 			? postfixPl.iterator(address)
 			: null;
+	}
+
+	interface FoundWordsConsumer {
+
+		void foundWord(int wordIdx, int endingLength);
 	}
 }

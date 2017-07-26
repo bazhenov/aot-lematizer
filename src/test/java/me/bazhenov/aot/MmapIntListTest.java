@@ -11,6 +11,7 @@ import static java.nio.ByteBuffer.allocate;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+@SuppressWarnings("Duplicates")
 public class MmapIntListTest {
 
 	@Test

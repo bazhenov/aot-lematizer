@@ -200,7 +200,7 @@ class FlexionFunction implements Function<String, List<Flexion>> {
 			String morhTag = tabDescriptors.get(tabDescriptorsMapping.get(ancode));
 			String prefix = parts.length > 2 ? parts[2].toLowerCase().replace("ё", "е") : "";
 			String affix = parts[0].toLowerCase().replace("ё", "е");
-			Flexion f = new Flexion(affix, prefix, morhTag);
+			Flexion f = new Flexion(morhTag, affix, prefix);
 			flexions.add(f);
 		}
 		return flexions;
