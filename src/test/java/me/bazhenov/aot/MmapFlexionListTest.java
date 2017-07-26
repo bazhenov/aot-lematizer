@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static me.bazhenov.aot.CharacterUtils.dictionaryCharset;
+import static me.bazhenov.aot.Utils.dictionaryCharset;
 import static me.bazhenov.aot.MmapFlexionList.writeToByteBuffer;
 import static me.bazhenov.aot.Utils.writeAndGetBeforePosition;
 import static org.hamcrest.CoreMatchers.is;

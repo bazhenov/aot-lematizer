@@ -3,15 +3,15 @@ package me.bazhenov.aot;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.MappedByteBuffer;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.nio.channels.FileChannel.MapMode.READ_ONLY;
-import static me.bazhenov.aot.CharacterUtils.dictionaryCharset;
-import static me.bazhenov.aot.CharacterUtils.safeCastCharacter;
+import static me.bazhenov.aot.Utils.dictionaryCharset;
+import static me.bazhenov.aot.Utils.safeCastCharacter;
 
 public class MmapDictionary {
 
@@ -26,12 +26,12 @@ public class MmapDictionary {
 		try (RandomAccessFile f = new RandomAccessFile(dictFile, "r");
 				 FileChannel channel = f.getChannel()) {
 
-			MappedByteBuffer flexionBlock = mapBlock(f, channel);
-			MappedByteBuffer wordBaseToFlexionBlock = mapBlock(f, channel);
-			MappedByteBuffer prefixPostingList = mapBlock(f, channel);
-			MappedByteBuffer postfixPostingList = mapBlock(f, channel);
-			MappedByteBuffer prefixBlock = mapBlock(f, channel);
-			MappedByteBuffer postfixBlock = mapBlock(f, channel);
+			ByteBuffer flexionBlock = mapBlock(f, channel);
+			ByteBuffer wordBaseToFlexionBlock = mapBlock(f, channel);
+			ByteBuffer prefixPostingList = mapBlock(f, channel);
+			ByteBuffer postfixPostingList = mapBlock(f, channel);
+			ByteBuffer prefixBlock = mapBlock(f, channel);
+			ByteBuffer postfixBlock = mapBlock(f, channel);
 
 			prefixPl = new MmapIntList(prefixPostingList);
 			postfixPl = new MmapIntList(postfixPostingList);
@@ -42,15 +42,17 @@ public class MmapDictionary {
 		}
 	}
 
-	private MappedByteBuffer mapBlock(RandomAccessFile f, FileChannel channel) throws IOException {
+	private ByteBuffer mapBlock(RandomAccessFile f, FileChannel channel) throws IOException {
 		int header = f.readInt();
 		if (header != 0xDEADC0DE) {
 			throw new IllegalStateException("Incorrect block header at offset: " + (f.getFilePointer() - 4));
 		}
 		int length = f.readInt();
 		long start = f.getFilePointer();
+
 		// по контракту этот метод сдвигает указатель файла на конец блока, который отображается в память
-		f.seek(f.getFilePointer() + length);
+		f.seek(start + length);
+
 		return channel.map(READ_ONLY, start, length);
 	}
 
@@ -101,8 +103,7 @@ public class MmapDictionary {
 		doFind(word, (wordId, endingLength) -> {
 			int flexionId = wordBaseToFlexion.getValue(wordId - 1);
 			byte[] bytes = flexions.retrievedNormPostfix(flexionId);
-			//String ending = new String(bytes, dictionaryCharset);
-			String ending = "";
+			String ending = new String(bytes, dictionaryCharset);
 			norms.add(word.substring(0, word.length() - endingLength) + ending);
 		});
 		return norms;

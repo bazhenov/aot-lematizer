@@ -2,7 +2,7 @@ package me.bazhenov.aot;
 
 import java.nio.ByteBuffer;
 
-import static me.bazhenov.aot.CharacterUtils.safeCastCharacter;
+import static me.bazhenov.aot.Utils.safeCastCharacter;
 
 public class MmapTrie {
 

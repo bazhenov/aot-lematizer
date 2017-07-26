@@ -55,11 +55,11 @@ public class LookupBenchmark {
 		MMAP_DICTIONARY.getWordNorms("мир");
 	}
 
-	/*@Benchmark
+	@Benchmark
 	@BenchmarkMode(Mode.AverageTime)
 	public void measureLookupLongMMapDictionary() throws IOException {
 		MMAP_DICTIONARY.getWordNorms("клавиатура");
-	}*/
+	}
 
 	/*@Benchmark
 	@BenchmarkMode(Mode.AverageTime)

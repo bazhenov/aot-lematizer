@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 import java.nio.ByteBuffer;
 import java.util.function.Consumer;
 
-import static me.bazhenov.aot.CharacterUtils.safeCastCharacter;
+import static me.bazhenov.aot.Utils.safeCastCharacter;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
