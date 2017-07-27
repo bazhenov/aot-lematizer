@@ -41,10 +41,20 @@ public class MmapTrie {
 			int cAddr = sAddr + 5; // character lookup block address
 			byte cnt = buffer.get(sAddr);
 			int aAddr = cAddr + cnt; // refs block address
-			for (int i = 0; i < cnt; i++) {
-				byte c = buffer.get(cAddr + i);
-				if (c == character) {
-					sAddr = buffer.getInt(aAddr + i * 4);
+			int start = cAddr;
+			int end = (cAddr + cnt) - 1;
+
+			while (start <= end) {
+				int mid = (end + start) / 2;
+				byte c = buffer.get(mid);
+
+				if (c < character) {
+					start = mid + 1;
+				} else if (c > character) {
+					end = mid - 1;
+				} else {
+					int idx = mid - cAddr;
+					sAddr = buffer.getInt(aAddr + idx * 4);
 					return true;
 				}
 			}

@@ -33,10 +33,10 @@ public class LookupBenchmark {
 		new Runner(opt).run();
 	}
 
-	@Benchmark
+	/*@Benchmark
 	public void mMapDictionary(WordList list, MMapDictionaryHolder holder) throws IOException {
 		holder.dictionary.getWordNorms(list.nextWord);
-	}
+	}*/
 
 	@Benchmark
 	public void mapDictionary(WordList list, MapDictHolder holder) throws IOException {

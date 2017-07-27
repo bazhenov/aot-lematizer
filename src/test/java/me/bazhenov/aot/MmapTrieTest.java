@@ -19,8 +19,8 @@ public class MmapTrieTest {
 			source.add("матрас", new Addressed<>(3));
 		});
 
-		assertThat(trie.lookup("мама"), is(1));
 		assertThat(trie.lookup("папа"), is(2));
+		assertThat(trie.lookup("мама"), is(1));
 		assertThat(trie.lookup("матрас"), is(3));
 		assertThat(trie.lookup("матрац"), is(0));
 		assertThat(trie.lookup("цапля"), is(0));
