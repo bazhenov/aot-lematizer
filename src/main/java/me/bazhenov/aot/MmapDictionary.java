@@ -65,10 +65,13 @@ public class MmapDictionary {
 	private void doFind(String word, FoundWordsConsumer callback) {
 		try {
 			MmapTrie.State state = prefixTrie.init();
-			for (int i = 0; i < word.length(); i++) {
+			byte[] characters = new byte[word.length()];
+			for (int i = 0; i < word.length(); i++)
+				characters[i] = safeCastCharacter(word.charAt(i));
+			for (int i = 0; i < characters.length; i++) {
 				int prefixPlAddress = state.value();
 				if (prefixPlAddress != 0) {
-					MmapIntList.IntIterator postfixPlIterator = lookupPostfixTree(word, i);
+					MmapIntList.IntIterator postfixPlIterator = lookupPostfixTree(characters, i);
 					if (postfixPlIterator != null) {
 						MmapIntList.IntIterator prefixPlIterator = prefixPl.iterator(prefixPlAddress);
 
@@ -79,7 +82,7 @@ public class MmapDictionary {
 					}
 				}
 
-				byte c = safeCastCharacter(word.charAt(i));
+				byte c = characters[i];
 				if (!state.step(c)) {
 					break;
 				}
@@ -104,13 +107,13 @@ public class MmapDictionary {
 		return norms;
 	}
 
-	private MmapIntList.IntIterator lookupPostfixTree(String word, int start) {
+	private MmapIntList.IntIterator lookupPostfixTree(byte[] word, int start) {
 		MmapTrie.State state = postfixTrie.init();
-		for (int i = start; i < word.length(); i++)
-			if (!state.step(safeCastCharacter(word.charAt(i))))
+		for (int i = word.length - 1; i >= start; i--)
+			if (!state.step(word[i]))
 				return null;
 
-		if (!state.step(safeCastCharacter(word.charAt(0))))
+		if (!state.step(word[0]))
 			return null;
 
 		int address = state.value();

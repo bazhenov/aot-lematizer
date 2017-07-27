@@ -26,6 +26,12 @@ public class Utils {
 		}
 	}
 
+	static void checkNonNegative(int l) {
+		if (l <= 0) {
+			throw new IllegalStateException("Should be positive number: " + l);
+		}
+	}
+
 	public static byte safeCastCharacter(char n) {
 		switch (n) {
 			case '-':

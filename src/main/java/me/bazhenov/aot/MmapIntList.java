@@ -3,7 +3,9 @@ package me.bazhenov.aot;
 import java.nio.ByteBuffer;
 import java.util.List;
 
+import static java.lang.ThreadLocal.withInitial;
 import static java.util.Comparator.naturalOrder;
+import static me.bazhenov.aot.Utils.checkNonNegative;
 
 public class MmapIntList {
 
@@ -37,18 +39,28 @@ public class MmapIntList {
 	}
 
 	private static void writeVInt(ByteBuffer buffer, int previous, int value) {
+		checkNonNegative(value);
 		int delta = value - previous;
-		if (delta <= 0x7FFF) {
-			// число вписывается в 15 бит, пишем в виде двух байт с ведущим установленными битом
-			buffer.putShort((short) (delta & 0x7FFFF | 0x8000));
-		} else {
-			// число не вписывается в 15 бит, пишем в виде четырех байт
-			buffer.putInt(delta);
-		}
+		do {
+			byte b = (byte) (delta & 0x7F);
+			delta >>>= 7;
+			b |= delta > 0 ? 0x80 : 0;
+			buffer.put(b);
+		} while (delta != 0);
 	}
 
+	private final ThreadLocal<IntIterator> iterator = withInitial(() -> new IntIterator());
+
 	public IntIterator iterator(int offset) {
-		return new IntIterator(offset);
+		IntIterator iterator = this.iterator.get();
+
+		iterator.left = buffer.getShort(offset);
+		if (iterator.left <= 0) {
+			throw new IllegalArgumentException("Illegal list length at offset: " + offset);
+		}
+		iterator.offset = offset + 2;
+		iterator.previousValue = 0;
+		return iterator;
 	}
 
 	public class IntIterator {
@@ -56,14 +68,6 @@ public class MmapIntList {
 		private int offset = 0;
 		private int previousValue = 0;
 		private int left;
-
-		public IntIterator(int offset) {
-			this.left = buffer.getShort(offset);
-			if (left <= 0) {
-				throw new IllegalArgumentException("Illegal list length at offset: " + offset);
-			}
-			this.offset = offset + 2;
-		}
 
 		public boolean hasNext() {
 			return left > 0;
@@ -96,20 +100,31 @@ public class MmapIntList {
 			if (!hasNext()) {
 				return 0;
 			}
-			int value = buffer.getShort(offset);
-			if ((value & 0x8000) != 0) {
-				// если ведущий бит установлен, то число записно в виде двухбайтового, а не четырехбайтового числа
-				value = value & 0x7FFF;
-				offset += 2;
-			} else {
-				value = buffer.getInt(offset);
-				offset += 4;
-			}
+			int value = readVInt();
 			// Восстанавливаем дельта-кодирование
 			value += previousValue;
 			previousValue = value;
 			left--;
 			return value;
+		}
+
+		private int readVInt() {
+			byte b = buffer.get(offset++);
+			if (b >= 0) return b;
+			int i = b & 0x7F;
+			b = buffer.get(offset++);
+			i |= (b & 0x7F) << 7;
+			if (b >= 0) return i;
+			b = buffer.get(offset++);
+			i |= (b & 0x7F) << 14;
+			if (b >= 0) return i;
+			b = buffer.get(offset++);
+			i |= (b & 0x7F) << 21;
+			if (b >= 0) return i;
+			b = buffer.get(offset++);
+			i |= (b & 0x0F) << 28;
+			if ((b & 0xF0) == 0) return i;
+			throw new IllegalStateException("Invalid vInt detected (too many bits)");
 		}
 	}
 }
