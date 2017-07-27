@@ -3,19 +3,23 @@ package me.bazhenov.aot.measure;
 import me.bazhenov.aot.MapDictionary;
 import me.bazhenov.aot.MmapDictionary;
 import me.bazhenov.aot.TernaryTreeDictionary;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.zip.GZIPInputStream;
 
+import static java.lang.System.currentTimeMillis;
 import static me.bazhenov.aot.TernaryTreeDictionary.loadDictionary;
+import static org.openjdk.jmh.annotations.Mode.Throughput;
+import static org.openjdk.jmh.annotations.Scope.Benchmark;
 
 public class LookupBenchmark {
 
@@ -27,13 +31,13 @@ public class LookupBenchmark {
 	static {
 		try {
 			TERNARY_TREE_DICTIONARY = loadDictionary();
-			long before = System.currentTimeMillis();
+
+			long before = currentTimeMillis();
 			MAP_DICTIONARY = MapDictionary.loadDictionary();
-			long after = System.currentTimeMillis();
+			long after = currentTimeMillis();
+			System.out.println("\n\nTime taken: " + (after - before));
 
 			MMAP_DICTIONARY = new MmapDictionary(new File("/Users/bazhenov/Desktop/dictionary.dict"));
-
-			System.out.println("\n\nTime taken: " + (after - before));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -41,7 +45,7 @@ public class LookupBenchmark {
 
 	public static void main(String[] args) throws RunnerException {
 		Options opt = new OptionsBuilder()
-			.mode(Mode.AverageTime)
+			.mode(Throughput)
 			.include(".*" + LookupBenchmark.class.getSimpleName() + ".*")
 			.forks(1)
 			.timeUnit(TimeUnit.MICROSECONDS)
@@ -51,14 +55,14 @@ public class LookupBenchmark {
 
 	@Benchmark
 	@BenchmarkMode(Mode.AverageTime)
-	public void measureLookupShortMMapDictionary() throws IOException {
-		MMAP_DICTIONARY.getWordNorms("мир");
+	public void mMapDictionary(WordList list) throws IOException {
+		MMAP_DICTIONARY.getWordNorms(list.nextWord);
 	}
 
 	@Benchmark
 	@BenchmarkMode(Mode.AverageTime)
-	public void measureLookupLongMMapDictionary() throws IOException {
-		MMAP_DICTIONARY.getWordNorms("клавиатура");
+	public void mapDictionary(WordList list) throws IOException {
+		MAP_DICTIONARY.lookupWord(list.nextWord);
 	}
 
 	/*@Benchmark
@@ -84,4 +88,27 @@ public class LookupBenchmark {
 	public void measureLookupLongMapDictionary() throws IOException {
 		MAP_DICTIONARY.lookupWord("клавиатура");
 	}*/
+
+	@State(Benchmark)
+	public static class WordList {
+
+		final List<String> words = new ArrayList<>();
+		final AtomicInteger wordId = new AtomicInteger(0);
+		String nextWord;
+
+		public WordList() {
+			try (InputStream is = getClass().getResourceAsStream("/random-words.txt.gz");
+					 InputStream gzip = new GZIPInputStream(is);
+					 BufferedReader reader = new BufferedReader(new InputStreamReader(gzip))) {
+				reader.lines().sequential().forEach(words::add);
+			} catch (IOException e) {
+				throw new UncheckedIOException(e);
+			}
+		}
+
+		@Setup(Level.Invocation)
+		public void setUp() {
+			this.nextWord = words.get(wordId.getAndIncrement() % words.size());
+		}
+	}
 }

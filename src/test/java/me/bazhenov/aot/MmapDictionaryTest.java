@@ -54,10 +54,8 @@ public class MmapDictionaryTest {
 	@Test
 	public void dictionaryShouldBeAbleToReturnWordNorms() throws IOException {
 		MmapDictionary d = createDictionary();
-		List<String> norms = d.getWordNorms("дорога");
-		assertThat(norms, hasSize(2));
-		assertThat(norms, hasItems("дорога"));
-		assertThat(norms, hasItems("дорогой"));
+		assertThat(d.getWordNorms("дорога"), hasItems("дорога", "дорогой"));
+		assertThat(d.getWordNorms("черномырдину"), hasItems("черномырдин"));
 	}
 
 	@Test

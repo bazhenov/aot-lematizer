@@ -26,4 +26,17 @@ public class MmapFlexionListTest {
 
 		assertThat(flexions.retrievedNormPostfix(offset), is("а".getBytes(dictionaryCharset)));
 	}
+
+	@Test
+	public void emptyEnding() {
+		ByteBuffer buffer = ByteBuffer.allocate(1024);
+		List<Flexion> flexion = asList(new Flexion("ae", ""));
+
+		int offset = writeAndGetBeforePosition(buffer, writeToByteBuffer(flexion));
+		buffer.flip();
+
+		MmapFlexionList flexions = new MmapFlexionList(buffer);
+
+		assertThat(flexions.retrievedNormPostfix(offset), is("".getBytes(dictionaryCharset)));
+	}
 }

@@ -63,38 +63,29 @@ public class MmapDictionary {
 	}
 
 	private void doFind(String word, FoundWordsConsumer callback) {
-		//System.out.println("\n\n");
-		MmapTrie.State state = prefixTrie.init();
-		for (int i = 0; i < word.length(); i++) {
-			int prefixPlAddress = state.value();
-			if (prefixPlAddress != 0) {
-				MmapIntList.IntIterator postfixPlIterator = lookupPostfixTree(word, i);
-				if (postfixPlIterator != null) {
-					MmapIntList.IntIterator prefixPlIterator = prefixPl.iterator(prefixPlAddress);
+		try {
+			MmapTrie.State state = prefixTrie.init();
+			for (int i = 0; i < word.length(); i++) {
+				int prefixPlAddress = state.value();
+				if (prefixPlAddress != 0) {
+					MmapIntList.IntIterator postfixPlIterator = lookupPostfixTree(word, i);
+					if (postfixPlIterator != null) {
+						MmapIntList.IntIterator prefixPlIterator = prefixPl.iterator(prefixPlAddress);
 
-//					System.out.printf("Combination %s-%s\n", word.substring(0, i), word.substring(i, word.length()));
-
-					/*while (prefixPlIterator.hasNext()) {
-						System.out.println(prefixPlIterator.next());
-					}
-
-					System.out.println("----");
-					while (postfixPlIterator.hasNext()) {
-						System.out.println(postfixPlIterator.next());
-					}*/
-
-					int wordBaseIdx;
-					while ((wordBaseIdx = postfixPlIterator.nextCommon(prefixPlIterator)) != 0) {
-//						System.out.printf("Allowed combination: %s-%s [%d]\n", word.substring(0, i), word.substring(i, word.length()), wordBaseIdx);
-						callback.foundWord(wordBaseIdx, word.length() - i);
+						int wordBaseIdx;
+						while ((wordBaseIdx = postfixPlIterator.nextCommon(prefixPlIterator)) != 0) {
+							callback.foundWord(wordBaseIdx, word.length() - i);
+						}
 					}
 				}
-			}
 
-			byte c = safeCastCharacter(word.charAt(i));
-			if (!state.step(c)) {
-				break;
+				byte c = safeCastCharacter(word.charAt(i));
+				if (!state.step(c)) {
+					break;
+				}
 			}
+		} catch (RuntimeException e) {
+			throw new RuntimeException("Unable to lookup word: " + word, e);
 		}
 	}
 
@@ -103,8 +94,12 @@ public class MmapDictionary {
 		doFind(word, (wordId, endingLength) -> {
 			int flexionId = wordBaseToFlexion.getValue(wordId - 1);
 			byte[] bytes = flexions.retrievedNormPostfix(flexionId);
-			String ending = new String(bytes, dictionaryCharset);
-			norms.add(word.substring(0, word.length() - endingLength) + ending);
+			String base = word.substring(0, word.length() - endingLength);
+			if (bytes.length == 0) {
+				norms.add(base);
+			} else {
+				norms.add(base + new String(bytes, dictionaryCharset));
+			}
 		});
 		return norms;
 	}
