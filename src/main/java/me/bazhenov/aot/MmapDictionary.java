@@ -106,11 +106,15 @@ public class MmapDictionary {
 
 	private MmapIntList.IntIterator lookupPostfixTree(String word, int start) {
 		MmapTrie.State state = postfixTrie.init();
-		for (int i = start; i < word.length(); i++) {
-			byte c = safeCastCharacter(word.charAt(i));
-			if (!state.step(c))
+		for (int i = start; i < word.length(); i++)
+			if (!state.step(safeCastCharacter(word.charAt(i))))
 				return null;
-		}
+
+		String wordLength = Integer.toString(word.length());
+		for (int i = 0; i < wordLength.length(); i++)
+			if (!state.step(safeCastCharacter(wordLength.charAt(i))))
+				return null;
+
 		int address = state.value();
 		return address > 0
 			? postfixPl.iterator(address)

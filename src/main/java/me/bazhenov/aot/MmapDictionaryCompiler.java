@@ -103,14 +103,25 @@ public class MmapDictionaryCompiler {
 			// flexions
 			readSection(reader, flexions::add);
 
+			for (int i = 0; i < flexions.size(); i++) {
+				String line = flexions.get(i);
+				List<Flexion> flexia = new ArrayList<>();
+				for (String flex : line.split("%")) {
+					if (flex.isEmpty())
+						continue;
+					String[] parts = flex.split("\\*");
+					String postfix = parts[0].toLowerCase();
+					String ancode = parts[1].toLowerCase();
+					flexia.add(new Flexion(ancode, postfix));
+				}
+				state.flexions.add(flexia);
+			}
+
 			readSection(reader, null); // accentual models
 			readSection(reader, null); // user sessions
 			readSection(reader, null); // prefix sets
 
 			AtomicInteger wordBases = new AtomicInteger(1);
-
-
-			Set<Integer>[] flexionToWordBasesIndex = new Set[flexions.size()];
 
 			readSection(reader, (line) -> {
 				int wordIdx = wordBases.getAndIncrement();
@@ -120,10 +131,19 @@ public class MmapDictionaryCompiler {
 					word = "";
 				int flexionIdx = parseInt(parts[1]);
 
-				if (flexionToWordBasesIndex[flexionIdx] == null)
-					flexionToWordBasesIndex[flexionIdx] = new TreeSet<>();
+				// индексируем постфиксы слова
+				for (Flexion f : state.flexions.get(flexionIdx)) {
+					String postfix = f.getEnding() + Integer.toString(word.length() + f.getEnding().length());
 
-				flexionToWordBasesIndex[flexionIdx].add(wordIdx);
+					Addressed<Set<Integer>> existingPl = state.postfixTrie.search(postfix);
+					if (existingPl == null) {
+						existingPl = new Addressed<>(new TreeSet<>());
+						state.postfixPostingLists.add(existingPl);
+						state.postfixTrie.add(postfix, existingPl);
+					}
+					existingPl.getRef().add(wordIdx);
+				}
+
 				state.wordBaseToFlexionIndex.add(flexionIdx);
 
 				Addressed<Set<Integer>> existedPostingList = state.prefixTrie.search(word);
@@ -138,28 +158,6 @@ public class MmapDictionaryCompiler {
 				}
 				return null;
 			});
-
-			for (int i = 0; i < flexions.size(); i++) {
-				String line = flexions.get(i);
-				List<Flexion> flexia = new ArrayList<>();
-				for (String flex : line.split("%")) {
-					if (flex.isEmpty())
-						continue;
-					String[] parts = flex.split("\\*");
-					String postfix = parts[0].toLowerCase();
-					String ancode = parts[1].toLowerCase();
-					flexia.add(new Flexion(ancode, postfix));
-
-					Addressed<Set<Integer>> existingPl = state.postfixTrie.search(postfix);
-					if (existingPl == null) {
-						existingPl = new Addressed<>(new TreeSet<>());
-						state.postfixPostingLists.add(existingPl);
-						state.postfixTrie.add(postfix, existingPl);
-					}
-					existingPl.getRef().addAll(flexionToWordBasesIndex[i]);
-				}
-				state.flexions.add(flexia);
-			}
 		}
 		return state;
 	}
