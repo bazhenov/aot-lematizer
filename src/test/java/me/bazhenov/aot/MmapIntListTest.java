@@ -26,7 +26,7 @@ public class MmapIntListTest {
 			l.add(18);
 		});
 
-		MmapIntList.IntIterator iterator = list.iterator(0);
+		MmapIntList.IntIterator iterator = list.iterator().reset(0);
 		assertThat(iterator.next(), is(1));
 		assertThat(iterator.next(), is(3));
 		assertThat(iterator.next(), is(5));
@@ -44,14 +44,14 @@ public class MmapIntListTest {
 			l.add(3);
 			l.add(35);
 			l.add(39);
-		}).iterator(0);
+		}).iterator().reset(0);
 
 		MmapIntList.IntIterator l2 = prepare(l -> {
 			l.add(1);
 			l.add(5);
 			l.add(18);
 			l.add(39);
-		}).iterator(0);
+		}).iterator().reset(0);
 
 		assertThat(l1.nextCommon(l2), is(1));
 		assertThat(l1.nextCommon(l2), is(39));
@@ -65,7 +65,7 @@ public class MmapIntListTest {
 			l.add(3);
 			l.add(35);
 			l.add(39);
-		}).iterator(0);
+		}).iterator().reset(0);
 
 		MmapIntList.IntIterator l2 = prepare(l -> {
 			l.add(3);
@@ -73,7 +73,7 @@ public class MmapIntListTest {
 			l.add(18);
 			l.add(19);
 			l.add(35);
-		}).iterator(0);
+		}).iterator().reset(0);
 
 		assertThat(l1.nextCommon(l2), is(3));
 		assertThat(l1.nextCommon(l2), is(35));

@@ -22,7 +22,7 @@ public class MmapFlexionList {
 					throw new IllegalArgumentException("Ending is too long: " + ending.length());
 				b.put((byte) ending.length());
 				for (byte i = 0; i < ending.length(); i++) {
-					b.put(safeCastCharacter(ending.charAt(i)));
+					b.put(safeCharToByte(ending.charAt(i)));
 				}
 			}
 		};

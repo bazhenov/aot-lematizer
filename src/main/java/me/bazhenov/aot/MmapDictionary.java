@@ -9,9 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.lang.ThreadLocal.withInitial;
 import static java.nio.channels.FileChannel.MapMode.READ_ONLY;
-import static me.bazhenov.aot.Utils.dictionaryCharset;
-import static me.bazhenov.aot.Utils.safeCastCharacter;
+import static me.bazhenov.aot.Utils.safeByteToChar;
+import static me.bazhenov.aot.Utils.safeCharToByte;
 
 public class MmapDictionary {
 
@@ -21,6 +22,8 @@ public class MmapDictionary {
 	private final MmapIntList postfixPl;
 	private final MmapFixedWidthIntBlock wordBaseToFlexion;
 	private final MmapFlexionList flexions;
+
+	private final ThreadLocal<byte[]> characters = withInitial(() -> new byte[0]);
 
 	public MmapDictionary(File dictFile) throws IOException {
 		try (RandomAccessFile f = new RandomAccessFile(dictFile, "r");
@@ -65,15 +68,21 @@ public class MmapDictionary {
 	private void doFind(String word, FoundWordsConsumer callback) {
 		try {
 			MmapTrie.State state = prefixTrie.init();
-			byte[] characters = new byte[word.length()];
-			for (int i = 0; i < word.length(); i++)
-				characters[i] = safeCastCharacter(word.charAt(i));
-			for (int i = 0; i < characters.length; i++) {
+
+			int length = word.length();
+			byte[] characters = new byte[length];
+
+			for (int i = 0; i < length; i++)
+				characters[i] = safeCharToByte(word.charAt(i));
+
+			MmapIntList.IntIterator prefixPlIterator = prefixPl.iterator();
+			MmapIntList.IntIterator postfixPlIterator = postfixPl.iterator();
+
+			for (int i = 0; i < length; i++) {
 				int prefixPlAddress = state.value();
 				if (prefixPlAddress != 0) {
-					MmapIntList.IntIterator postfixPlIterator = lookupPostfixTree(characters, i);
-					if (postfixPlIterator != null) {
-						MmapIntList.IntIterator prefixPlIterator = prefixPl.iterator(prefixPlAddress);
+					if (lookupPostfixTree(postfixPlIterator, characters, i, length)) {
+						prefixPlIterator.reset(prefixPlAddress);
 
 						int wordBaseIdx;
 						while ((wordBaseIdx = postfixPlIterator.nextCommon(prefixPlIterator)) != 0) {
@@ -96,30 +105,44 @@ public class MmapDictionary {
 		List<String> norms = new ArrayList<>();
 		doFind(word, (wordId, endingLength) -> {
 			int flexionId = wordBaseToFlexion.getValue(wordId - 1);
-			byte[] bytes = flexions.retrievedNormPostfix(flexionId);
-			String base = word.substring(0, word.length() - endingLength);
-			if (bytes.length == 0) {
-				norms.add(base);
+			byte[] ending = flexions.retrievedNormPostfix(flexionId);
+			int baseLength = word.length() - endingLength;
+
+			if (ending.length == 0) {
+				norms.add(word.substring(0, baseLength));
 			} else {
-				norms.add(base + new String(bytes, dictionaryCharset));
+				norms.add(makeWord(word, baseLength, ending));
 			}
 		});
 		return norms;
 	}
 
-	private MmapIntList.IntIterator lookupPostfixTree(byte[] word, int start) {
+	private String makeWord(String base, int baseLength, byte[] ending) {
+		char[] result = new char[baseLength + ending.length];
+		for (int i = 0; i < baseLength; i++)
+			result[i] = base.charAt(i);
+		for (int i = 0; i < ending.length; i++)
+			result[i + baseLength] = safeByteToChar(ending[i]);
+
+		return new String(result);
+	}
+
+	private boolean lookupPostfixTree(MmapIntList.IntIterator postfixPlIterator, byte[] word, int start, int length) {
 		MmapTrie.State state = postfixTrie.init();
-		for (int i = word.length - 1; i >= start; i--)
+		for (int i = length - 1; i >= start; i--)
 			if (!state.step(word[i]))
-				return null;
+				return false;
 
 		if (!state.step(word[0]))
-			return null;
+			return false;
 
 		int address = state.value();
-		return address > 0
-			? postfixPl.iterator(address)
-			: null;
+		if (address > 0) {
+			postfixPlIterator.reset(address);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	interface FoundWordsConsumer {

@@ -2,7 +2,7 @@ package me.bazhenov.aot;
 
 import java.nio.ByteBuffer;
 
-import static me.bazhenov.aot.Utils.safeCastCharacter;
+import static me.bazhenov.aot.Utils.safeCharToByte;
 
 class TrieWriter {
 
@@ -29,7 +29,7 @@ class TrieWriter {
 		}
 		buffer.putInt(value);
 		for (Character children : node.getChildren().keySet()) {
-			buffer.put(safeCastCharacter(children));
+			buffer.put(safeCharToByte(children));
 		}
 		int refsPosition = buffer.position();
 		buffer.position(buffer.position() + sz * 4);

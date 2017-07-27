@@ -2,7 +2,7 @@ package me.bazhenov.aot;
 
 import java.nio.ByteBuffer;
 
-import static me.bazhenov.aot.Utils.safeCastCharacter;
+import static me.bazhenov.aot.Utils.safeCharToByte;
 
 public class MmapTrie {
 
@@ -18,7 +18,7 @@ public class MmapTrie {
 	public int lookup(String str) {
 		State s = init();
 		for (int i = 0; i < str.length(); i++) {
-			if (!s.step(safeCastCharacter(str.charAt(i)))) {
+			if (!s.step(safeCharToByte(str.charAt(i)))) {
 				return 0;
 			}
 		}

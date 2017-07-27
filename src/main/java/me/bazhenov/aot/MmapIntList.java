@@ -3,7 +3,6 @@ package me.bazhenov.aot;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import static java.lang.ThreadLocal.withInitial;
 import static java.util.Comparator.naturalOrder;
 import static me.bazhenov.aot.Utils.checkNonNegative;
 
@@ -49,18 +48,8 @@ public class MmapIntList {
 		} while (delta != 0);
 	}
 
-	private final ThreadLocal<IntIterator> iterator = withInitial(() -> new IntIterator());
-
-	public IntIterator iterator(int offset) {
-		IntIterator iterator = this.iterator.get();
-
-		iterator.left = buffer.getShort(offset);
-		if (iterator.left <= 0) {
-			throw new IllegalArgumentException("Illegal list length at offset: " + offset);
-		}
-		iterator.offset = offset + 2;
-		iterator.previousValue = 0;
-		return iterator;
+	public IntIterator iterator() {
+		return new IntIterator();
 	}
 
 	public class IntIterator {
@@ -68,6 +57,16 @@ public class MmapIntList {
 		private int offset = 0;
 		private int previousValue = 0;
 		private int left;
+
+		public IntIterator reset(int offset) {
+			left = buffer.getShort(offset);
+			if (left <= 0) {
+				throw new IllegalArgumentException("Illegal list length at offset: " + offset);
+			}
+			this.offset = offset + 2;
+			this.previousValue = 0;
+			return this;
+		}
 
 		public boolean hasNext() {
 			return left > 0;

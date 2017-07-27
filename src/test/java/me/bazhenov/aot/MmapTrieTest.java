@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 import java.nio.ByteBuffer;
 import java.util.function.Consumer;
 
-import static me.bazhenov.aot.Utils.safeCastCharacter;
+import static me.bazhenov.aot.Utils.safeCharToByte;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -38,20 +38,20 @@ public class MmapTrieTest {
 		MmapTrie.State state = trie.init();
 		assertThat(state.value(), is(1));
 
-		assertThat(state.step(safeCastCharacter('м')), is(true));
+		assertThat(state.step(safeCharToByte('м')), is(true));
 		assertThat(state.value(), is(2));
 
-		assertThat(state.step(safeCastCharacter('а')), is(true));
+		assertThat(state.step(safeCharToByte('а')), is(true));
 		assertThat(state.value(), is(3));
 
-		assertThat(state.step(safeCastCharacter('м')), is(true));
+		assertThat(state.step(safeCharToByte('м')), is(true));
 		assertThat(state.value(), is(0));
 
-		assertThat(state.step(safeCastCharacter('а')), is(true));
+		assertThat(state.step(safeCharToByte('а')), is(true));
 		assertThat(state.value(), is(4));
 
 		// после ухода на несуществубщий символ, система остается в предыдущем состоянии
-		assertThat(state.step(safeCastCharacter('н')), is(false));
+		assertThat(state.step(safeCharToByte('н')), is(false));
 		assertThat(state.value(), is(4));
 	}
 
