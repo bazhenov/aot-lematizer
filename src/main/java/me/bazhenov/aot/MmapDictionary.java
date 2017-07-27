@@ -110,10 +110,8 @@ public class MmapDictionary {
 			if (!state.step(safeCastCharacter(word.charAt(i))))
 				return null;
 
-		String wordLength = Integer.toString(word.length());
-		for (int i = 0; i < wordLength.length(); i++)
-			if (!state.step(safeCastCharacter(wordLength.charAt(i))))
-				return null;
+		if (!state.step(safeCastCharacter(word.charAt(0))))
+			return null;
 
 		int address = state.value();
 		return address > 0

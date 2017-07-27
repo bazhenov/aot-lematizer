@@ -133,7 +133,8 @@ public class MmapDictionaryCompiler {
 
 				// индексируем постфиксы слова
 				for (Flexion f : state.flexions.get(flexionIdx)) {
-					String postfix = f.getEnding() + Integer.toString(word.length() + f.getEnding().length());
+					String fullWord = word + f.getEnding();
+					String postfix = f.getEnding() + fullWord.charAt(0);
 
 					Addressed<Set<Integer>> existingPl = state.postfixTrie.search(postfix);
 					if (existingPl == null) {
