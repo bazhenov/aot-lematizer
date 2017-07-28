@@ -3,7 +3,10 @@ package me.bazhenov.aot;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.Integer.parseInt;
@@ -143,7 +146,8 @@ public class MmapDictionaryCompiler {
 				for (Flexion f : state.flexions.get(flexionIdx)) {
 					String ending = f.getEnding();
 					String fullWord = base + ending;
-					String postfix = new StringBuilder(ending).reverse().toString() + fullWord.charAt(0);
+					String length = Integer.toString(fullWord.length() % 10);
+					String postfix = new StringBuilder(ending).reverse().toString() + fullWord.charAt(0) + length;
 
 					Addressed<SortedSet<Integer>> existingPl = state.postfixTrie.search(postfix);
 					if (existingPl == null) {

@@ -12,7 +12,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 
-@Test(dependsOnGroups = "compiler")
 public class MmapDictionaryTest {
 
 	private MmapDictionary d;

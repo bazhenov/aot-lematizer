@@ -13,6 +13,7 @@ import static java.lang.ThreadLocal.withInitial;
 import static java.nio.channels.FileChannel.MapMode.READ_ONLY;
 import static me.bazhenov.aot.Utils.charToByte;
 import static me.bazhenov.aot.Utils.safeByteToChar;
+import static me.bazhenov.aot.Utils.safeCharToByte;
 
 public class MmapDictionary {
 
@@ -105,9 +106,10 @@ public class MmapDictionary {
 		}
 	}
 
-	private void feedWordsInCallback(FoundWordsConsumer callback, MmapIntList.IntIterator prefixPlIterator, MmapIntList.IntIterator postfixPlIterator, int endingLength) {
+	private void feedWordsInCallback(FoundWordsConsumer callback, MmapIntList.IntIterator prefix,
+																	 MmapIntList.IntIterator postfix, int endingLength) {
 		int wordBaseIdx;
-		while ((wordBaseIdx = postfixPlIterator.nextCommon(prefixPlIterator)) != 0) {
+		while ((wordBaseIdx = postfix.nextCommon(prefix)) != 0) {
 			callback.foundWord(wordBaseIdx, endingLength);
 		}
 	}
@@ -145,6 +147,45 @@ public class MmapDictionary {
 				return false;
 
 		if (!state.step(word[0]))
+			return false;
+
+		char c;
+		switch (length % 10) {
+			case 0:
+				c='0';
+				break;
+			case 1:
+				c='1';
+				break;
+			case 2:
+				c='2';
+				break;
+			case 3:
+				c='3';
+				break;
+			case 4:
+				c='4';
+				break;
+			case 5:
+				c='5';
+				break;
+			case 6:
+				c='6';
+				break;
+			case 7:
+				c='7';
+				break;
+			case 8:
+				c='8';
+				break;
+			case 9:
+				c='9';
+				break;
+			default:
+				throw new IllegalStateException("Ooops");
+		}
+
+		if (!state.step(safeCharToByte(c)))
 			return false;
 
 		int address = state.value();
