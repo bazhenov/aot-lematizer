@@ -36,6 +36,10 @@ public class Utils {
 		switch (b) {
 			case (byte) 0x2d:
 				return '-';
+			case (byte) 0x96:
+				return '–';
+			case (byte) 0x97:
+				return '—';
 			case (byte) 0x30:
 				return '0';
 			case (byte) 0x31:
@@ -222,10 +226,6 @@ public class Utils {
 				return (byte) 0x96;
 			case '—':
 				return (byte) 0x97;
-			case 'Ё':
-				return (byte) 0xa8;
-			case 'ё':
-				return (byte) 0xb8;
 			case 'А':
 				return (byte) 0xc0;
 			case 'Б':
@@ -237,6 +237,7 @@ public class Utils {
 			case 'Д':
 				return (byte) 0xc4;
 			case 'Е':
+			case 'Ё':
 				return (byte) 0xc5;
 			case 'Ж':
 				return (byte) 0xc6;
@@ -301,6 +302,7 @@ public class Utils {
 			case 'д':
 				return (byte) 0xe4;
 			case 'е':
+			case 'ё':
 				return (byte) 0xe5;
 			case 'ж':
 				return (byte) 0xe6;

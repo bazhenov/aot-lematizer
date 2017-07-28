@@ -52,6 +52,12 @@ public class MmapDictionaryTest {
 	}
 
 	@Test
+	public void tempTest() throws IOException {
+		MmapDictionary d = createDictionary();
+		assertThat(d.countWords("ребёнок"), is(1));
+	}
+
+	@Test
 	public void dictionaryShouldBeAbleToReturnWordNorms() throws IOException {
 		MmapDictionary d = createDictionary();
 		assertThat(d.getWordNorms("дорога"), hasItems("дорога", "дорогой"));
