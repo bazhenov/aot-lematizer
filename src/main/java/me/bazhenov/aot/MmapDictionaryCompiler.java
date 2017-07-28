@@ -110,7 +110,7 @@ public class MmapDictionaryCompiler {
 					if (flex.isEmpty())
 						continue;
 					String[] parts = flex.split("\\*");
-					String postfix = parts[0].toLowerCase();
+					String postfix = prepare(parts[0]);
 					String ancode = parts[1].toLowerCase();
 					flexia.add(new Flexion(ancode, postfix));
 				}
@@ -126,15 +126,16 @@ public class MmapDictionaryCompiler {
 			readSection(reader, (line) -> {
 				int wordIdx = wordBases.getAndIncrement();
 				String[] parts = line.split(" ");
-				String word = parts[0].toLowerCase();
-				if (word.equals("#")) // слово с пустой неизменяемой основной
-					word = "";
+				String base = prepare(parts[0]);
+				if (base.equals("#")) // слово с пустой неизменяемой основной
+					base = "";
 				int flexionIdx = parseInt(parts[1]);
 
 				// индексируем постфиксы слова
 				for (Flexion f : state.flexions.get(flexionIdx)) {
-					String fullWord = word + f.getEnding();
-					String postfix = new StringBuilder(f.getEnding()).reverse().toString() + fullWord.charAt(0);
+					String ending = f.getEnding();
+					String fullWord = base + ending;
+					String postfix = new StringBuilder(ending).reverse().toString() + fullWord.charAt(0);
 
 					Addressed<Set<Integer>> existingPl = state.postfixTrie.search(postfix);
 					if (existingPl == null) {
@@ -147,7 +148,7 @@ public class MmapDictionaryCompiler {
 
 				state.wordBaseToFlexionIndex.add(flexionIdx);
 
-				Addressed<Set<Integer>> existedPostingList = state.prefixTrie.search(word);
+				Addressed<Set<Integer>> existedPostingList = state.prefixTrie.search(base);
 				if (existedPostingList != null) {
 					existedPostingList.getRef().add(wordIdx);
 				} else {
@@ -155,12 +156,16 @@ public class MmapDictionaryCompiler {
 					newPostingList.add(wordIdx);
 					Addressed<Set<Integer>> wrapper = new Addressed<>(newPostingList);
 					state.prefixPostingLists.add(wrapper);
-					state.prefixTrie.add(word, wrapper);
+					state.prefixTrie.add(base, wrapper);
 				}
 				return null;
 			});
 		}
 		return state;
+	}
+
+	private static String prepare(String word) {
+		return word.toLowerCase().replaceAll("ё", "е");
 	}
 
 	private static class State {

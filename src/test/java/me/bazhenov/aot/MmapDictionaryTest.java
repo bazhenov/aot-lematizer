@@ -14,21 +14,6 @@ import static org.hamcrest.Matchers.hasSize;
 public class MmapDictionaryTest {
 
 	@Test
-	public void testCompileLoad() throws IOException {
-		File tempFile = File.createTempFile("mmap", "dict");
-		tempFile.deleteOnExit();
-
-		tempFile = new File("/Users/bazhenov/Desktop/dictionary.dict");
-
-		MmapDictionaryCompiler.compile(tempFile);
-		System.out.println(tempFile);
-
-		MmapDictionary d = new MmapDictionary(tempFile);
-		assertThat(d.countWords("краснеющий"), is(1));
-		assertThat(d.countWords("фентифлюшка"), is(0));
-	}
-
-	@Test
 	public void dictionaryShouldBeAbleToFindExistentWords() throws IOException {
 		MmapDictionary d = createDictionary();
 		assertThat(d.countWords("краснеющий"), is(1));

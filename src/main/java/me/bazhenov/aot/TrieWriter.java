@@ -1,6 +1,8 @@
 package me.bazhenov.aot;
 
 import java.nio.ByteBuffer;
+import java.util.HashSet;
+import java.util.Set;
 
 import static me.bazhenov.aot.Utils.safeCharToByte;
 
@@ -28,7 +30,11 @@ class TrieWriter {
 			value = addr;
 		}
 		buffer.putInt(value);
-		for (Character children : node.getChildren().keySet()) {
+
+		Set<Character> characters = node.getChildren().keySet();
+		checkUniqBytes(characters);
+
+		for (Character children : characters) {
 			buffer.put(safeCharToByte(children));
 		}
 		int refsPosition = buffer.position();
@@ -41,6 +47,15 @@ class TrieWriter {
 			refsPosition += 4;
 		}
 		return address;
+	}
+
+	private static void checkUniqBytes(Set<Character> characters) {
+		Set<Byte> writtenBytes = new HashSet<>();
+		for (Character children : characters) {
+			if (!writtenBytes.add(safeCharToByte(children))) {
+				throw new IllegalStateException("Duplicate byte/character found: " + children);
+			}
+		}
 	}
 
 	private static byte safeCast(int n) {

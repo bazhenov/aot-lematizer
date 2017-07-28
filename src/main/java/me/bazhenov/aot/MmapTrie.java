@@ -44,7 +44,16 @@ public class MmapTrie {
 			int start = cAddr;
 			int end = (cAddr + cnt) - 1;
 
-			while (start <= end) {
+			for (int idx = 0; idx < cnt; idx++) {
+				byte c = buffer.get(cAddr + idx);
+				if (c == character) {
+					sAddr = buffer.getInt(aAddr + idx * 4);
+					return true;
+				}
+			}
+			return false;
+
+			/*while (start <= end) {
 				int mid = (end + start) / 2;
 				byte c = buffer.get(mid);
 
@@ -58,7 +67,7 @@ public class MmapTrie {
 					return true;
 				}
 			}
-			return false;
+			return false;*/
 		}
 	}
 }
