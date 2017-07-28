@@ -11,8 +11,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.ThreadLocal.withInitial;
 import static java.nio.channels.FileChannel.MapMode.READ_ONLY;
+import static me.bazhenov.aot.Utils.charToByte;
 import static me.bazhenov.aot.Utils.safeByteToChar;
-import static me.bazhenov.aot.Utils.safeCharToByte;
 
 public class MmapDictionary {
 
@@ -73,7 +73,7 @@ public class MmapDictionary {
 			byte[] characters = new byte[length];
 
 			for (int i = 0; i < length; i++)
-				characters[i] = safeCharToByte(word.charAt(i));
+				characters[i] = charToByte(word.charAt(i));
 
 			MmapIntList.IntIterator prefixPlIterator = prefixPl.iterator();
 			MmapIntList.IntIterator postfixPlIterator = postfixPl.iterator();
@@ -83,21 +83,32 @@ public class MmapDictionary {
 				if (prefixPlAddress != 0) {
 					if (lookupPostfixTree(postfixPlIterator, characters, i, length)) {
 						prefixPlIterator.reset(prefixPlAddress);
-
-						int wordBaseIdx;
-						while ((wordBaseIdx = postfixPlIterator.nextCommon(prefixPlIterator)) != 0) {
-							callback.foundWord(wordBaseIdx, word.length() - i);
-						}
+						feedWordsInCallback(callback, prefixPlIterator, postfixPlIterator, word.length() - i);
 					}
 				}
 
 				byte c = characters[i];
 				if (!state.step(c)) {
-					break;
+					return;
+				}
+			}
+			// проверяем слово состоящее полностью из префикса
+			int prefixPlAddress = state.value();
+			if (prefixPlAddress != 0) {
+				if (lookupPostfixTree(postfixPlIterator, characters, length, length)) {
+					prefixPlIterator.reset(prefixPlAddress);
+					feedWordsInCallback(callback, prefixPlIterator, postfixPlIterator, 0);
 				}
 			}
 		} catch (RuntimeException e) {
 			throw new RuntimeException("Unable to lookup word: " + word, e);
+		}
+	}
+
+	private void feedWordsInCallback(FoundWordsConsumer callback, MmapIntList.IntIterator prefixPlIterator, MmapIntList.IntIterator postfixPlIterator, int endingLength) {
+		int wordBaseIdx;
+		while ((wordBaseIdx = postfixPlIterator.nextCommon(prefixPlIterator)) != 0) {
+			callback.foundWord(wordBaseIdx, endingLength);
 		}
 	}
 

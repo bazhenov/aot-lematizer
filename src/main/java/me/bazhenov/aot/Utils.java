@@ -33,6 +33,14 @@ public class Utils {
 	}
 
 	public static char safeByteToChar(byte b) {
+		char c = byteToChar(b);
+		if (c == 0) {
+			throw new IllegalArgumentException("Invalid byte character: " + b);
+		}
+		return c;
+	}
+
+	public static char byteToChar(byte b) {
 		switch (b) {
 			case (byte) 0x2d:
 				return '-';
@@ -194,11 +202,19 @@ public class Utils {
 				return 'я';
 
 			default:
-				throw new IllegalArgumentException("Illegal byte: " + b);
+				return 0;
 		}
 	}
 
 	public static byte safeCharToByte(char n) {
+		byte b = charToByte(n);
+		if (b == 0) {
+			throw new IllegalArgumentException("Invalid character: " + n);
+		}
+		return b;
+	}
+
+	public static byte charToByte(char n) {
 		switch (n) {
 			case '-':
 				return (byte) 0x2d;
@@ -358,7 +374,7 @@ public class Utils {
 				return (byte) 0xff;
 
 			default:
-				throw new IllegalArgumentException("Illegal character: " + n);
+				return 0x0;
 		}
 	}
 }

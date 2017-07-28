@@ -37,9 +37,9 @@ public class MmapDictionaryTest {
 	}
 
 	@Test
-	public void tempTest() throws IOException {
+	public void shouldNotThrowExceptionIfWordHasUnknownCharacter() throws IOException {
 		MmapDictionary d = createDictionary();
-		assertThat(d.countWords("ребёнок"), is(1));
+		assertThat(d.countWords("super#starnge@string"), is(0));
 	}
 
 	@Test
@@ -47,6 +47,12 @@ public class MmapDictionaryTest {
 		MmapDictionary d = createDictionary();
 		assertThat(d.getWordNorms("дорога"), hasItems("дорога", "дорогой"));
 		assertThat(d.getWordNorms("черномырдину"), hasItems("черномырдин"));
+	}
+
+	@Test
+	public void regression1() throws IOException {
+		MmapDictionary d = createDictionary();
+		assertThat(d.getWordNorms("замок"), hasItems("замок", "замокнуть"));
 	}
 
 	@Test
