@@ -2,8 +2,8 @@ package me.bazhenov.aot.measure;
 
 import me.bazhenov.aot.MapDictionary;
 import me.bazhenov.aot.MmapDictionary;
+import me.bazhenov.aot.MmapDictionaryTest;
 import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.runner.Runner;
@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.GZIPInputStream;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.openjdk.jmh.annotations.Level.Invocation;
 import static org.openjdk.jmh.annotations.Mode.Throughput;
 import static org.openjdk.jmh.annotations.Scope.Benchmark;
 
@@ -46,7 +47,7 @@ public class LookupBenchmark {
 	@State(Benchmark)
 	public static class MapDictHolder {
 
-		public MapDictionary dictionary;
+		MapDictionary dictionary;
 
 		public MapDictHolder() {
 			this.dictionary = MapDictionary.loadDictionary();
@@ -56,11 +57,11 @@ public class LookupBenchmark {
 	@State(Benchmark)
 	public static class MMapDictionaryHolder {
 
-		public MmapDictionary dictionary;
+		MmapDictionary dictionary;
 
 		public MMapDictionaryHolder() {
 			try {
-				dictionary = new MmapDictionary(new File("/Users/bazhenov/Desktop/dictionary.dict"));
+				dictionary = MmapDictionaryTest.createDictionary();
 			} catch (IOException e) {
 				throw new UncheckedIOException(e);
 			}
@@ -84,7 +85,7 @@ public class LookupBenchmark {
 			}
 		}
 
-		@Setup(Level.Invocation)
+		@Setup(Invocation)
 		public void setUp() {
 			this.nextWord = words.get(wordId.getAndIncrement() % words.size());
 		}

@@ -1,40 +1,39 @@
 package me.bazhenov.aot;
 
 import java.nio.ByteBuffer;
-import java.util.List;
+import java.util.SortedSet;
+import java.util.function.Consumer;
 
-import static java.util.Comparator.naturalOrder;
-import static me.bazhenov.aot.Utils.checkNonNegative;
+import static me.bazhenov.aot.Utils.*;
 
 public class MmapIntList {
 
-	private ByteBuffer buffer;
+	private final ByteBuffer buffer;
 
 	public MmapIntList(ByteBuffer buffer) {
-		if (buffer.position() != 0) {
-			throw new IllegalArgumentException("Buffer should be at zero position");
-		}
-		this.buffer = buffer;
+		this.buffer = checkBufferIsReset(buffer);
 	}
 
-	public static void writeToByteBuffer(List<Integer> ints, ByteBuffer buffer) {
-		if (ints.isEmpty()) {
-			throw new IllegalArgumentException("No empty list allowed");
-		}
-		ints.sort(naturalOrder());
-		if (ints.get(0) <= 0) {
-			throw new IllegalArgumentException("Only positive numbers allowed");
-		}
+	public static Consumer<ByteBuffer> writeToByteBuffer(SortedSet<Integer> ints) {
+		return buffer -> {
+			if (ints.isEmpty()) {
+				throw new IllegalArgumentException("No empty list allowed");
+			}
+			checkPositive(ints.first());
+			if (ints.first() > ints.last()) {
+				throw new IllegalArgumentException("Illegal posting list order");
+			}
 
-		if (ints.size() > 32_768) { // 2^15
-			throw new IllegalArgumentException("Too big list detected");
-		}
-		buffer.putShort((short) ints.size());
-		int previous = 0;
-		for (int value : ints) {
-			writeVInt(buffer, previous, value);
-			previous = value;
-		}
+			if (ints.size() > 32_768) { // 2^15
+				throw new IllegalArgumentException("Too big list detected");
+			}
+			buffer.putShort((short) ints.size());
+			int previous = 0;
+			for (int value : ints) {
+				writeVInt(buffer, previous, value);
+				previous = value;
+			}
+		};
 	}
 
 	private static void writeVInt(ByteBuffer buffer, int previous, int value) {
@@ -48,16 +47,31 @@ public class MmapIntList {
 		} while (delta != 0);
 	}
 
+	/**
+	 * @return новый итератор для прохода по постинг листу
+	 */
 	public IntIterator iterator() {
 		return new IntIterator();
 	}
 
+	/**
+	 * Итератор по posting list'у.
+	 * <p>
+	 * Класс реализован таким образом, чтобы его можно было использовать повторно, используя метод {@link #reset(int)}.
+	 * Этот же метод играет роль конструктора.
+	 */
 	public class IntIterator {
 
 		private int offset = 0;
 		private int previousValue = 0;
 		private int left;
 
+		/**
+		 * Сбрасывает состояние итератора готовя его к повторному использованию. Вызов этого метода перед первым
+		 * использованием обязателен
+		 *
+		 * @param offset смещение posting list'а относительно начала блока
+		 */
 		public IntIterator reset(int offset) {
 			left = buffer.getShort(offset);
 			if (left <= 0) {
@@ -72,6 +86,12 @@ public class MmapIntList {
 			return left > 0;
 		}
 
+		/**
+		 * Выполняет пересечение себя с переданным интератором
+		 *
+		 * @param other итератор с которым надо пересечь
+		 * @return следующее числоприсутствующее в обоих итераторах или {@code 0}, если таковых более нет
+		 */
 		public int nextCommon(MmapIntList.IntIterator other) {
 			if (!other.hasNext() || !hasNext())
 				return 0;

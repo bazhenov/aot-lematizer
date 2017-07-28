@@ -6,8 +6,6 @@ import java.util.function.Consumer;
 
 public class Utils {
 
-	public static Charset dictionaryCharset = Charset.forName("windows-1251");
-
 	public static int writeAndGetBeforePosition(ByteBuffer buffer, Consumer<ByteBuffer> writer) {
 		int position = buffer.position();
 		writer.accept(buffer);
