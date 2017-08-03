@@ -6,6 +6,7 @@ import me.bazhenov.aot.MmapDictionaryTest;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.profile.GCProfiler;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
@@ -28,6 +29,9 @@ public class LookupBenchmark {
 		Options opt = new OptionsBuilder()
 			.mode(Throughput)
 			.include(".*" + LookupBenchmark.class.getSimpleName() + ".*")
+			.addProfiler(GCProfiler.class)
+			.warmupIterations(5)
+			.measurementIterations(10)
 			.forks(1)
 			.timeUnit(MILLISECONDS)
 			.build();

@@ -1,19 +1,14 @@
 package me.bazhenov.aot;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.lang.ThreadLocal.withInitial;
 import static java.nio.channels.FileChannel.MapMode.READ_ONLY;
-import static me.bazhenov.aot.Utils.charToByte;
-import static me.bazhenov.aot.Utils.safeByteToChar;
-import static me.bazhenov.aot.Utils.safeCharToByte;
+import static me.bazhenov.aot.Utils.*;
 
 public class MmapDictionary {
 
@@ -24,26 +19,39 @@ public class MmapDictionary {
 	private final MmapFixedWidthIntBlock wordBaseToFlexion;
 	private final MmapFlexionList flexions;
 
-	private final ThreadLocal<byte[]> characters = withInitial(() -> new byte[0]);
+	public MmapDictionary() throws IOException {
+		this(MmapDictionary.class.getResourceAsStream("/aot.dict"));
+	}
+
 
 	public MmapDictionary(File dictFile) throws IOException {
 		try (RandomAccessFile f = new RandomAccessFile(dictFile, "r");
 				 FileChannel channel = f.getChannel()) {
 
-			ByteBuffer flexionBlock = mapBlock(f, channel);
-			ByteBuffer wordBaseToFlexionBlock = mapBlock(f, channel);
-			ByteBuffer prefixPostingList = mapBlock(f, channel);
-			ByteBuffer postfixPostingList = mapBlock(f, channel);
-			ByteBuffer prefixBlock = mapBlock(f, channel);
-			ByteBuffer postfixBlock = mapBlock(f, channel);
-
-			prefixPl = new MmapIntList(prefixPostingList);
-			postfixPl = new MmapIntList(postfixPostingList);
-			prefixTrie = new MmapTrie(prefixBlock);
-			postfixTrie = new MmapTrie(postfixBlock);
-			wordBaseToFlexion = new MmapFixedWidthIntBlock(wordBaseToFlexionBlock);
-			flexions = new MmapFlexionList(flexionBlock);
+			flexions = new MmapFlexionList(mapBlock(f, channel));
+			wordBaseToFlexion = new MmapFixedWidthIntBlock(mapBlock(f, channel));
+			prefixPl = new MmapIntList(mapBlock(f, channel));
+			postfixPl = new MmapIntList(mapBlock(f, channel));
+			prefixTrie = new MmapTrie(mapBlock(f, channel));
+			postfixTrie = new MmapTrie(mapBlock(f, channel));
 		}
+	}
+
+	/**
+	 * Создает словарь из {@link InputStream}'а. Данный метод выделяет память под словарь в heap-памяти.
+	 *
+	 * @param inputStream поток с данными словаря спозиционированный в начале файла
+	 */
+	public MmapDictionary(InputStream inputStream) throws IOException {
+		if (inputStream == null) {
+			throw new NullPointerException("No input stream provided");
+		}
+		flexions = new MmapFlexionList(readBlock(inputStream));
+		wordBaseToFlexion = new MmapFixedWidthIntBlock(readBlock(inputStream));
+		prefixPl = new MmapIntList(readBlock(inputStream));
+		postfixPl = new MmapIntList(readBlock(inputStream));
+		prefixTrie = new MmapTrie(readBlock(inputStream));
+		postfixTrie = new MmapTrie(readBlock(inputStream));
 	}
 
 	private ByteBuffer mapBlock(RandomAccessFile f, FileChannel channel) throws IOException {
@@ -58,6 +66,18 @@ public class MmapDictionary {
 		f.seek(start + length);
 
 		return channel.map(READ_ONLY, start, length);
+	}
+
+	private static ByteBuffer readBlock(InputStream in) throws IOException {
+		DataInputStream input = new DataInputStream(in);
+		int header = input.readInt();
+		if (header != 0xDEADC0DE) {
+			throw new IllegalStateException("Incorrect block header");
+		}
+		int length = input.readInt();
+		ByteBuffer buffer = ByteBuffer.allocate(length);
+		input.readFully(buffer.array());
+		return buffer;
 	}
 
 	public int countWords(String word) {
@@ -152,34 +172,34 @@ public class MmapDictionary {
 		char c;
 		switch (length % 10) {
 			case 0:
-				c='0';
+				c = '0';
 				break;
 			case 1:
-				c='1';
+				c = '1';
 				break;
 			case 2:
-				c='2';
+				c = '2';
 				break;
 			case 3:
-				c='3';
+				c = '3';
 				break;
 			case 4:
-				c='4';
+				c = '4';
 				break;
 			case 5:
-				c='5';
+				c = '5';
 				break;
 			case 6:
-				c='6';
+				c = '6';
 				break;
 			case 7:
-				c='7';
+				c = '7';
 				break;
 			case 8:
-				c='8';
+				c = '8';
 				break;
 			case 9:
-				c='9';
+				c = '9';
 				break;
 			default:
 				throw new IllegalStateException("Ooops");

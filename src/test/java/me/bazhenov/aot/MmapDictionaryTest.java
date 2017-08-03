@@ -3,7 +3,9 @@ package me.bazhenov.aot;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
 
 import static me.bazhenov.aot.MmapDictionaryCompilerTest.dictionaryFile;
@@ -19,6 +21,28 @@ public class MmapDictionaryTest {
 	@BeforeMethod
 	public void setUp() throws IOException {
 		d = createDictionary();
+	}
+
+	@SuppressWarnings("ConstantConditions")
+	@Test
+	public void createDictionaryFromInputStream() {
+		try (FileInputStream stream = new FileInputStream(dictionaryFile)) {
+			d = new MmapDictionary(stream);
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+		assertThat(d.countWords("краснеющий"), is(1));
+		assertThat(d.countWords("дорога"), is(2));
+		assertThat(d.countWords("клавиатура"), is(1));
+	}
+
+	@SuppressWarnings("ConstantConditions")
+	@Test
+	public void createDictionaryFromDefaultStream() throws IOException {
+		d = new MmapDictionary();
+		assertThat(d.countWords("краснеющий"), is(1));
+		assertThat(d.countWords("дорога"), is(2));
+		assertThat(d.countWords("клавиатура"), is(1));
 	}
 
 	@Test
