@@ -1,5 +1,7 @@
 package cf.demidko.aot;
 
+// Флексия --
+//   лемма + информация о грамматических характеристиках которые были примнены к лемме
 public class Flexion {
 
 	public final String lemma;

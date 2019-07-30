@@ -21,6 +21,7 @@ public class LemmasStorage {
 	private final char[] resultBuffer = new char[36];
 	private int resIndex;
 
+	// Принимает иднекс леммы
 	public String get(final int requestIndex) {
 		resIndex = -1;
 		for (final byte b : strings[requestIndex]) {
@@ -41,13 +42,13 @@ public class LemmasStorage {
 		try (final InputStream lemmasReader = getClass().getResourceAsStream("/lemmas.bin")) {
 			final byte[] buf = new byte[36];
 			int bufIndex = -1;
+			final byte endl = 95;
 			while (true) {
 				final byte currentByte = (byte) lemmasReader.read();
 				if (currentByte == 0) {
 					break;
 				}
-				// байт 95 разделяет массивы из байт Lemmas
-				if (currentByte == 95) {
+				if (currentByte == endl) {
 					addBinaryString(Arrays.copyOf(buf, bufIndex + 1));
 					bufIndex = -1;
 					continue;

@@ -19,6 +19,7 @@ public class FlexionStorage {
 
 	private final Map<Integer, int[]> flexionsData = new HashMap<>();
 
+	// Принимает слово, возвращает массив флексий, которыми может быть это слово.
 	public Flexion[] get(final String str) {
 		final int[] pointers = flexionsData.get(
 			str.toLowerCase()
@@ -41,7 +42,8 @@ public class FlexionStorage {
 	public FlexionStorage() throws IOException {
 		try (final InputStream flexionsReader = getClass().getResourceAsStream("/flexions.bin")) {
 			final byte[] keybuf = new byte[4], lemmapointer = new byte[4], infopointer = new byte[4];
-			for (int i = 0; i < 5017012; ++i) {
+			// магическое число всех лемм в бинарном файле
+			for (int i = 0; i < 5_017_012; ++i) {
 
 				if (flexionsReader.read(keybuf) != 4) {
 					throw new UncheckedIOException(new IOException());

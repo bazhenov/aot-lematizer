@@ -19,6 +19,7 @@ public class GrammarStorage {
 
 	}
 
+	// Принимает индекс строки с информацией
 	public GrammarInfo[] get(final int requestIndex) {
 		return infoLines[requestIndex];
 	}
@@ -26,14 +27,14 @@ public class GrammarStorage {
 	public GrammarStorage() throws IOException {
 		try (final InputStream grammarReader = getClass().getResourceAsStream("/grammar.bin")) {
 			final byte[] buf = new byte[12];
+			final byte endl = 95;
 			int bufIndex = -1;
 			while (true) {
 				final byte currentByte = (byte) grammarReader.read();
 				if (currentByte == 0) {
 					break;
 				}
-				// байт 95 разделяет массивы из байт GrammarInfo
-				if (currentByte == 95) {
+				if (currentByte == endl) {
 					addBinaryEnums(Arrays.copyOf(buf, bufIndex + 1));
 					bufIndex = -1;
 					continue;
