@@ -1,4 +1,4 @@
-package cf.demidko.bflexion;
+package cf.demidko.aot;
 
 import org.testng.annotations.Test;
 
@@ -9,7 +9,7 @@ import java.util.Set;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-import static cf.demidko.bflexion.FlexionStorageTest.*;
+import static cf.demidko.aot.FlexionStorageTest.*;
 
 public class FlexionStorageNewFeaturesTest {
 

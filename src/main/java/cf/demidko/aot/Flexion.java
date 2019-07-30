@@ -1,4 +1,4 @@
-package cf.demidko.bflexion;
+package cf.demidko.aot;
 
 public class Flexion {
 

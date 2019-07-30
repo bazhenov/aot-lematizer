@@ -1,4 +1,4 @@
-package me.bazhenov;
+package me.bazhenov.aot;
 
 public class Utils {
 

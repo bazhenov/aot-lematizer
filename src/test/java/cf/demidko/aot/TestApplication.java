@@ -1,4 +1,4 @@
-package cf.demidko.bflexion;
+package cf.demidko.aot;
 
 import java.io.BufferedReader;
 import java.io.IOException;

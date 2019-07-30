@@ -1,4 +1,4 @@
-package cf.demidko.bflexion;
+package cf.demidko.aot;
 
 import org.testng.annotations.Test;
 

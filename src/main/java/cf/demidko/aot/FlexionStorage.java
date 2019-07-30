@@ -1,4 +1,4 @@
-package cf.demidko.bflexion;
+package cf.demidko.aot;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,7 +20,11 @@ public class FlexionStorage {
 	private final Map<Integer, int[]> flexionsData = new HashMap<>();
 
 	public Flexion[] get(final String str) {
-		final int[] pointers = flexionsData.get(str.toLowerCase().replace('ё', 'е').hashCode());
+		final int[] pointers = flexionsData.get(
+			str.toLowerCase()
+				.replace('ё', 'е')
+				.hashCode()
+		);
 		if (pointers == null) {
 			return new Flexion[0];
 		}
