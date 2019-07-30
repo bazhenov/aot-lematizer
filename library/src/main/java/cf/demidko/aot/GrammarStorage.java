@@ -16,7 +16,6 @@ public class GrammarStorage {
 		for (int i = 0; i < enums.length; ++i) {
 			infoLines[dataIndex][i] = GrammarInfo.fromByte(enums[i]);
 		}
-
 	}
 
 	// Принимает индекс строки с информацией
