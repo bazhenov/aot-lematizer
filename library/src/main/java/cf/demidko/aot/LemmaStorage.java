@@ -23,6 +23,9 @@ public class LemmaStorage {
 
 	// Принимает индекс леммы
 	public String get(final int requestIndex) {
+
+		//changing
+
 		resIndex = -1;
 		for (final byte b : strings[requestIndex]) {
 			resultBuffer[++resIndex] = Utils.byteToChar(b);
@@ -36,6 +39,7 @@ public class LemmaStorage {
 			res[i] = Utils.byteToChar(src[i]);
 		}
 		return new String(res);*/
+
 	}
 
 	public LemmaStorage() throws IOException {
