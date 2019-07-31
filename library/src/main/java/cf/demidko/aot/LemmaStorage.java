@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-public class LemmasStorage {
+public class LemmaStorage {
 
 	private final byte[][] strings = new byte[171365][];
 
@@ -21,7 +21,7 @@ public class LemmasStorage {
 	private final char[] resultBuffer = new char[36];
 	private int resIndex;
 
-	// Принимает иднекс леммы
+	// Принимает индекс леммы
 	public String get(final int requestIndex) {
 		resIndex = -1;
 		for (final byte b : strings[requestIndex]) {
@@ -38,7 +38,7 @@ public class LemmasStorage {
 		return new String(res);*/
 	}
 
-	public LemmasStorage() throws IOException {
+	public LemmaStorage() throws IOException {
 		try (final InputStream lemmasReader = getClass().getResourceAsStream("/lemmas.bin")) {
 			final byte[] buf = new byte[36];
 			int bufIndex = -1;

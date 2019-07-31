@@ -7,7 +7,7 @@ import java.util.*;
 
 public class FlexionStorage {
 
-	private static int intFromBytes(byte[] b) {
+	private static int intFromBytes(final byte[] b) {
 		return b[3] & 0xFF |
 			(b[2] & 0xFF) << 8 |
 			(b[1] & 0xFF) << 16 |
@@ -15,7 +15,7 @@ public class FlexionStorage {
 	}
 
 	private final GrammarStorage grammarStorage = new GrammarStorage();
-	private final LemmasStorage lemmasStorage = new LemmasStorage();
+	private final LemmaStorage lemmaStorage = new LemmaStorage();
 
 	private final Map<Integer, int[]> flexionsData = new HashMap<>();
 
@@ -32,7 +32,7 @@ public class FlexionStorage {
 		final Flexion[] results = new Flexion[pointers.length / 2];
 		for (int i = 0, j = 0; i < pointers.length; i += 2, ++j) {
 			results[j] = new Flexion(
-				lemmasStorage.get(pointers[i]),
+				lemmaStorage.get(pointers[i]),
 				grammarStorage.get(pointers[i + 1])
 			);
 		}
