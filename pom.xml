@@ -16,6 +16,7 @@
 	<modules>
 		<module>library</module>
 		<module>bencmark</module>
+		<module>testapp</module>
 	</modules>
 
 	<build>
