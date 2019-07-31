@@ -33,8 +33,8 @@ public class LookupBenchmark {
 			.timeUnit(MILLISECONDS)
 			.build();
 		new Runner(opt).run();
-	}
 
+	}
 
 	@Benchmark
 	public void lookup(WordList list, Holder holder) {
