@@ -17,7 +17,7 @@ public class LemmaStorage {
 		strings[++currentItem] = str;
 	}
 
-	// оптимизация чтобы не выделять каждый раз память под буффер юникоднгых символов
+	// оптимизация чтобы не выделять каждый раз память под буффер юникодных символов
 	private final char[] resultBuffer = new char[36];
 	private int resIndex;
 
