@@ -1,4 +1,4 @@
-package me.bazhenov.aot;
+package cf.demidko.aot;
 
 public class Utils {
 

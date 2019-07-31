@@ -1,6 +1,6 @@
 package cf.demidko.aot;
 
-import me.bazhenov.aot.Utils;
+import me.bazhenov.aot
 
 import java.io.IOException;
 import java.io.InputStream;
