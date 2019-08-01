@@ -1,4 +1,4 @@
-package cf.demidko.aot;
+package com.farpost.aot;
 
 import me.bazhenov.aot.Utils;
 

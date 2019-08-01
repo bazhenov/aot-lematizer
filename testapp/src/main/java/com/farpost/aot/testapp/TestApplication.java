@@ -1,13 +1,11 @@
-package cf.demidko.aot.testapp;
+package com.farpost.aot.testapp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
-import cf.demidko.aot.Flexion;
-import cf.demidko.aot.FlexionStorage;
+import com.farpost.aot.Flexion;
+import com.farpost.aot.FlexionStorage;
 
 public class TestApplication {
 

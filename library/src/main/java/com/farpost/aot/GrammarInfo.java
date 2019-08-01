@@ -1,4 +1,4 @@
-package cf.demidko.aot;
+package com.farpost.aot;
 
 public enum GrammarInfo {
 

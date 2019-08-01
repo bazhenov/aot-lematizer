@@ -1,6 +1,5 @@
-package cf.demidko.aot.bencmarks;
+package com.farpost.aot;
 
-import cf.demidko.aot.FlexionStorage;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Mode;

@@ -1,4 +1,4 @@
-package cf.demidko.aot;
+package com.farpost.aot;
 
 import java.io.IOException;
 import java.io.InputStream;

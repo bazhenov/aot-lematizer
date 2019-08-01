@@ -1,4 +1,4 @@
-package cf.demidko.aot;
+package com.farpost.aot;
 
 import org.testng.annotations.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
