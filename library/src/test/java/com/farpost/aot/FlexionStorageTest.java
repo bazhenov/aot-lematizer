@@ -52,7 +52,7 @@ public class FlexionStorageTest {
 	}
 
 	@Test
-	public void shouldNotThrowExceptionIfWordHasUnknownCharacter() throws IOException {
+	public void shouldNotThrowExceptionIfWordHasUnknownCharacter()  {
 		assertThat(map.get("super#starnge@string").length, is(0));
 	}
 
@@ -79,7 +79,7 @@ public class FlexionStorageTest {
 	}
 
 	@Test
-	public void dictionaryShouldBeAbleToReturnWordNormsForEmptyBases() throws IOException {
+	public void dictionaryShouldBeAbleToReturnWordNormsForEmptyBases()  {
 		Set<String> norms = collectLemmas(map.get("люди"));
 		assertThat(norms, hasSize(1));
 		assertThat(norms, hasItems("человек"));

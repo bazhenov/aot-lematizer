@@ -27,12 +27,14 @@ for(var flexion: flexions) {
   var sourceLemmaString = flexion.lemma;
 
   // массив грамматической информации слова
-  // (если применить ее к лемме, по правилам русского языка получается искомое слово "дорога")
+  // (если применить ее к лемме, 
+  //  по правилам русского языка получается искомое слово "дорога")
   var grammarInfoArray = flexion.grammarInfo;
   
   // выводим на экран лемму
   System.out.println(lemma);
-  // делаем разные действия в зависимости от грамматических характеристик слова
+  // делаем разные действия 
+  // в зависимости от грамматических характеристик слова
   for(var inf: grammarInfoArray) {
     case GrammarInfo.Noun:
       // *** //
@@ -49,3 +51,4 @@ for(var flexion: flexions) {
 ### Полезные ссылки:
 * [Описание исходного формата словаря, из которого взяты слова](http://phpmorphy.sourceforge.net/dokuwiki/manual-graminfo)  
 * [Аббревиатуры, использованые в перечислении GrammarInfo](https://sourceforge.net/p/seman/svn/HEAD/tree/trunk/Docs/Morph_UNIX.txt)
+* [Консольное приложение использующее aot-lemmatizer](https://github.com/demidko/aot-lematizer/blob/master/testapp/src/main/java/com/farpost/aot/testapp/TestApplication.java)

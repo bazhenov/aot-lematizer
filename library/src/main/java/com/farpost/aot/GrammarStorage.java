@@ -8,21 +8,6 @@ public class GrammarStorage {
 
 	private final GrammarInfo[][] infoLines = new GrammarInfo[722][];
 
-	// это поле нужно методу addBinaryEnums;
-	private int dataIndex = -1;
-
-	private void addBinaryEnums(final byte[] enums) {
-		infoLines[++dataIndex] = new GrammarInfo[enums.length];
-		for (int i = 0; i < enums.length; ++i) {
-			infoLines[dataIndex][i] = GrammarInfo.fromByte(enums[i]);
-		}
-	}
-
-	// Принимает индекс строки с информацией
-	public GrammarInfo[] get(final int requestIndex) {
-		return infoLines[requestIndex];
-	}
-
 	public GrammarStorage() throws IOException {
 		try (final InputStream grammarReader = getClass().getResourceAsStream("/grammar.bin")) {
 			final byte[] buf = new byte[12];
@@ -41,5 +26,23 @@ public class GrammarStorage {
 				buf[++bufIndex] = currentByte;
 			}
 		}
+	}
+
+	// это поле нужно методу addBinaryEnums;
+	private int dataIndex = -1;
+
+	private void addBinaryEnums(final byte[] enums) {
+		infoLines[++dataIndex] = new GrammarInfo[enums.length];
+		for (int i = 0; i < enums.length; ++i) {
+			infoLines[dataIndex][i] = GrammarInfo.fromByte(enums[i]);
+		}
+	}
+
+	/**
+	 * @param requestIndex индекс массива с инфоромаций
+	 * @return массив грамматической информации
+	 */
+	public GrammarInfo[] get(final int requestIndex) {
+		return infoLines[requestIndex];
 	}
 }

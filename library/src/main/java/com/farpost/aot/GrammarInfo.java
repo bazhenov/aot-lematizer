@@ -1,5 +1,8 @@
 package com.farpost.aot;
 
+// Ни в коем случае нельзя меня порядок в этом перечислении
+// От этого зависит корректность считывания данных из ресурсов.
+
 public enum GrammarInfo {
 
 	Plural("мн"),
@@ -76,16 +79,16 @@ public enum GrammarInfo {
 
 	private final String token;
 
+	GrammarInfo(final String token) {
+		this.token = token;
+	}
+
 	@Override
 	public String toString() {
 		return token;
 	}
 
 	public static GrammarInfo fromByte(final byte i) {
-		return values()[i - 1];
-	}
-
-	GrammarInfo(final String token) {
-		this.token = token;
+		return values()[i];
 	}
 }
