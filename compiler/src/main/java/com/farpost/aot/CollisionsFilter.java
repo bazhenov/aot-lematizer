@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 public class CollisionsFilter {
 
 	public static class Result {
+
 		public final List<Flexion> removedCollisions;
 		public final Set<Integer> collisionHashes;
 
@@ -35,8 +36,8 @@ public class CollisionsFilter {
 		var collisions = new ArrayList<Flexion>();
 		var collisionHashes = new HashSet<Integer>();
 
-		for(var hashAndList: hashToFlex.entrySet()) {
-			if(isCollision(hashAndList.getValue())) {
+		for (var hashAndList : hashToFlex.entrySet()) {
+			if (isCollision(hashAndList.getValue())) {
 
 				collisionHashes.add(hashAndList.getKey());
 				collisions.addAll(hashAndList.getValue());

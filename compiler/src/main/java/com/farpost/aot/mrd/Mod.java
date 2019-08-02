@@ -1,10 +1,5 @@
 package com.farpost.aot.mrd;
 
-
-/// Класс отвечает за модификацию основы слова
-
-import java.util.Map;
-
 public class Mod {
 
 	public final String postfix, prefix;
@@ -13,7 +8,7 @@ public class Mod {
 	public Mod(final String postfix, final int infoIndex, final String prefix) {
 		this.grammarInfoLineIndex = infoIndex;
 		this.postfix = postfix.toLowerCase().replace('ё', 'е');
-		this.prefix =  prefix == null? null: prefix.toLowerCase().replace('ё', 'е');
+		this.prefix = prefix == null ? null : prefix.toLowerCase().replace('ё', 'е');
 	}
 
 	public Mod(final String postfix, final int infoIndex) {
@@ -21,6 +16,7 @@ public class Mod {
 	}
 
 	public static class ApplyResult {
+
 		public final int infoLineIndex;
 		public final String flexion;
 
@@ -36,7 +32,7 @@ public class Mod {
 			res.append(prefix);
 		}
 		// Если у слова изменяемая основа, то
-		if(!base.startsWith("#")) {
+		if (!base.startsWith("#")) {
 			res.append(base.toLowerCase().replace('ё', 'е'));
 		}
 		return new ApplyResult(res.append(postfix).toString(), grammarInfoLineIndex);

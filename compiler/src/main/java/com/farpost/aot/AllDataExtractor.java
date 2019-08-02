@@ -24,7 +24,7 @@ public class AllDataExtractor {
 	private List<Paradigm> parseParadigms(final Reader reader, final Parser parser) throws IOException {
 		final var len = reader.readLong();
 		final var res = new ArrayList<Paradigm>();
-		for(var i = 0; i < len; ++i) {
+		for (var i = 0; i < len; ++i) {
 			res.add(parser.parseParadigm(reader.readLine()));
 		}
 		reader.skipSection();
@@ -40,10 +40,10 @@ public class AllDataExtractor {
 		final var len = reader.readLong();
 
 		final var collector = new UniqueLemmasCollector(allUniqueLemmas);
-		for(var i = 0; i < len; ++i) {
+		for (var i = 0; i < len; ++i) {
 			final var line = reader.readLine();
 			// фильтр метапостфиксов
-			if(line.startsWith("-")) {
+			if (line.startsWith("-")) {
 				continue;
 			}
 			final var tokens = line.split(" ");

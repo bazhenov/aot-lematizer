@@ -18,7 +18,7 @@ public final class Compiler {
 
 	public static byte[] complieGrammarInfoLine(final List<GrammarInfo> line) {
 		final var res = new byte[line.size()];
-		for(var i = 0; i < res.length; ++i) {
+		for (var i = 0; i < res.length; ++i) {
 			res[i] = line.get(i).toByte();
 		}
 		return res;
@@ -26,7 +26,7 @@ public final class Compiler {
 
 	public static byte[] complieString(final String s) {
 		final var res = new byte[s.length()];
-		for(var i = 0; i < res.length; ++i) {
+		for (var i = 0; i < res.length; ++i) {
 			res[i] = complieChar(s.charAt(i));
 		}
 		return res;

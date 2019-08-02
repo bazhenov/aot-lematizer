@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UniqueLemmasCollector {
+
 	public final List<String> uniqueLemmas;
 
 	public UniqueLemmasCollector(final List<String> ref) {
@@ -17,7 +18,7 @@ public class UniqueLemmasCollector {
 	// принимает лемму, возвращает ее индекс в массиве уникальных лемм
 	public int getIndexOfLemma(final String lemma) {
 		final int fix = uniqueLemmas.indexOf(lemma);
-		if(fix == -1) {
+		if (fix == -1) {
 			uniqueLemmas.add(lemma);
 			return uniqueLemmas.size() - 1;
 		}

@@ -1,8 +1,7 @@
 package com.farpost.aot.mrd;
 
-import static com.farpost.aot.Compiler.*;
-
 public class Flexion {
+
 	public final int flexionHash, uniqueLemmaIndex, grammarInfoIndex;
 	public final String sourceString;
 
