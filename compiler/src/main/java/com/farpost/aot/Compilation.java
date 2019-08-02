@@ -37,6 +37,7 @@ public final class Compilation {
 	}
 
 	private static void compileCollisionHashes(Set<Integer> hashes) throws IOException {
+		System.out.println("Компилируем хеши коллизионных флексий...");
 		try (var writer = new DataOutputStream(new FileOutputStream("hashes.bin"))) {
 			writer.writeInt(hashes.size());
 			for (var hash : hashes) {
@@ -46,6 +47,9 @@ public final class Compilation {
 	}
 
 	private static void complieCollisionFlexions(List<Flexion> flexions) throws IOException {
+		System.out.println("Обнаружено " + flexions.size() + " колллизий.");
+		System.out.println("Компилируем колизионные флексии...");
+
 		try (var writer = new DataOutputStream(new FileOutputStream("collisions.bin"))) {
 			writer.writeInt(flexions.size());
 			for (var i : flexions) {
@@ -55,23 +59,12 @@ public final class Compilation {
 				writer.writeInt(i.grammarInfoIndex);
 			}
 		}
+		System.out.println("Скомпилировано " + flexions.size() + " коллзионных флексий.");
 	}
 
-	private static void extractAndCompileCollisionFlexions(List<Flexion> flexions) throws IOException {
-		System.out.println("Извлекаем коллизионные флексии для отдельной компиляции...");
-		var res = CollisionsFilter.extractCollisions(flexions);
-		System.out.println("Обнаружено " + res.removedCollisions.size() + " колллизий.");
-		System.out.println("Компилируем хеши коллизионных флексий...");
-		compileCollisionHashes(res.collisionHashes);
-		System.out.println("Компилируем колизионные флексии...");
-		complieCollisionFlexions(res.removedCollisions);
-		System.out.println("Скомпилировано " + res.removedCollisions.size() + " коллзионных флексий.");
-	}
 
 	private static void compileFlexions(List<Flexion> flexions) throws IOException {
-		System.out.println("Всего в наличии " + flexions.size() + " флексий.");
-		extractAndCompileCollisionFlexions(flexions);
-		System.out.println("Компилируем остальные флексии...");
+		System.out.println("Компилируем нормальные флексии...");
 		try (final var writer = new DataOutputStream(new FileOutputStream("flexions.bin"))) {
 			writer.writeInt(flexions.size());
 			for (var i : flexions) {
@@ -88,6 +81,14 @@ public final class Compilation {
 		var data = new AllDataExtractor();
 		complieGrammarInfo(data.getGrammarInfoLines());
 		complieLemmas(data.getLemmas());
-		compileFlexions(data.getFlexions());
+
+		final var flexions = data.getFlexions();
+		System.out.println("Всего в наличии " + flexions.size() + " флексий.");
+		System.out.println("Извлекаем коллизионные флексии для отдельной компиляции...");
+		var res = CollisionsFilter.extractCollisions(flexions);
+
+		compileCollisionHashes(res.collisionHashes);
+		complieCollisionFlexions(res.removedCollisions);
+		compileFlexions(flexions);
 	}
 }
