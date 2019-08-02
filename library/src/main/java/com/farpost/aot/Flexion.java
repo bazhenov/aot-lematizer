@@ -2,11 +2,19 @@ package com.farpost.aot;
 
 import java.util.Objects;
 
-// Флексия --
-//   лемма + информация о грамматических характеристиках которые были примнены к лемме
+/**
+ * Флексия - лемма (изначальная форма слова) + грамматическая информация об вторичной форме слова
+ */
 public class Flexion {
 
+	/**
+	 * Лемма - исходная форма слова
+	 */
 	public final String lemma;
+	/**
+	 * Грамматическая информация в виде массива элементов перечисления.
+	 * (Информация именно о словоформе, а не о лемме, от которой было произведено слово).
+	 */
 	public final GrammarInfo[] grammarInfo;
 
 	public Flexion(final String lemma, final GrammarInfo[] grammarInfo) {

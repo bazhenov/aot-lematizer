@@ -1,48 +1,38 @@
 package com.farpost.aot;
 
-import me.bazhenov.aot.Utils;
-
+import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 
-import static com.farpost.aot.Utils.stringFromBytes;
+import static com.farpost.aot.Decompiler.isEndl;
+import static com.farpost.aot.Decompiler.stringFromBytes;
 
+/**
+ * Хранилище лемм, доступных по индексу
+ */
 public class LemmaStorage {
 
-	private final byte[][] strings = new byte[171365][];
-
-	// это поле нужно методу addBinaryString
-	private int currentItem = -1;
+	private final byte[][] lines;
 
 	public LemmaStorage() throws IOException {
-		try (final InputStream lemmasReader = getClass().getResourceAsStream("/lemmas.bin")) {
+		try(DataInputStream reader = new DataInputStream(getClass().getResourceAsStream("/lemmas.bin"))) {
+			lines = new byte[reader.readInt()][];
 			final byte[] buf = new byte[36];
-			int bufIndex = -1;
-			final byte endl = 95;
-			while (true) {
-				final byte currentByte = (byte) lemmasReader.read();
-				if (currentByte == 0) {
-					break;
+			for(int i = 0, bufIndex = 0; i < lines.length; ++i, bufIndex = 0) {
+				for(byte j = reader.readByte(); !isEndl(j); j = reader.readByte(), ++bufIndex) {
+					buf[bufIndex] = j;
 				}
-				if (currentByte == endl) {
-					addBinaryString(Arrays.copyOf(buf, bufIndex + 1));
-					bufIndex = -1;
-					continue;
-				}
-				buf[++bufIndex] = currentByte;
+				lines[i] = Arrays.copyOf(buf, bufIndex +1);
 			}
 		}
 	}
 
-	private void addBinaryString(final byte[] str) {
-		strings[++currentItem] = str;
-	}
-
 	/**
 	 * Принимает индекс леммы, возвращает лемму
- 	 */
-	public String get(final int requestIndex) {
-		return stringFromBytes(strings[requestIndex]);
+	 * @param requestedIndex индекс леммы
+	 * @return лемма
+	 */
+	public String get(final int requestedIndex) {
+		return stringFromBytes(lines[requestedIndex]);
 	}
 }

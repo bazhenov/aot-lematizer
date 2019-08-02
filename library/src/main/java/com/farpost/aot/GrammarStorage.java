@@ -1,48 +1,48 @@
 package com.farpost.aot;
 
+import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 
+import static com.farpost.aot.Decompiler.infoFromByte;
+import static com.farpost.aot.Decompiler.isEndl;
+
+/**
+ * Хранилище наборов грамматической информации, доступных по индексу.
+ */
 public class GrammarStorage {
 
-	private final GrammarInfo[][] infoLines = new GrammarInfo[722][];
+	private final GrammarInfo[][] lines;
 
 	public GrammarStorage() throws IOException {
-		try (final InputStream grammarReader = getClass().getResourceAsStream("/grammar.bin")) {
-			final byte[] buf = new byte[12];
-			final byte endl = 95;
-			int bufIndex = -1;
-			while (true) {
-				final byte currentByte = (byte) grammarReader.read();
-				if (currentByte == 0) {
-					break;
+
+		try (DataInputStream reader = new DataInputStream(getClass().getResourceAsStream("/grammar.bin"))) {
+			// считали количество строк
+			lines = new GrammarInfo[reader.readInt()][];
+
+			// буфер для строки
+			final GrammarInfo[] buf = new GrammarInfo[12];
+
+			for(int i = 0; i < lines.length; ++i) {
+
+				int bufIndex = -1;
+
+				// считываем строку
+				for(byte currentByte = reader.readByte(); !isEndl(currentByte); currentByte = reader.readByte()) {
+					buf[++bufIndex] = infoFromByte(currentByte);
 				}
-				if (currentByte == endl) {
-					addBinaryEnums(Arrays.copyOf(buf, bufIndex + 1));
-					bufIndex = -1;
-					continue;
-				}
-				buf[++bufIndex] = currentByte;
+
+				// копируем ее в соответствующий индекс масива строк
+				lines[i] = Arrays.copyOf(buf, bufIndex + 1);
 			}
 		}
 	}
 
-	// это поле нужно методу addBinaryEnums;
-	private int dataIndex = -1;
-
-	private void addBinaryEnums(final byte[] enums) {
-		infoLines[++dataIndex] = new GrammarInfo[enums.length];
-		for (int i = 0; i < enums.length; ++i) {
-			infoLines[dataIndex][i] = GrammarInfo.fromByte(enums[i]);
-		}
-	}
-
 	/**
-	 * @param requestIndex индекс массива с инфоромаций
-	 * @return массив грамматической информации
+	 * @param requestedIndex индекс строки с грамматической информацией
+	 * @return строка грамматической информации
 	 */
-	public GrammarInfo[] get(final int requestIndex) {
-		return infoLines[requestIndex];
+	public GrammarInfo[] get(final int requestedIndex) {
+		return lines[requestedIndex];
 	}
 }

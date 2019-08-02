@@ -10,7 +10,7 @@ public final class Compiler {
 	public static byte complieChar(final char n) {
 		switch (n) {
 			case '\n':
-				return 0;
+				return 95;
 			default:
 				return Utils.safeCharToByte(n);
 		}
