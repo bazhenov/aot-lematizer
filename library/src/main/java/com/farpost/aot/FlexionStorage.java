@@ -17,7 +17,7 @@ import java.util.*;
  */
 public class FlexionStorage {
 
-	// список хранилищ которые объединются здесь
+	// список хранилищ которые объединяются здесь
 	private final GrammarStorage grammarStorage = new GrammarStorage();
 	private final LemmaStorage lemmaStorage = new LemmaStorage();
 	private final CollisionHashStorage collisionHashStorage = new CollisionHashStorage();
@@ -86,7 +86,7 @@ public class FlexionStorage {
 		);
 		// если хеш колизионный
 		return get(collisionHashStorage.containsHash(trueHash) ?
-			// то получаем соответсвующие индексы напрмую по строке во избежание колиззий
+			// то получаем соответсвующие индексы напрямую по строке во избежание колиззий
 			collisionFlexionStorage.get(str) :
 			// если хеш нормальный, то получаем индексы по хешу
 			flexionStorageData.getOrDefault(trueHash, new int[0])
