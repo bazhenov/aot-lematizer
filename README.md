@@ -48,7 +48,7 @@ for(var flexion: flexions) {
 ```
 
 ### Полезные ссылки:
-* [Описание исходного формата словаря, из которого взяты слова](http://phpmorphy.sourceforge.net/dokuwiki/manual-graminfo)  
-* [Аббревиатуры, использованые в перечислении GrammarInfo](https://sourceforge.net/p/seman/svn/HEAD/tree/trunk/Docs/Morph_UNIX.txt)
+* [Аббревиатуры, использованые в перечислении GrammarInfo](http://phpmorphy.sourceforge.net/dokuwiki/manual-graminfo)  
+* [Описание исходного формата словаря, из которого взяты слова](https://sourceforge.net/p/seman/svn/HEAD/tree/trunk/Docs/Morph_UNIX.txt)
 * [Консольное приложение использующее aot-lemmatizer](https://github.com/demidko/aot-lematizer/blob/master/testapp/src/main/java/com/farpost/aot/TestApplication.java)
  
