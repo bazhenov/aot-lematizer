@@ -41,7 +41,7 @@ public final class Compilation {
 		try (var writer = new DataOutputStream(new FileOutputStream("hashes.bin"))) {
 			writer.writeInt(hashes.size());
 			for (var hash : hashes) {
-				writer.write(hash);
+				writer.writeInt(hash);
 			}
 		}
 	}
