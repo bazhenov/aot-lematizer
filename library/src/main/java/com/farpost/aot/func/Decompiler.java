@@ -10,6 +10,7 @@ import static me.bazhenov.aot.Utils.byteToChar;
 public final class Decompiler {
 
 	// оптимизация чтобы не выделять каждый раз память под буфер юникодных символов
+	// 36 - длина наибольшей флексии, поэтому больше нам и не потребуется
 	private static final char[] resultBuffer = new char[36];
 
 	/**
