@@ -44,10 +44,10 @@ public final class Compilation {
 				writer.writeInt(hash);
 			}
 		}
+		System.out.println("Скомпилировано " + hashes.size() + " колизионных хешей.");
 	}
 
 	private static void complieCollisionFlexions(List<Flexion> flexions) throws IOException {
-		System.out.println("Обнаружено " + flexions.size() + " колллизий.");
 		System.out.println("Компилируем колизионные флексии...");
 
 		try (var writer = new DataOutputStream(new FileOutputStream("collisions.bin"))) {
