@@ -1,5 +1,6 @@
 package com.farpost.aot;
 
+import com.farpost.aot.data.GrammarInfo;
 import org.hamcrest.Matchers;
 import org.testng.annotations.Test;
 

@@ -1,5 +1,12 @@
 package com.farpost.aot;
 
+import com.farpost.aot.data.Flexion;
+import com.farpost.aot.func.Hash;
+import com.farpost.aot.storages.CollisionFlexionStorage;
+import com.farpost.aot.storages.CollisionHashStorage;
+import com.farpost.aot.storages.GrammarStorage;
+import com.farpost.aot.storages.LemmaStorage;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.*;
@@ -22,7 +29,7 @@ public class FlexionStorage {
 
 	/**
 	 * Начало работы с бибилиотекой, должно начинаться с создания этого объекта
-	 * @throws IOException
+	 * @throws IOException исключение может возникнуть при чтении словаря из ресурсов.
 	 */
 	public FlexionStorage() throws IOException {
 		try (final DataInputStream reader = new DataInputStream(getClass().getResourceAsStream("/flexions.bin"))) {

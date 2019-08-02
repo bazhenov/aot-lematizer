@@ -1,4 +1,4 @@
-package com.farpost.aot;
+package com.farpost.aot.func;
 
 /**
  * Статичный класс, а по сути, часть имени функции

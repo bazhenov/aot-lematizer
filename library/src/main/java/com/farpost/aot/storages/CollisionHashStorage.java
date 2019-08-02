@@ -1,4 +1,4 @@
-package com.farpost.aot;
+package com.farpost.aot.storages;
 
 import java.io.DataInputStream;
 import java.io.IOException;

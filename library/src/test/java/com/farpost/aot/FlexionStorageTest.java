@@ -1,5 +1,7 @@
 package com.farpost.aot;
 
+import com.farpost.aot.data.Flexion;
+import com.farpost.aot.data.GrammarInfo;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -39,12 +41,12 @@ public class FlexionStorageTest {
 	}
 
 	@Test
-	public void dictionaryShouldNotFindNotRealWords() throws IOException {
+	public void dictionaryShouldNotFindNotRealWords() {
 		assertThat(map.get("фентифлюшка").length, is(0));
 	}
 
 	@Test
-	public void testEmptyWordBases() throws IOException {
+	public void testEmptyWordBases() {
 		assertThat(map.get("человек").length, is(2)); // два падежа(им и рд)
 		assertThat(map.get("люди").length, is(1));
 		assertThat(map.get("ребёнок").length, is(1));
@@ -57,7 +59,7 @@ public class FlexionStorageTest {
 	}
 
 	@Test
-	public void dictionaryShouldBeAbleToReturnWordNorms() throws IOException {
+	public void dictionaryShouldBeAbleToReturnWordNorms() {
 		assertThat(collectLemmas(map.get("дорога")), hasItems("дорога", "дорогой"));
 		assertThat(collectLemmas(map.get("черномырдину")), hasItems("черномырдин"));
 	}
@@ -74,7 +76,7 @@ public class FlexionStorageTest {
 
 
 	@Test
-	public void regression2() throws IOException {
+	public void regression2() {
 		assertThat(collectLemmas(map.get("придет")), hasItems("прийти"));
 	}
 

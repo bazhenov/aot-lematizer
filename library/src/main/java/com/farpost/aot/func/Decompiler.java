@@ -1,11 +1,13 @@
-package com.farpost.aot;
+package com.farpost.aot.func;
+
+import com.farpost.aot.data.GrammarInfo;
 
 import static me.bazhenov.aot.Utils.byteToChar;
 
 /**
  * Класс хранит общую для всех информацию о преобразованиях из байтов в объекты
  */
-public class Decompiler {
+public final class Decompiler {
 
 	// оптимизация чтобы не выделять каждый раз память под буфер юникодных символов
 	private static final char[] resultBuffer = new char[36];

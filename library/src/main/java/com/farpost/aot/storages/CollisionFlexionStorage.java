@@ -1,11 +1,11 @@
-package com.farpost.aot;
+package com.farpost.aot.storages;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.*;
 
-import static com.farpost.aot.Decompiler.isEndl;
-import static com.farpost.aot.Decompiler.stringFromBytes;
+import static com.farpost.aot.func.Decompiler.isEndl;
+import static com.farpost.aot.func.Decompiler.stringFromBytes;
 
 /**
  * Класс - хранилище служебной информации о флексиях,
