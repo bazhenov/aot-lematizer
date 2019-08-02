@@ -22,7 +22,8 @@ public class LemmaStorage {
 				for(byte j = reader.readByte(); !isEndl(j); j = reader.readByte(), ++bufIndex) {
 					buf[bufIndex] = j;
 				}
-				lines[i] = Arrays.copyOf(buf, bufIndex +1);
+				//!!
+				lines[i] = Arrays.copyOf(buf, bufIndex);
 			}
 		}
 	}
