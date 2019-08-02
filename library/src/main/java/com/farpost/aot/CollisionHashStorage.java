@@ -6,9 +6,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Статичный класс, как обычно, является лишь частью имени функции
+ * Хранилище коллизионных хешей.
  */
-public final class CollisionHashStorage {
+public class CollisionHashStorage {
 	private final Set<Integer> hashes = new HashSet<>();
 
 	/**
