@@ -7,7 +7,7 @@
 ### Краткое описание.
 Библиотека принимает на вход форму слова и возвращает набор пар вида:  
 * Лемма (нормальная форма слова)
-* Грамматическая информация о переданной форме слова, в соответствии с леммой.
+* Грамматическая информация о переданной форме слова, в соответствии с леммой
 
 Например, рассмотрим слово "дорогой". Есть (как минимум) два варианта:
 * *исходная лемма*: дорога,  
@@ -51,7 +51,7 @@ for(var flexion: flexions) {
 ```
 
 ### Полезные ссылки:
-* [Аббревиатуры, использованые в перечислении GrammarInfo](http://phpmorphy.sourceforge.net/dokuwiki/manual-graminfo)  
-* [Описание исходного формата словаря, из которого взяты слова](https://sourceforge.net/p/seman/svn/HEAD/tree/trunk/Docs/Morph_UNIX.txt)
+* [Аббревиатуры использованые в перечислении GrammarInfo](http://phpmorphy.sourceforge.net/dokuwiki/manual-graminfo)  
+* [Описание исходного формата словаря](https://sourceforge.net/p/seman/svn/HEAD/tree/trunk/Docs/Morph_UNIX.txt)
 * [Консольное приложение использующее aot-lemmatizer](https://github.com/demidko/aot-lematizer/blob/master/testapp/src/main/java/com/farpost/aot/TestApplication.java)
  
