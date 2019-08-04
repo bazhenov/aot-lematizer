@@ -24,6 +24,7 @@
 ```
 var flexionStorage = new FlexionStorage();
 var flexions = flexionStorage.get("дорога");
+
 for(var flexion: flexions) {
 
   // исходная лемма из которой было образовано слово
@@ -46,7 +47,6 @@ for(var flexion: flexions) {
     default: 
       // *** //
   }
-  
 }
 ```
 
