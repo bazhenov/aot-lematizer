@@ -52,6 +52,10 @@ for(var flexion: flexions) {
 }
 ```
 
+### Особенности реализации.
+* Вввиду частого взаимозаменяемого использования в речи,  
+  буква ё рассматривается наравне с буквой е.
+
 ### Полезные ссылки:
 * [Аббревиатуры использованые в перечислении GrammarInfo](http://phpmorphy.sourceforge.net/dokuwiki/manual-graminfo)  
 * [Описание исходного формата словаря](https://sourceforge.net/p/seman/svn/HEAD/tree/trunk/Docs/Morph_UNIX.txt)
