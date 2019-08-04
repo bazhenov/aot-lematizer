@@ -37,9 +37,11 @@ for(var flexion: flexions) {
   
   // выводим на экран лемму
   System.out.println(lemma);
+  
   // делаем разные действия 
   // в зависимости от грамматических характеристик слова
   for(var inf: grammarInfoArray) {
+  
     case GrammarInfo.Noun:
       // *** //
     case GrammarInfo.ShortAdjective:
