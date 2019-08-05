@@ -13,6 +13,6 @@ public class FlexionTest {
 	public void toStringMethodTest() {
 		assertThat(
 			new Flexion("яблоко", new GrammarInfo[]{GrammarInfo.Noun}).toString(),
-			is(equalTo("яблоко(С)")));
+			is(equalTo("яблоко[С]")));
 	}
 }
