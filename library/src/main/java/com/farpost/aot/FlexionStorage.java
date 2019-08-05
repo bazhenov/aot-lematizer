@@ -79,17 +79,17 @@ public class FlexionStorage {
 	 * @param str флексия
 	 * @return набор информации лемма + грамматика
 	 */
-	public Flexion[] get(final String str) {
+	public Collection<Flexion> get(final String str) {
 		// получаем хеш по формуле использовавшейся при компиляции словаря
 		final int trueHash = Hash.fromString(
 			str.toLowerCase().replace('ё', 'е')
 		);
 		// если хеш колизионный
-		return get(collisionHashStorage.containsHash(trueHash) ?
+		return Arrays.asList(get(collisionHashStorage.containsHash(trueHash) ?
 			// то получаем соответсвующие индексы напрямую по строке во избежание колиззий
 			collisionFlexionStorage.get(str) :
 			// если хеш нормальный, то получаем индексы по хешу
 			flexionStorageData.getOrDefault(trueHash, new int[0])
-		);
+		));
 	}
 }

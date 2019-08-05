@@ -14,9 +14,8 @@ public class TestApplication {
                 new InputStreamReader(System.in))
         ) {
             while (true) {
-                System.out.println(Arrays.stream(
-                        flexionStorage.get(reader.readLine())
-                        ).collect(Collectors.toList())
+                System.out.println(
+                  flexionStorage.get(reader.readLine())
                 );
             }
         }

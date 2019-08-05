@@ -5,9 +5,7 @@ import com.farpost.aot.data.GrammarInfo;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -21,41 +19,39 @@ public class FlexionStorageTest {
 		map = new FlexionStorage();
 	}
 
-	public static Set<String> collectLemmas(final Flexion[] results) {
-		return Arrays.stream(results).map(x -> x.lemma).collect(Collectors.toSet());
+	public static Set<String> collectLemmas(final Collection<Flexion> results) {
+		return (results).stream().map(x -> x.lemma).collect(Collectors.toSet());
 	}
 
-	public static List<Set<GrammarInfo>> collectGrammarInfo(final Flexion[] results) {
-		return Arrays.stream(results)
-			.map(x ->
-				Arrays.stream(x.grammarInfo)
-					.collect(Collectors.toSet()))
+	public static List<Set<GrammarInfo>> collectGrammarInfo(final Collection<Flexion> results) {
+		return results.stream()
+			.map(x -> new HashSet<>(x.grammarInfo))
 			.collect(Collectors.toList());
 	}
 
 	@Test
 	public void createDictionaryFromDefaultStream() {
-		assertThat(map.get("краснеющий").length, is(2)); // 2 разных падежа
-		assertThat(map.get("дорога").length, is(2));
-		assertThat(map.get("клавиатура").length, is(1));
+		assertThat(map.get("краснеющий").size(), is(2)); // 2 разных падежа
+		assertThat(map.get("дорога").size(), is(2));
+		assertThat(map.get("клавиатура").size(), is(1));
 	}
 
 	@Test
 	public void dictionaryShouldNotFindNotRealWords() {
-		assertThat(map.get("фентифлюшка").length, is(0));
+		assertThat(map.get("фентифлюшка").size(), is(0));
 	}
 
 	@Test
 	public void testEmptyWordBases() {
-		assertThat(map.get("человек").length, is(2)); // два падежа(им и рд)
-		assertThat(map.get("люди").length, is(1));
-		assertThat(map.get("ребёнок").length, is(1));
-		assertThat(map.get("дети").length, is(1));
+		assertThat(map.get("человек").size(), is(2)); // два падежа(им и рд)
+		assertThat(map.get("люди").size(), is(1));
+		assertThat(map.get("ребёнок").size(), is(1));
+		assertThat(map.get("дети").size(), is(1));
 	}
 
 	@Test
-	public void shouldNotThrowExceptionIfWordHasUnknownCharacter()  {
-		assertThat(map.get("super#starnge@string").length, is(0));
+	public void shouldNotThrowExceptionIfWordHasUnknownCharacter() {
+		assertThat(map.get("super#starnge@string").size(), is(0));
 	}
 
 	@Test
@@ -71,7 +67,7 @@ public class FlexionStorageTest {
 
 	@Test
 	public void regression3() {
-		assertThat(map.get("и").length, is(2));
+		assertThat(map.get("и").size(), is(2));
 	}
 
 
@@ -81,7 +77,7 @@ public class FlexionStorageTest {
 	}
 
 	@Test
-	public void dictionaryShouldBeAbleToReturnWordNormsForEmptyBases()  {
+	public void dictionaryShouldBeAbleToReturnWordNormsForEmptyBases() {
 		Set<String> norms = collectLemmas(map.get("люди"));
 		assertThat(norms, hasSize(1));
 		assertThat(norms, hasItems("человек"));
