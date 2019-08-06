@@ -22,33 +22,35 @@
 ### Пример использования в коде:
 
 ```
+// Инициализируем хранилище информации
 var flexionStorage = new FlexionStorage();
-var flexions = flexionStorage.get("дорога");
 
+// Запрашиваем информацию по слову "дорогой"
+var flexions = flexionStorage.get("дорогой");
+
+// Обходим все варианты, чем может являться это слово
 for(var flexion: flexions) {
 
-  // исходная лемма из которой было образовано слово
+  // исходное слово, от которого образовано слово "дорогой" (лемма)
   var sourceLemmaString = flexion.lemma;
 
-  // массив грамматической информации слова
-  // (если применить ее к лемме, 
-  //  по правилам русского языка получается искомое слово "дорога")
+  // Набор всей грамматической информации о слове
+  // (если применить ее к лемме,
+  //  по правилам русского языка получается слово "дорогой")
   var grammarInfoArray = flexion.grammarInfo;
-  
-  // выводим на экран лемму
-  System.out.println(lemma);
   
   // делаем разные действия 
   // в зависимости от грамматических характеристик слова
-  for(var inf: grammarInfoArray) {
-  
-    case GrammarInfo.Noun:
-      // *** //
-    case GrammarInfo.ShortAdjective:
-      // *** //
-    default: 
+
+  if(flexion.is(GrammarInfo.Noun) {
+    // *** //
+  }
+
+  if(flexion.isNot(GrammarInfo.ShortAdjective) {
       // *** //
   }
+
+  // *** //
 }
 ```
 
