@@ -16,8 +16,11 @@ public class Tabfile {
 	public Tabfile() throws IOException {
 		final var reader = new Reader();
 		for (var line = reader.readLine(); line != null; line = reader.readLine()) {
+
+
 			allLines.add(parseInfo(line));
 			ancodeToLineIndex.put(parseAncode(line), allLines.size() - 1);
+
 		}
 		reader.close();
 	}
