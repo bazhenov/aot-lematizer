@@ -5,6 +5,9 @@ import me.bazhenov.Utils;
 
 import java.util.List;
 
+/**
+ * Класс отвечает за компиляцию разных сущностей в байты
+ */
 public final class Compiler {
 
 	public static byte complieChar(final char n) {

@@ -2,6 +2,10 @@ package com.farpost.aot.tab;
 
 import java.util.Arrays;
 
+/**
+ * В этом перечислении ни в коем случае нельзя менять порядок элементов.
+ * От этого зависит корректность компиляции и декомпиляции.
+ */
 public enum GrammarInfo {
 
 	Plural("мн"),
@@ -78,6 +82,10 @@ public enum GrammarInfo {
 
 	private final String token;
 
+	GrammarInfo(final String token) {
+		this.token = token;
+	}
+
 	@Override
 	public String toString() {
 		return token;
@@ -100,7 +108,5 @@ public enum GrammarInfo {
 		return (byte) Arrays.binarySearch(values(), this);
 	}
 
-	GrammarInfo(final String token) {
-		this.token = token;
-	}
+
 }

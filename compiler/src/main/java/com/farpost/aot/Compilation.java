@@ -9,8 +9,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Класс отвечает за процесс компиляции.
+ */
 public final class Compilation {
-
 
 	private static void complieLemmas(List<String> lemmas) throws IOException {
 		System.out.println("Компилируем леммы...");
