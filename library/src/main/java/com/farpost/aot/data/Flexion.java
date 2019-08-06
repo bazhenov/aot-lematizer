@@ -20,6 +20,10 @@ public class Flexion {
 	 */
 	public final Collection<GrammarInfo> allGrammarInfo;
 
+	public Flexion(final String lemma, final GrammarInfo[] allGrammarInfo) {
+		this.lemma = Objects.requireNonNull(lemma);
+		this.allGrammarInfo = Arrays.asList(Objects.requireNonNull(allGrammarInfo));
+	}
 
 	/**
 	 * Проверка что флексия характеризуется некой грамматической информацией
@@ -37,11 +41,6 @@ public class Flexion {
 	 */
 	public boolean isNot(final GrammarInfo info) {
 		return !allGrammarInfo.contains(info);
-	}
-
-	public Flexion(final String lemma, final GrammarInfo[] allGrammarInfo) {
-		this.lemma = Objects.requireNonNull(lemma);
-		this.allGrammarInfo = Arrays.asList(Objects.requireNonNull(allGrammarInfo));
 	}
 
 	@Override
