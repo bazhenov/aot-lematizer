@@ -62,4 +62,18 @@ for(var flexion: flexions) {
 * [Аббревиатуры использованые в перечислении GrammarInfo](http://phpmorphy.sourceforge.net/dokuwiki/manual-graminfo)  
 * [Описание исходного формата словаря](https://sourceforge.net/p/seman/svn/HEAD/tree/trunk/Docs/Morph_UNIX.txt)
 * [Консольное приложение использующее aot-lemmatizer](https://github.com/demidko/aot-lematizer/blob/master/testapp/src/main/java/com/farpost/aot/TestApplication.java)
+
+### TODO:
+
+1. Изменить выдачу следующим образом (пример для слова замок):  
+   <замок, [С, мр, ед, им], [С, мр, ед, вн]>  
+   <замок, [С, мр, ед, им], [С, мр, ед, вн]>  
+   <замокнуть, [Г, дст, прш, мр, ед]>  
+   
+2. Новая функция:  
+   На вход подается лемма, на выходе все словоформы с характеристиками.
+   
+3. Согласовать процесс компиляции:  
+   редактируемая база данных -> mrd формат -> бинарный формат.
+
  
