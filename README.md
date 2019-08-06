@@ -37,7 +37,7 @@ for(var flexion: flexions) {
   // Набор всей грамматической информации о слове
   // (если применить ее к лемме,
   //  по правилам русского языка получается слово "дорогой")
-  var grammarInfoArray = flexion.grammarInfo;
+  var grammarInfoArray = flexion.allGrammarInfo;
   
   // делаем разные действия 
   // в зависимости от грамматических характеристик слова
