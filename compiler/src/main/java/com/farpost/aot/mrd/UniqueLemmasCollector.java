@@ -1,6 +1,5 @@
 package com.farpost.aot.mrd;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class UniqueLemmasCollector {
@@ -15,13 +14,20 @@ public class UniqueLemmasCollector {
 		return uniqueLemmas.get(i);
 	}
 
-	// принимает лемму, возвращает ее индекс в массиве уникальных лемм
+	// принимает лемму, возвращает ее индекс в массиве лемм
 	public int getIndexOfLemma(final String lemma) {
-		final int fix = uniqueLemmas.indexOf(lemma);
+
+		// Этот код склеивал одинаковые леммы
+		/*final int fix = uniqueLemmas.indexOf(lemma);
 		if (fix == -1) {
 			uniqueLemmas.add(lemma);
 			return uniqueLemmas.size() - 1;
 		}
-		return fix;
+		return fix;*/
+
+		// Это новый код, он ничего не склеивает,
+		// ибо совпадающие леммы могут иметь несовпадающие наборы флексий
+		uniqueLemmas.add(lemma);
+		return uniqueLemmas.size() - 1;
 	}
 }

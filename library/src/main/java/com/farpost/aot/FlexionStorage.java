@@ -10,7 +10,10 @@ import com.farpost.aot.storages.LemmaStorage;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -69,7 +72,7 @@ public class FlexionStorage {
 	 */
 	private List<LemmaInfo> search(final int[] index) {
 
-		final Map<Integer, Set<Integer>>
+		final Map<Integer, List<FlexionInfo>>
 			lemmaIndexToFlexionsIndexes = new HashMap<>();
 
 		for (int i = 0, j = 0; i < index.length; i += 2, ++j) {
@@ -78,21 +81,13 @@ public class FlexionStorage {
 			final int indexOfGrammar = index[i + 1];
 
 			lemmaIndexToFlexionsIndexes
-				.computeIfAbsent(indexOfLemma, k -> new HashSet<>())
-				.add(indexOfGrammar);
+				.computeIfAbsent(indexOfLemma, k -> new ArrayList<>())
+				.add(new FlexionInfo(grammarStorage.get(indexOfGrammar)));
 		}
 
 		return lemmaIndexToFlexionsIndexes.entrySet().stream()
 			.map(i ->
-				new LemmaInfo(
-
-					lemmaStorage.get(i.getKey()),
-
-					i.getValue().stream()
-						.map(j -> new FlexionInfo(grammarStorage.get(j)))
-						.collect(Collectors.toList())
-
-				)
+				new LemmaInfo(lemmaStorage.get(i.getKey()), i.getValue())
 			)
 			.collect(Collectors.toList());
 	}

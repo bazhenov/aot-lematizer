@@ -1,5 +1,7 @@
 package com.farpost.aot;
 
+import com.farpost.aot.data.LemmaInfo;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,7 +14,9 @@ public class TestApplication {
 			new InputStreamReader(System.in)
 		)) {
 			while (true) {
-				System.out.println(flexionStorage.search(reader.readLine()));
+				for (final LemmaInfo i : flexionStorage.search(reader.readLine())) {
+					System.out.println(i);
+				}
 			}
 		}
 	}
