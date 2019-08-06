@@ -9,7 +9,10 @@ import com.farpost.aot.storages.LemmaStorage;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Этот класс не простое хранилище, а объединяющее звено для всех остальных.
@@ -86,7 +89,7 @@ public class FlexionStorage {
 		);
 		// если хеш колизионный
 		return Arrays.asList(get(collisionHashStorage.containsHash(trueHash) ?
-			// то получаем соответсвующие индексы напрямую по строке во избежание колиззий
+			// то получаем соответствующие индексы напрямую по строке во избежание колиззий
 			collisionFlexionStorage.get(str) :
 			// если хеш нормальный, то получаем индексы по хешу
 			flexionStorageData.getOrDefault(trueHash, new int[0])
