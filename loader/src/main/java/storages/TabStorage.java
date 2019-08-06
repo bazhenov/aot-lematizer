@@ -9,17 +9,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Хранилище грамматической информации
+ */
 public class TabStorage {
 
-	private final List<List<GrammarInfo>> lines = new ArrayList<>();
-	private final Map<String, Integer> indexes = new HashMap<>();
+	private final List<List<GrammarInfo>> allVariants = new ArrayList<>();
+	private final Map<String, Integer> index = new HashMap<>();
 
-	public List<List<GrammarInfo>> getAllLines() {
-		return lines;
+	/**
+	 * Возвращает список всех вариантов
+	 *
+	 * @return
+	 */
+	public List<List<GrammarInfo>> getAllVariants() {
+		return allVariants;
 	}
 
-	public int getLineIndex(final String ancode) {
-		return indexes.get(ancode);
+	/**
+	 * @param ancode строковый идентификатор
+	 * @return индекс варианта в списке вариантов
+	 */
+	public int getVariantIndex(final String ancode) {
+		return index.get(ancode);
 	}
 
 	public TabStorage() throws IOException {
