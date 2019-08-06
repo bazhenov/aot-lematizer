@@ -8,16 +8,16 @@ import java.util.stream.Collectors;
 
 public class TestApplication {
 
-    public static void main(String[] args) throws IOException {
-        final FlexionStorage flexionStorage = new FlexionStorage();
-        try (final BufferedReader reader = new BufferedReader(
-                new InputStreamReader(System.in))
-        ) {
-            while (true) {
-                System.out.println(
-                  flexionStorage.get(reader.readLine())
-                );
-            }
-        }
-    }
+	public static void main(String[] args) throws IOException {
+		final FlexionStorage flexionStorage = new FlexionStorage();
+		try (final BufferedReader reader = new BufferedReader(
+			new InputStreamReader(System.in)
+		)) {
+			while (true) {
+				System.out.println(
+					flexionStorage.get(reader.readLine())
+				);
+			}
+		}
+	}
 }

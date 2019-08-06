@@ -25,7 +25,7 @@ public class FlexionStorageTest {
 
 	public static List<Set<GrammarInfo>> collectGrammarInfo(final Collection<Flexion> results) {
 		return results.stream()
-			.map(x -> new HashSet<>(x.grammarInfo))
+			.map(x -> new HashSet<>(x.allGrammarInfo))
 			.collect(Collectors.toList());
 	}
 

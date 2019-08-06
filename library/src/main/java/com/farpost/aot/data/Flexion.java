@@ -2,7 +2,6 @@ package com.farpost.aot.data;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -19,26 +18,34 @@ public class Flexion {
 	 * Грамматическая информация в виде массива элементов перечисления.
 	 * (Информация именно о словоформе, а не о лемме, от которой было произведено слово).
 	 */
-	public final Collection<GrammarInfo> grammarInfo;
+	public final Collection<GrammarInfo> allGrammarInfo;
 
 
 	/**
-	 * Является ли флексия некой грамматической характеристикой
+	 * Проверка что флексия характеризуется некой грамматической информацией
 	 * Будь то падеж, склонение, род, число и так далее
 	 * @param info грамматическая характеристика
-	 * @return является или нет
 	 */
 	public boolean is(final GrammarInfo info) {
-		return grammarInfo.contains(info);
+		return allGrammarInfo.contains(info);
 	}
 
-	public Flexion(final String lemma, final GrammarInfo[] grammarInfo) {
+	/**
+	 * Проверка что флексия не характеризуется некой грамматической информацией
+	 * Будь то падеж, склонение, род, число и так далее
+	 * @param info грамматическая характеристика
+	 */
+	public boolean isNot(final GrammarInfo info) {
+		return !allGrammarInfo.contains(info);
+	}
+
+	public Flexion(final String lemma, final GrammarInfo[] allGrammarInfo) {
 		this.lemma = Objects.requireNonNull(lemma);
-		this.grammarInfo = Arrays.asList(Objects.requireNonNull(grammarInfo));
+		this.allGrammarInfo = Arrays.asList(Objects.requireNonNull(allGrammarInfo));
 	}
 
 	@Override
 	public String toString() {
-		return lemma + grammarInfo;
+		return lemma + allGrammarInfo;
 	}
 }
