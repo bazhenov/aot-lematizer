@@ -26,8 +26,8 @@ public class FlexionStorage {
 	private final Map<Integer, int[]> flexionStorageData = new HashMap<>();
 
 	/**
-	 * Начало работы с бибилиотекой, должно начинаться с создания этого объекта
-	 * @throws IOException исключение может возникнуть при чтении словаря из ресурсов.
+	 * Начало работы с библиотекой, должно начинаться с создания этого объекта
+	 * @throws IOException исключение может возникнуть при чтении словаря из ресурсов
 	 */
 	public FlexionStorage() throws IOException {
 		try (final DataInputStream reader = new DataInputStream(getClass().getResourceAsStream("/flexions.bin"))) {
@@ -57,7 +57,6 @@ public class FlexionStorage {
 	/**
 	 * Принимает индексы лемм и грамматики, возвращает набор флексий
 	 * Используется массив, так как число флексий заранее известно
-	 *
 	 * @param index индексы по порядку - лемма, грамматика, лемма, граматика, и т. д.
 	 * @return набор флексий
 	 */
