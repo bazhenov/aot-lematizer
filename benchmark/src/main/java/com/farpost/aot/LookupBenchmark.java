@@ -10,7 +10,8 @@ import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.GZIPInputStream;
 
@@ -37,7 +38,7 @@ public class LookupBenchmark {
 
 	@Benchmark
 	public void lookup(WordList list, Holder holder) {
-		holder.storage.get(list.nextWord);
+		holder.storage.search(list.nextWord);
 	}
 
 

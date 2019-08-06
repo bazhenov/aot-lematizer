@@ -6,12 +6,10 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
+import static com.farpost.aot.FlexionStorageTest.collectGrammarInfo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
-import static com.farpost.aot.FlexionStorageTest.*;
+import static org.hamcrest.Matchers.hasSize;
 
 public class FlexionStorageNewFeaturesTest {
 
@@ -23,7 +21,7 @@ public class FlexionStorageNewFeaturesTest {
 
 	@Test
 	public void grammarInfoIsCorrect1() {
-		final List<Set<GrammarInfo>> infoset = collectGrammarInfo(map.get("течь"));
+		final List<List<GrammarInfo>> infoset = collectGrammarInfo(map.search("течь"));
 		assertThat(infoset, hasSize(3));
 
 		assertThat(infoset.get(0), Matchers.containsInAnyOrder(
@@ -47,17 +45,17 @@ public class FlexionStorageNewFeaturesTest {
 
 	@Test
 	public void grammarInfoIsCorrect2() {
-		final List<Set<GrammarInfo>> infoset = collectGrammarInfo(map.get("дорога"));
+		final List<List<GrammarInfo>> infoset = collectGrammarInfo(map.search("дорога"));
 		assertThat(infoset, hasSize(2));
 
-		assertThat(infoset.get(0),
+		assertThat(infoset.get(1),
 			Matchers.containsInAnyOrder(
 				GrammarInfo.Noun,
 				GrammarInfo.Nominative,
 				GrammarInfo.Female,
 				GrammarInfo.Singular));
 
-		assertThat(infoset.get(1), Matchers.containsInAnyOrder(
+		assertThat(infoset.get(0), Matchers.containsInAnyOrder(
 			GrammarInfo.Singular,
 			GrammarInfo.ShortAdjective,
 			GrammarInfo.Female,

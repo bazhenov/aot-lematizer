@@ -3,8 +3,6 @@ package com.farpost.aot;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class TestApplication {
 
@@ -14,9 +12,7 @@ public class TestApplication {
 			new InputStreamReader(System.in)
 		)) {
 			while (true) {
-				System.out.println(
-					flexionStorage.get(reader.readLine())
-				);
+				System.out.println(flexionStorage.search(reader.readLine()));
 			}
 		}
 	}

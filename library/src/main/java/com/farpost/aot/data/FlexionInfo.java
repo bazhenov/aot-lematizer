@@ -1,34 +1,32 @@
 package com.farpost.aot.data;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Objects;
+import java.util.List;
 
 /**
- * Флексия -- лемма (изначальная форма слова) + грамматическая информация об вторичной форме слова
+ * Класс содержит информацию о флексии (но не саму флексию)
  */
-public class Flexion {
+public class FlexionInfo {
+
+	private final List<GrammarInfo> allGrammarInfo;
+
+	public FlexionInfo(final GrammarInfo[] allGrammarInfo) {
+		this.allGrammarInfo = Arrays.asList(allGrammarInfo);
+	}
 
 	/**
-	 * Лемма - исходная форма слова.
-	 * Иммутабельное поле.
+	 * Получить всю грамматическую информацию
+	 *
+	 * @return список перечислений GrammarInfo
 	 */
-	public final String lemma;
-
-	/**
-	 * Информации об запрошенной словоформе.
-	 * Иммутабельное поле.
-	 */
-	public final Collection<GrammarInfo> allGrammarInfo;
-
-	public Flexion(final String lemma, final GrammarInfo[] allGrammarInfo) {
-		this.lemma = Objects.requireNonNull(lemma);
-		this.allGrammarInfo = Arrays.asList(Objects.requireNonNull(allGrammarInfo));
+	public List<GrammarInfo> getAllGrammarInfo() {
+		return allGrammarInfo;
 	}
 
 	/**
 	 * Проверка что флексия характеризуется некой грамматической информацией,
 	 * будь то падеж, склонение, род, число и так далее
+	 *
 	 * @param info грамматическая характеристика
 	 */
 	public boolean is(final GrammarInfo info) {
@@ -47,6 +45,7 @@ public class Flexion {
 	/**
 	 * Проверка что флексия не характеризуется некой грамматической информацией,
 	 * будь то падеж, склонение, род, число и так далее.
+	 *
 	 * @param info грамматическая характеристика
 	 */
 	public boolean isNot(final GrammarInfo info) {
@@ -65,6 +64,6 @@ public class Flexion {
 
 	@Override
 	public String toString() {
-		return lemma + allGrammarInfo;
+		return allGrammarInfo.toString();
 	}
 }

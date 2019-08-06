@@ -1,6 +1,7 @@
 package com.farpost.aot;
 
-import com.farpost.aot.data.Flexion;
+import com.farpost.aot.data.FlexionInfo;
+import com.farpost.aot.data.LemmaInfo;
 import com.farpost.aot.func.Hash;
 import com.farpost.aot.storages.CollisionFlexionStorage;
 import com.farpost.aot.storages.CollisionHashStorage;
@@ -9,10 +10,8 @@ import com.farpost.aot.storages.LemmaStorage;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Этот класс не простое хранилище, а объединяющее звено для всех остальных.
@@ -30,10 +29,13 @@ public class FlexionStorage {
 
 	/**
 	 * Начало работы с библиотекой, должно начинаться с создания этого объекта
+	 *
 	 * @throws IOException исключение может возникнуть при чтении словаря из ресурсов
 	 */
 	public FlexionStorage() throws IOException {
-		try (final DataInputStream reader = new DataInputStream(getClass().getResourceAsStream("/flexions.bin"))) {
+		try (final DataInputStream reader = new DataInputStream(
+			getClass().getResourceAsStream("/flexions.bin")
+		)) {
 			// число всех лемм в бинарном файле
 			final int flexionsDataSize = reader.readInt();
 			for (int i = 0; i < flexionsDataSize; ++i) {
@@ -45,7 +47,8 @@ public class FlexionStorage {
 				final int[] oldValue = flexionStorageData.get(flexionHash);
 
 				if (oldValue == null) {
-					flexionStorageData.put(flexionHash, new int[]{indexOfLemma, indexOfGrammarData});
+					flexionStorageData.put(flexionHash,
+						new int[]{indexOfLemma, indexOfGrammarData});
 				} else {
 					final int[] joinedValue = new int[oldValue.length + 2];
 					System.arraycopy(oldValue, 0, joinedValue, 0, oldValue.length);
@@ -57,41 +60,77 @@ public class FlexionStorage {
 		}
 	}
 
-	/**
-	 * Принимает индексы лемм и грамматики, возвращает набор флексий
-	 * Используется массив, так как число флексий заранее известно
-	 * @param index индексы по порядку - лемма, грамматика, лемма, граматика, и т. д.
-	 * @return набор флексий
-	 */
-	private Flexion[] get(final int[] index) {
-		final Flexion[] results = new Flexion[index.length / 2];
-		for (int i = 0, j = 0; i < index.length; i += 2, ++j) {
-			results[j] = new Flexion(
-				lemmaStorage.get(index[i]),
-				grammarStorage.get(index[i + 1])
-			);
-		}
-		return results;
-	}
 
 	/**
-	 * Это центральный метод всей библиотеки.
-	 * Принимает строку, и если она является словоформой неких известных нам лемм,
-	 * то возвращет все эти леммы + набор грамматической информации для каждого случая.
-	 * @param str флексия
-	 * @return набор информации лемма + грамматика
+	 * Принимает индексы cтрок лемм и грамматики, возвращает набор уникальных лемм
+	 *
+	 * @param index индексы по порядку - строка леммы, грамматика, строка леммы, граматика, и т. д.
+	 * @return набор лемм
 	 */
-	public Collection<Flexion> get(final String str) {
+	private List<LemmaInfo> search(final int[] index) {
+
+		final Map<Integer, Set<Integer>>
+			lemmaIndexToFlexionsIndexes = new HashMap<>();
+
+		for (int i = 0, j = 0; i < index.length; i += 2, ++j) {
+
+			final int indexOfLemma = index[i];
+			final int indexOfGrammar = index[i + 1];
+
+			lemmaIndexToFlexionsIndexes
+				.computeIfAbsent(indexOfLemma, k -> new HashSet<>())
+				.add(indexOfGrammar);
+		}
+
+		return lemmaIndexToFlexionsIndexes.entrySet().stream()
+			.map(i ->
+				new LemmaInfo(
+
+					lemmaStorage.get(i.getKey()),
+
+					i.getValue().stream()
+						.map(j -> new FlexionInfo(grammarStorage.get(j)))
+						.collect(Collectors.toList())
+
+				)
+			)
+			.collect(Collectors.toList());
+	}
+
+
+	/**
+	 * Основной метод работы с библиотекой
+	 *
+	 * @param str строка флексии
+	 * @return набор уникальных лемм,
+	 * к каждой из которых прикреплена информация обо всех её флексиях,
+	 * совпавших (!) с изначально запрошенной.
+	 */
+	public List<LemmaInfo> search(final String str) {
 		// получаем хеш по формуле использовавшейся при компиляции словаря
 		final int trueHash = Hash.fromString(
 			str.toLowerCase().replace('ё', 'е')
 		);
 		// если хеш колизионный
-		return Arrays.asList(get(collisionHashStorage.containsHash(trueHash) ?
+		return search(collisionHashStorage.containsHash(trueHash) ?
 			// то получаем соответствующие индексы напрямую по строке во избежание колиззий
 			collisionFlexionStorage.get(str) :
 			// если хеш нормальный, то получаем индексы по хешу
 			flexionStorageData.getOrDefault(trueHash, new int[0])
-		));
+		);
 	}
+
+
+	/**
+	 * Основной метод работы с библиотекой
+	 *
+	 * @param str строка флексии
+	 * @return набор лемм,
+	 * которые (!) могут совпадать по написанию, но не по смыслу,
+	 * к каждой из которых прикреплена информация обо всех её флексиях,
+	 * совпавших (!) с изначально запрошенной.
+	 */
+	/*public List<LemmaInfo> searchLemmas(final String str) {
+		throw new UnsupportedOperationException();
+	}*/
 }
