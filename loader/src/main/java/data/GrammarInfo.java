@@ -1,7 +1,5 @@
 package data;
 
-import java.util.Arrays;
-
 /**
  * В этом перечислении ни в коем случае нельзя менять порядок элементов.
  * От этого зависит корректность компиляции и декомпиляции.
@@ -99,14 +97,4 @@ public enum GrammarInfo {
 		}
 		throw new IllegalArgumentException("Invalid token: " + token);
 	}
-
-	public static GrammarInfo fromByte(final byte i) {
-		return values()[i];
-	}
-
-	public byte toByte() {
-		return (byte) Arrays.binarySearch(values(), this);
-	}
-
-
 }
