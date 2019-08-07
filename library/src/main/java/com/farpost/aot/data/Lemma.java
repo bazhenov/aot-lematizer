@@ -14,6 +14,14 @@ public class Lemma {
 		this.flexions = flexions;
 	}
 
+	public String getSource() {
+		return src;
+	}
+
+	public List<GrammarInfo[]> getFlexions() {
+		return flexions;
+	}
+
 	@Override
 	public String toString() {
 		return
