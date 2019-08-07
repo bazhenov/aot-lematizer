@@ -16,27 +16,25 @@ public class GrammarStorage {
 
 	private final GrammarInfo[][] lines;
 
-	public GrammarStorage() throws IOException {
+	public GrammarStorage(final DataInputStream reader) throws IOException {
 
-		try (DataInputStream reader = new DataInputStream(getClass().getResourceAsStream("/grammar.bin"))) {
-			// считали количество строк
-			lines = new GrammarInfo[reader.readInt()][];
+		// считали количество строк
+		lines = new GrammarInfo[reader.readInt()][];
 
-			// буфер для строки
-			final GrammarInfo[] buf = new GrammarInfo[12];
+		// буфер для строки
+		final GrammarInfo[] buf = new GrammarInfo[12];
 
-			for(int i = 0; i < lines.length; ++i) {
+		for (int i = 0; i < lines.length; ++i) {
 
-				int bufIndex = -1;
+			int bufIndex = -1;
 
-				// считываем строку
-				for(byte currentByte = reader.readByte(); !isEndl(currentByte); currentByte = reader.readByte()) {
-					buf[++bufIndex] = infoFromByte(currentByte);
-				}
-
-				// копируем ее в соответствующий индекс масива строк
-				lines[i] = Arrays.copyOf(buf, bufIndex + 1);
+			// считываем строку
+			for (byte currentByte = reader.readByte(); !isEndl(currentByte); currentByte = reader.readByte()) {
+				buf[++bufIndex] = infoFromByte(currentByte);
 			}
+
+			// копируем ее в соответствующий индекс масива строк
+			lines[i] = Arrays.copyOf(buf, bufIndex + 1);
 		}
 	}
 

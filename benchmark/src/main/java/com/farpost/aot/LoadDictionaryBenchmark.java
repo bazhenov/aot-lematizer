@@ -17,6 +17,7 @@ public class LoadDictionaryBenchmark {
 		Options opt = new OptionsBuilder()
 			.mode(Mode.SingleShotTime)
 			.include(".*" + LoadDictionaryBenchmark.class.getSimpleName() + ".*")
+			.measurementIterations(10)
 			.forks(1)
 			.timeUnit(TimeUnit.SECONDS)
 			.build();
@@ -26,6 +27,6 @@ public class LoadDictionaryBenchmark {
 	@Benchmark
 	@BenchmarkMode(Mode.AverageTime)
 	public void allDataLoading() throws IOException {
-		new FlexionStorage();
+		new LemmaDictionary();
 	}
 }
