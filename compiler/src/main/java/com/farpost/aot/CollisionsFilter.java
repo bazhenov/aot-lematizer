@@ -1,6 +1,7 @@
 package com.farpost.aot;
 
-import com.farpost.aot.mrd.Flexion;
+
+import com.farpost.aot.data.Flexion;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,7 +21,7 @@ public class CollisionsFilter {
 
 	private static boolean isCollision(List<Flexion> flexionsWithOneHash) {
 		return flexionsWithOneHash.stream()
-			.map(x -> x.sourceString)
+			.map(x -> x.source)
 			.collect(Collectors.toSet())
 			.size() > 1;
 	}
@@ -29,7 +30,7 @@ public class CollisionsFilter {
 		var hashToFlex = new HashMap<Integer, List<Flexion>>();
 		for (var i : flexions) {
 			hashToFlex
-				.computeIfAbsent(i.flexionHash, k -> new ArrayList<>())
+				.computeIfAbsent(i.source.hashCode(), k -> new ArrayList<>())
 				.add(i);
 		}
 

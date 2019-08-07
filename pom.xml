@@ -18,6 +18,7 @@
 		<module>benchmark</module>
 		<module>testapp</module>
 		<module>compiler</module>
+		<module>loader</module>
 	</modules>
 
 

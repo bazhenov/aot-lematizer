@@ -32,11 +32,13 @@ public class LemmaInfo {
 
 	@Override
 	public String toString() {
-		final StringBuilder builder = new StringBuilder("{\n")
-			.append("  ").append(lemma).append('\n');
+		final StringBuilder builder = new StringBuilder()
+			.append('<').append(lemma);
+
 		for (final FlexionInfo i : flexionsInfo) {
-			builder.append("  ").append(i).append('\n');
+			builder.append(", ").append(i);
 		}
-		return builder.append("}").toString();
+
+		return builder.append('>').toString();
 	}
 }

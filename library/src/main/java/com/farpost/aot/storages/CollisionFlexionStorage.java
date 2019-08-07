@@ -2,7 +2,9 @@ package com.farpost.aot.storages;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.farpost.aot.func.Decompiler.isEndl;
 import static com.farpost.aot.func.Decompiler.stringFromBytes;
@@ -22,35 +24,35 @@ public class CollisionFlexionStorage {
 	 * @return индексы лемм и грамматической информации
 	 */
 	public int[] get(final String flexion) {
-		return map.getOrDefault(flexion, new int[0]);
+		return map.get(flexion);
 	}
 
-	public CollisionFlexionStorage() throws IOException {
-		try (DataInputStream reader = new DataInputStream(getClass().getResourceAsStream("/collisions.bin"))) {
-			final int count = reader.readInt();
-			for (int i = 0; i < count; ++i) {
+	public CollisionFlexionStorage(final DataInputStream reader) throws IOException {
+		final int count = reader.readInt();
+		for (int i = 0; i < count; ++i) {
 
-				final byte[] strbuf = new byte[36];
-				int strbufIndex = -1;
-				for (byte j = reader.readByte(); !isEndl(j); j = reader.readByte()) {
-					strbuf[++strbufIndex] = j;
-				}
+			final int lemmaIndex = reader.readInt();
+			final int grammarIndex = reader.readInt();
 
-				final String javaString = stringFromBytes(Arrays.copyOf(strbuf, strbufIndex + 1));
-				final int lemmaIndex = reader.readInt();
-				final int grammarIndex = reader.readInt();
+			final byte[] strbuf = new byte[36];
+			int strbufIndex = -1;
+			for (byte j = reader.readByte(); !isEndl(j); j = reader.readByte()) {
+				strbuf[++strbufIndex] = j;
+			}
 
-				final int[] oldValue = map.get(javaString);
+			final String javaString = stringFromBytes(Arrays.copyOf(strbuf, strbufIndex + 1));
 
-				if (oldValue == null) {
-					map.put(javaString, new int[]{lemmaIndex, grammarIndex});
-				} else {
-					final int[] joinedValue = new int[oldValue.length + 2];
-					System.arraycopy(oldValue, 0, joinedValue, 0, oldValue.length);
-					joinedValue[joinedValue.length - 2] = lemmaIndex;
-					joinedValue[joinedValue.length - 1] = grammarIndex;
-					map.put(javaString, joinedValue);
-				}
+
+			final int[] oldValue = map.get(javaString);
+
+			if (oldValue == null) {
+				map.put(javaString, new int[]{lemmaIndex, grammarIndex});
+			} else {
+				final int[] joinedValue = new int[oldValue.length + 2];
+				System.arraycopy(oldValue, 0, joinedValue, 0, oldValue.length);
+				joinedValue[joinedValue.length - 2] = lemmaIndex;
+				joinedValue[joinedValue.length - 1] = grammarIndex;
+				map.put(javaString, joinedValue);
 			}
 		}
 	}

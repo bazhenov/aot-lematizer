@@ -38,18 +38,18 @@ public class LookupBenchmark {
 
 	@Benchmark
 	public void lookup(WordList list, Holder holder) {
-		holder.storage.search(list.nextWord);
+		holder.storage.lookup(list.nextWord);
 	}
 
 
 	@State(Benchmark)
 	public static class Holder {
 
-		FlexionStorage storage;
+		LemmaDictionary storage;
 
 		public Holder() {
 			try {
-				storage = new FlexionStorage();
+				storage = new LemmaDictionary();
 			} catch (IOException e) {
 				throw new UncheckedIOException(e);
 			}
