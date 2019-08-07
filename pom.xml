@@ -13,6 +13,19 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
+	<distributionManagement>
+		<repository>
+			<id>farpost-releases</id>
+			<name>FarPost releases repository</name>
+			<url>http://maven.bazadev.net/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>farpost-snapshots</id>
+			<name>FarPost shapshots repository</name>
+			<url>http://maven.bazadev.net/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 	<modules>
 		<module>library</module>
 		<module>benchmark</module>
@@ -20,7 +33,6 @@
 		<module>compiler</module>
 		<module>loader</module>
 	</modules>
-
 
 	<build>
 		<plugins>
@@ -35,6 +47,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-
 </project>
