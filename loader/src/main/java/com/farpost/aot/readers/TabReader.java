@@ -1,17 +1,16 @@
 package com.farpost.aot.readers;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
-public class TabReader extends Utf8ResourceReader {
+import static com.farpost.aot.readers.BufferedReaderFabric.createUtf8Reader;
 
-	public TabReader() throws UnsupportedEncodingException {
-		super("/tab");
-	}
+public class TabReader {
 
-	@Override
+	private BufferedReader reader = createUtf8Reader("/tab");
+
 	public String readLine() throws IOException {
-		final var line = super.readLine();
+		final var line = reader.readLine();
 		if (line == null) {
 			return null;
 		}
