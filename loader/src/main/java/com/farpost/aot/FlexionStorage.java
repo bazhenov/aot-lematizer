@@ -52,10 +52,8 @@ public class FlexionStorage {
 			for (final var j : flex) {
 				j.lemmaIndex = (lemmas.size() - 1);
 			}
-
 			flexions.addAll(flex);
 		}
-		reader.close();
 	}
 
 	public List<List<GrammarInfo>> getAllGrammarVariants() {

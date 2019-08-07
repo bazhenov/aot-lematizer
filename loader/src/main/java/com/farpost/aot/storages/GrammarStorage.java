@@ -23,7 +23,6 @@ public class GrammarStorage {
 				.collect(Collectors.toList()));
 			index.put(i.substring(0, 2), allVariants.size() - 1);
 		}
-		reader.close();
 	}
 
 	/**

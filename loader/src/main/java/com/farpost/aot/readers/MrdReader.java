@@ -19,6 +19,10 @@ public class MrdReader {
 		}
 	}
 
+	public String readLine() throws IOException {
+		return reader.readLine();
+	}
+
 	public void skipSection() throws IOException {
 		skipLines(readLong());
 	}

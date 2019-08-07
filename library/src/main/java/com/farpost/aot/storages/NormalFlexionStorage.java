@@ -12,11 +12,6 @@ public class NormalFlexionStorage {
 
 	private final Map<Integer, int[]> normalFlexions = new HashMap<>();
 
-
-	public int[] get(final int hash) {
-		return normalFlexions.get(hash);
-	}
-
 	/**
 	 * @throws IOException исключение может возникнуть при чтении словаря из ресурсов
 	 */
@@ -43,5 +38,9 @@ public class NormalFlexionStorage {
 				normalFlexions.put(flexionHash, joinedValue);
 			}
 		}
+	}
+
+	public int[] get(final int hash) {
+		return normalFlexions.get(hash);
 	}
 }
