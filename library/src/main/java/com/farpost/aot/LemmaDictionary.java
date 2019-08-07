@@ -1,7 +1,6 @@
 package com.farpost.aot;
 
-import com.farpost.aot.data.GrammarInfo;
-import com.farpost.aot.data.Lemma;
+import com.farpost.aot.data.LemmaInfo;
 import com.farpost.aot.storages.CollisionFlexionStorage;
 import com.farpost.aot.storages.GrammarStorage;
 import com.farpost.aot.storages.LemmaStorage;
@@ -10,10 +9,7 @@ import com.farpost.aot.storages.NormalFlexionStorage;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class LemmaDictionary {
 
@@ -32,18 +28,32 @@ public class LemmaDictionary {
 		}
 	}
 
-	private List<Lemma> lookup(final int[] indexes) {
-		final Map<Integer, List<GrammarInfo[]>> res = new HashMap<>();
+	private List<LemmaInfo> lookup(final int[] indexes) {
+
+		final List<LemmaInfo> res = new ArrayList<>();
 		for (int i = 0; i < indexes.length; i += 2) {
-			res.computeIfAbsent(indexes[i], k -> new ArrayList<>())
-				.add(gramStore.get(indexes[i + 1]));
+
+			boolean notFound = true;
+
+			for (final LemmaInfo info : res) {
+				if (info.lemmaIndex == indexes[i]) {
+					info.flexions.add(gramStore.get(indexes[i + 1]));
+					notFound = false;
+					break;
+				}
+			}
+
+			if (notFound) {
+				LemmaInfo info = new LemmaInfo(indexes[i], lemStore.get(indexes[i]));
+				info.flexions.add(gramStore.get(indexes[i + 1]));
+				res.add(info);
+			}
 		}
-		return res.entrySet().stream()
-			.map(pair -> new Lemma(lemStore.get(pair.getKey()), pair.getValue()))
-			.collect(Collectors.toList());
+		return res;
 	}
 
-	public List<Lemma> lookup(final String flexion) {
+	public List<LemmaInfo> lookup(String flexion) {
+		flexion = flexion.replace('ё', 'е');
 		final int[] col = colFlex.get(flexion);
 		if (col != null) {
 			return lookup(col);

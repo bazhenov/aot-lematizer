@@ -1,6 +1,6 @@
 package com.farpost.aot;
 
-import com.farpost.aot.data.Lemma;
+import com.farpost.aot.data.LemmaInfo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,11 +15,11 @@ public class TestApplication {
 		)) {
 			while (true) {
 				final var res = d.lookup(reader.readLine());
-				if (res == null) {
-					System.out.println("<>");
+				if (res.isEmpty()) {
+					System.out.println(res);
 					continue;
 				}
-				for (final Lemma i : res) {
+				for (final LemmaInfo i : res) {
 					System.out.println(i);
 				}
 			}

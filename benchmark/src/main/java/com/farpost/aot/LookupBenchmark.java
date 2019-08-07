@@ -41,7 +41,6 @@ public class LookupBenchmark {
 		holder.storage.lookup(list.nextWord);
 	}
 
-
 	@State(Benchmark)
 	public static class Holder {
 
