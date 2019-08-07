@@ -14,7 +14,12 @@ public class TestApplication {
 			new InputStreamReader(System.in)
 		)) {
 			while (true) {
-				for (final Lemma i : d.lookup(reader.readLine())) {
+				final var res = d.lookup(reader.readLine());
+				if (res == null) {
+					System.out.println("<>");
+					continue;
+				}
+				for (final Lemma i : res) {
 					System.out.println(i);
 				}
 			}
