@@ -1,5 +1,6 @@
 package com.farpost.aot;
 
+import com.farpost.aot.data.FlexionInfo;
 import com.farpost.aot.data.LemmaInfo;
 import com.farpost.aot.storages.CollisionFlexionStorage;
 import com.farpost.aot.storages.GrammarStorage;
@@ -37,7 +38,7 @@ public class LemmaDictionary {
 
 			for (final LemmaInfo info : res) {
 				if (info.lemmaIndex == indexes[i]) {
-					info.flexions.add(gramStore.get(indexes[i + 1]));
+					info.flexions.add(new FlexionInfo(gramStore.get(indexes[i + 1])));
 					notFound = false;
 					break;
 				}
@@ -45,7 +46,7 @@ public class LemmaDictionary {
 
 			if (notFound) {
 				LemmaInfo info = new LemmaInfo(indexes[i], lemStore.get(indexes[i]));
-				info.flexions.add(gramStore.get(indexes[i + 1]));
+				info.flexions.add(new FlexionInfo(gramStore.get(indexes[i + 1])));
 				res.add(info);
 			}
 		}
