@@ -4,10 +4,12 @@ import java.util.Arrays;
 
 public class FlexionInfo {
 
-	public final GrammarInfo[] allGrammarInfo;
+	public final GrammarTag[] allGrammarTag;
+	public final PartOfSpeech partOfSpeech;
 
-	public FlexionInfo(final GrammarInfo[] allGrammarInfo) {
-		this.allGrammarInfo = allGrammarInfo;
+	public FlexionInfo(final GrammarTag[] allGrammarTag) {
+		this.partOfSpeech = PartOfSpeech.from(allGrammarTag);
+		this.allGrammarTag = allGrammarTag;
 	}
 
 	/**
@@ -16,8 +18,8 @@ public class FlexionInfo {
 	 *
 	 * @param info грамматическая характеристика
 	 */
-	public boolean is(final GrammarInfo info) {
-		for (GrammarInfo i : allGrammarInfo) {
+	public boolean is(final GrammarTag info) {
+		for (GrammarTag i : allGrammarTag) {
 			if (i == info) {
 				return true;
 			}
@@ -30,7 +32,7 @@ public class FlexionInfo {
 	 *
 	 * @param info набор грамматической информации
 	 */
-	public boolean is(final GrammarInfo... info) {
+	public boolean is(final GrammarTag... info) {
 		return Arrays.stream(info).allMatch(this::is);
 	}
 
@@ -40,7 +42,7 @@ public class FlexionInfo {
 	 *
 	 * @param info грамматическая характеристика
 	 */
-	public boolean isNot(final GrammarInfo info) {
+	public boolean isNot(final GrammarTag info) {
 		return !is(info);
 	}
 
@@ -50,12 +52,12 @@ public class FlexionInfo {
 	 *
 	 * @param info набор грамматической информации
 	 */
-	public boolean isNot(final GrammarInfo... info) {
+	public boolean isNot(final GrammarTag... info) {
 		return Arrays.stream(info).allMatch(this::isNot);
 	}
 
 	@Override
 	public String toString() {
-		return Arrays.toString(allGrammarInfo);
+		return Arrays.toString(allGrammarTag);
 	}
 }

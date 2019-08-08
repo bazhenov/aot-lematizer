@@ -18,6 +18,11 @@ public class LemmaInfo {
 		this.lemma = lemma;
 	}
 
+	// часть речи
+	public PartOfSpeech getPartOfSpeech() {
+		return flexions.get(0).partOfSpeech;
+	}
+
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder()

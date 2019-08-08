@@ -1,6 +1,6 @@
 package com.farpost.aot.storages;
 
-import com.farpost.aot.data.GrammarInfo;
+import com.farpost.aot.data.GrammarTag;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -14,15 +14,15 @@ import static com.farpost.aot.func.Decompiler.isEndl;
  */
 public class GrammarStorage {
 
-	private final GrammarInfo[][] lines;
+	private final GrammarTag[][] lines;
 
 	public GrammarStorage(final DataInputStream reader) throws IOException {
 
 		// считали количество строк
-		lines = new GrammarInfo[reader.readInt()][];
+		lines = new GrammarTag[reader.readInt()][];
 
 		// буфер для строки
-		final GrammarInfo[] buf = new GrammarInfo[12];
+		final GrammarTag[] buf = new GrammarTag[12];
 
 		for (int i = 0; i < lines.length; ++i) {
 
@@ -42,7 +42,7 @@ public class GrammarStorage {
 	 * @param requestedIndex индекс строки с грамматической информацией
 	 * @return строка грамматической информации
 	 */
-	public GrammarInfo[] get(final int requestedIndex) {
+	public GrammarTag[] get(final int requestedIndex) {
 		return lines[requestedIndex];
 	}
 }

@@ -5,7 +5,7 @@ package com.farpost.aot.data;
  * Ни в коем случае нельзя менять порядок элементов этого перечисления,
  * так как от их порядка зависит преобразование байта из файла, в нужный элемент перечисления!
  */
-public enum GrammarInfo {
+public enum GrammarTag {
 
 	Plural("мн"),
 	Male("мр"),
@@ -81,7 +81,7 @@ public enum GrammarInfo {
 
 	private final String token;
 
-	GrammarInfo(final String token) {
+	GrammarTag(final String token) {
 		this.token = token;
 	}
 
