@@ -14,7 +14,7 @@ public class LemmaStorage {
 
 	private final byte[][] lines;
 
-	public LemmaStorage(final DataInputStream reader) throws IOException {
+	public LemmaStorage(DataInputStream reader) throws IOException {
 		lines = new byte[reader.readInt()][];
 		final byte[] buf = new byte[36];
 		for (int i = 0, bufIndex = 0; i < lines.length; ++i, bufIndex = 0) {

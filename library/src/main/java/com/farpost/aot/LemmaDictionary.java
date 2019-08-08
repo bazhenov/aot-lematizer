@@ -21,7 +21,9 @@ public class LemmaDictionary {
 	private final GrammarStorage gramStore;
 
 	public LemmaDictionary() throws IOException {
-		try (DataInputStream reader = new DataInputStream(getClass().getResourceAsStream("/MRD.BIN"))) {
+		try (DataInputStream reader = new DataInputStream(
+			getClass().getResourceAsStream("/MRD.BIN")
+		)) {
 			colFlex = new CollisionFlexionStorage(reader);
 			norFlex = new NormalFlexionStorage(reader);
 			lemStore = new LemmaStorage(reader);
