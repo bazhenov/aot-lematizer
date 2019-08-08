@@ -11,7 +11,6 @@ import java.util.List;
 
 
 final class Compiler {
-
 	public static void main(String[] args) throws IOException {
 		System.out.println("Парсим /mrd . . .");
 		final var store = new FlexionStorage();

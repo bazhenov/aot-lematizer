@@ -15,29 +15,38 @@ public class NormalFlexionStorage {
 	/**
 	 * @throws IOException исключение может возникнуть при чтении словаря из ресурсов
 	 */
-	public NormalFlexionStorage(final DataInputStream reader) throws IOException {
+	public NormalFlexionStorage(DataInputStream reader) throws IOException {
 		// число всех лемм в бинарном файле
 		final int flexionsDataSize = reader.readInt();
-		for (int i = 0; i < flexionsDataSize; ++i) {
 
+		final byte[] block = new byte[flexionsDataSize * 12];
 
-			final int indexOfLemma = reader.readInt();
-			final int indexOfGrammarData = reader.readInt();
-			final int flexionHash = reader.readInt();
+		reader.readFully(block);
 
-			final int[] oldValue = normalFlexions.get(flexionHash);
+		for (int i = 0; i < block.length; i += 12) {
+
+			int lemmIndex = intFromBytes(block[i], block[i + 1], block[i + 2], block[i + 3]);
+			int gramIndex = intFromBytes(block[i + 4], block[i + 5], block[i + 6], block[i + 7]);
+			int hash = intFromBytes(block[i + 8], block[i + 9], block[i + 10], block[i + 11]);
+
+			final int[] oldValue = normalFlexions.get(hash);
 
 			if (oldValue == null) {
-				normalFlexions.put(flexionHash,
-					new int[]{indexOfLemma, indexOfGrammarData});
+				normalFlexions.put(hash,
+					new int[]{lemmIndex, gramIndex});
 			} else {
 				final int[] joinedValue = new int[oldValue.length + 2];
 				System.arraycopy(oldValue, 0, joinedValue, 0, oldValue.length);
-				joinedValue[joinedValue.length - 2] = indexOfLemma;
-				joinedValue[joinedValue.length - 1] = indexOfGrammarData;
-				normalFlexions.put(flexionHash, joinedValue);
+				joinedValue[joinedValue.length - 2] = lemmIndex;
+				joinedValue[joinedValue.length - 1] = gramIndex;
+				normalFlexions.put(hash, joinedValue);
 			}
 		}
+
+	}
+
+	private static int intFromBytes(byte a, byte b, byte c, byte d) {
+		return 0;
 	}
 
 	public int[] get(final int hash) {
