@@ -22,31 +22,49 @@ public class NormalFlexionStorage {
 		final byte[] block = new byte[flexionsDataSize * 12];
 
 		reader.readFully(block);
-
 		for (int i = 0; i < block.length; i += 12) {
 
-			int lemmIndex = intFromBytes(block[i], block[i + 1], block[i + 2], block[i + 3]);
-			int gramIndex = intFromBytes(block[i + 4], block[i + 5], block[i + 6], block[i + 7]);
-			int hash = intFromBytes(block[i + 8], block[i + 9], block[i + 10], block[i + 11]);
+			int lem = intFromBytes(
+				block[i],
+				block[i + 1],
+				block[i + 2],
+				block[i + 3]
+			);
+			int grm = intFromBytes(
+				block[i + 4],
+				block[i + 5],
+				block[i + 6],
+				block[i + 7]
+			);
+			int hsh = intFromBytes(
+				block[i + 8],
+				block[i + 9],
+				block[i + 10],
+				block[i + 11]
+			);
 
-			final int[] oldValue = normalFlexions.get(hash);
+			final int[] oldValue = normalFlexions.get(hsh);
 
 			if (oldValue == null) {
-				normalFlexions.put(hash,
-					new int[]{lemmIndex, gramIndex});
+				normalFlexions.put(hsh,
+					new int[]{lem, grm});
 			} else {
 				final int[] joinedValue = new int[oldValue.length + 2];
 				System.arraycopy(oldValue, 0, joinedValue, 0, oldValue.length);
-				joinedValue[joinedValue.length - 2] = lemmIndex;
-				joinedValue[joinedValue.length - 1] = gramIndex;
-				normalFlexions.put(hash, joinedValue);
+				joinedValue[joinedValue.length - 2] = lem;
+				joinedValue[joinedValue.length - 1] = grm;
+				normalFlexions.put(hsh, joinedValue);
 			}
 		}
 
 	}
 
+
 	private static int intFromBytes(byte a, byte b, byte c, byte d) {
-		return 0;
+		return d & 0xFF |
+			(c & 0xFF) << 8 |
+			(b & 0xFF) << 16 |
+			(a & 0xFF) << 24;
 	}
 
 	public int[] get(final int hash) {
