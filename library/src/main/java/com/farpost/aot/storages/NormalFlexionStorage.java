@@ -16,12 +16,10 @@ public class NormalFlexionStorage {
 	 * @throws IOException исключение может возникнуть при чтении словаря из ресурсов
 	 */
 	public NormalFlexionStorage(DataInputStream reader) throws IOException {
-		// число всех лемм в бинарном файле
-		final int flexionsDataSize = reader.readInt();
-
-		final byte[] block = new byte[flexionsDataSize * 12];
-
+		// число всех флексий в бинарном файле * 12 байт
+		byte[] block = new byte[reader.readInt() * 12];
 		reader.readFully(block);
+
 		for (int i = 0; i < block.length; i += 12) {
 
 			int lem = intFromBytes(
