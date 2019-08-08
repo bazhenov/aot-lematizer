@@ -1,15 +1,26 @@
 package com.farpost.aot.data;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class FlexionInfo {
 
-	public final GrammarTag[] allGrammarTag;
 	public final PartOfSpeech partOfSpeech;
+	private final GrammarTag[] allGrammarTags;
 
-	public FlexionInfo(final GrammarTag[] allGrammarTag) {
-		this.partOfSpeech = PartOfSpeech.from(allGrammarTag);
-		this.allGrammarTag = allGrammarTag;
+	public FlexionInfo(final GrammarTag[] allGrammarTags) {
+		this.partOfSpeech = PartOfSpeech.from(allGrammarTags);
+		this.allGrammarTags = allGrammarTags;
+	}
+
+	/**
+	 * Возвращает иммутабельную коллекцию тегов
+	 *
+	 * @return список тегов
+	 */
+	public List<GrammarTag> getAllTags() {
+		return Arrays.asList(allGrammarTags);
+
 	}
 
 	/**
@@ -19,7 +30,7 @@ public class FlexionInfo {
 	 * @param info грамматическая характеристика
 	 */
 	public boolean is(final GrammarTag info) {
-		for (GrammarTag i : allGrammarTag) {
+		for (GrammarTag i : allGrammarTags) {
 			if (i == info) {
 				return true;
 			}
@@ -58,6 +69,6 @@ public class FlexionInfo {
 
 	@Override
 	public String toString() {
-		return Arrays.toString(allGrammarTag);
+		return Arrays.toString(allGrammarTags);
 	}
 }
