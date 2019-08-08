@@ -27,7 +27,7 @@ public class CollisionFlexionStorage {
 		return map.get(flexion);
 	}
 
-	public CollisionFlexionStorage(final DataInputStream reader) throws IOException {
+	public CollisionFlexionStorage(DataInputStream reader) throws IOException {
 		final int count = reader.readInt();
 		for (int i = 0; i < count; ++i) {
 

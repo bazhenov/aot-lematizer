@@ -16,8 +16,7 @@ public class GrammarStorage {
 
 	private final GrammarTag[][] lines;
 
-	public GrammarStorage(final DataInputStream reader) throws IOException {
-
+	public GrammarStorage(DataInputStream reader) throws IOException {
 		// считали количество строк
 		lines = new GrammarTag[reader.readInt()][];
 
