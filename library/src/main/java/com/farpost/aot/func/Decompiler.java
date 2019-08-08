@@ -1,6 +1,6 @@
 package com.farpost.aot.func;
 
-import com.farpost.aot.data.GrammarInfo;
+import com.farpost.aot.data.GrammarTag;
 
 import static me.bazhenov.aot.Utils.byteToChar;
 
@@ -32,8 +32,8 @@ public final class Decompiler {
 	 * @param i байт
 	 * @return экземпляр перечисления с грамматической информацией
 	 */
-	public static GrammarInfo infoFromByte(final byte i) {
-		return GrammarInfo.values()[i];
+	public static GrammarTag infoFromByte(final byte i) {
+		return GrammarTag.values()[i];
 	}
 
 	/**
