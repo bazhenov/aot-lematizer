@@ -57,13 +57,13 @@ public class LemmaDictionary {
 
 	public List<LemmaInfo> lookup(String flexion) {
 		flexion = flexion.replace('ё', 'е');
-		final int[] col = colFlex.get(flexion);
-		if (col != null) {
-			return lookup(col);
-		}
 		final int[] nor = norFlex.get(flexion.hashCode());
 		if (nor != null) {
 			return lookup(nor);
+		}
+		final int[] col = colFlex.get(flexion);
+		if (col != null) {
+			return lookup(col);
 		}
 		return new ArrayList<>();
 	}
