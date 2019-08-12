@@ -1,4 +1,4 @@
 *.iml
 /.idea
 /target
-/library/src/main/resources/MRD.BIN
+/MRD.BIN
