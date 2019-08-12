@@ -29,14 +29,14 @@ public class CollisionsFilter {
 		}
 	}
 
-	private static boolean isCollision(List<Flexion> flexionsWithOneHash) {
+	private static boolean isCollision(Collection<Flexion> flexionsWithOneHash) {
 		return flexionsWithOneHash.stream()
 			.map(x -> x.source)
 			.collect(toSet())
 			.size() > 1;
 	}
 
-	public static Result extractCollisions(List<Flexion> flexions) {
+	public static Result extractCollisions(Collection<Flexion> flexions) {
 		var hashToFlex = new HashMap<Integer, List<Flexion>>();
 		for (var i : flexions) {
 			hashToFlex
