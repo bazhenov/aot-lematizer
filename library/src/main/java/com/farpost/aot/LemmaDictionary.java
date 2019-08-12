@@ -39,8 +39,8 @@ public class LemmaDictionary {
 			boolean existsLemma = false;
 
 			for (final LemmaInfo info : res) {
-				if (info.lemmaIndex == indexes[i]) {
-					info.flexions.add(new FlexionInfo(gramStore.get(indexes[i + 1])));
+				if (info.getId() == indexes[i]) {
+					info.getFlexions().add(new FlexionInfo(gramStore.get(indexes[i + 1])));
 					existsLemma = true;
 					break;
 				}
@@ -48,7 +48,7 @@ public class LemmaDictionary {
 
 			if (!existsLemma) {
 				LemmaInfo info = new LemmaInfo(indexes[i], lemStore.get(indexes[i]));
-				info.flexions.add(new FlexionInfo(gramStore.get(indexes[i + 1])));
+				info.getFlexions().add(new FlexionInfo(gramStore.get(indexes[i + 1])));
 				res.add(info);
 			}
 		}

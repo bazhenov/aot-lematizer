@@ -39,7 +39,7 @@ public class FlexionStorage {
 
 			// !!! вывод всех неоднозначностей
 			if (flex.size() > 2 && flex.get(0).source.equals(flex.get(1).source)) {
-				System.out.println("!! Unexpected paradigm for base: " + toks[0].toLowerCase().replace('ё', 'е') + ":");
+				System.out.println("!! Unexpected paradigm for base: " + toks[0].toLowerCase().replace('ё', 'е'));
 				for (final var j : flex) {
 					System.out.print(j.source);
 					System.out.print(' ');

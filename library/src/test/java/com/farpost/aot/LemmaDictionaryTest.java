@@ -47,7 +47,7 @@ public class LemmaDictionaryTest {
 
 
 	private static List<String> collectNorms(final List<LemmaInfo> l) {
-		return l.stream().map(x -> x.lemma).collect(Collectors.toList());
+		return l.stream().map(LemmaInfo::getLemma).collect(Collectors.toList());
 	}
 
 	@Test
