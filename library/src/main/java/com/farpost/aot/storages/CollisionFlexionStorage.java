@@ -1,13 +1,13 @@
 package com.farpost.aot.storages;
 
+import me.bazhenov.aot.Utils;
+
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.farpost.aot.func.Decompiler.isEndl;
-import static com.farpost.aot.func.Decompiler.stringFromBytes;
+import static com.farpost.aot.func.Decompiler.readLine;
 
 /**
  * Класс - хранилище служебной информации о флексиях,
@@ -19,21 +19,16 @@ public class CollisionFlexionStorage {
 
 	private final Map<String, int[]> map = new HashMap<>();
 
+
+
 	public CollisionFlexionStorage(DataInputStream reader) throws IOException {
-		final int count = reader.readInt();
+		int count = reader.readInt();
 		for (int i = 0; i < count; ++i) {
 
-			final int lemmaIndex = reader.readInt();
-			final int grammarIndex = reader.readInt();
+			int lemmaIndex = reader.readInt();
+			int grammarIndex = reader.readInt();
 
-			final byte[] strbuf = new byte[36];
-			int strbufIndex = -1;
-			for (byte j = reader.readByte(); !isEndl(j); j = reader.readByte()) {
-				strbuf[++strbufIndex] = j;
-			}
-
-			final String javaString = stringFromBytes(Arrays.copyOf(strbuf, strbufIndex + 1));
-
+			String javaString = readLine(reader);
 
 			final int[] oldValue = map.get(javaString);
 
@@ -48,6 +43,7 @@ public class CollisionFlexionStorage {
 			}
 		}
 	}
+
 
 	/**
 	 * @param flexion строка с колизионным хешем

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static java.util.Objects.requireNonNull;
+
 public class LemmaInfo {
 
 	// индекс леммы в хранилище лемм (по сути, id)
@@ -16,7 +18,7 @@ public class LemmaInfo {
 
 	public LemmaInfo(final int lemmaIndex, final String lemma) {
 		this.lemmaIndex = lemmaIndex;
-		this.lemma = lemma;
+		this.lemma = requireNonNull(lemma);
 	}
 
 	public PartOfSpeech getPartOfSpeech() {

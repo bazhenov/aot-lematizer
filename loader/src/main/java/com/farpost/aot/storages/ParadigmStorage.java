@@ -22,17 +22,23 @@ public class ParadigmStorage {
 			pars.add(new Paradigm(
 				Arrays.stream(reader.readLine().split("%"))
 					.filter(s -> !s.isBlank())
-					.map(src -> {
-						final var args = src.split("\\*");
-						final var postfix = args[0].toLowerCase().replace('ё', 'е');
-						final var infoIndex = gram.getVariantIndex(args[1]);
-						return args.length == 2 ?
-							new Mod(infoIndex, null, postfix) :
-							new Mod(infoIndex, args[2].toLowerCase().replace('ё', 'е'), postfix);
-					})
+					.map(this::parseMod)
 					.collect(Collectors.toList())
 			));
 		}
+	}
+
+	private static String normalize(String token) {
+		return token.toLowerCase().replace('ё', 'е');
+	}
+
+	private Mod parseMod(String src) {
+			final var args = src.split("\\*");
+			final var postfix = normalize(args[0]);
+			final var infoIndex = gram.getVariantIndex(args[1]);
+			return args.length == 2 ?
+				new Mod(infoIndex, null, postfix) :
+				new Mod(infoIndex, normalize(args[2]), postfix);
 	}
 
 	public Paradigm get(final int index) {

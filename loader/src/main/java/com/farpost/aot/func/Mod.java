@@ -2,7 +2,9 @@ package com.farpost.aot.func;
 
 import com.farpost.aot.data.Flexion;
 
-public class Mod {
+import java.util.function.Function;
+
+public class Mod implements Function<String, Flexion> {
 
 	private final int grammarIndex;
 	private final String pref;

@@ -4,8 +4,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static com.farpost.aot.func.Decompiler.isEndl;
-import static com.farpost.aot.func.Decompiler.stringFromBytes;
+import static com.farpost.aot.func.Decompiler.readLine;
 
 /**
  * Хранилище лемм, доступных по индексу
@@ -16,12 +15,8 @@ public class LemmaStorage {
 
 	public LemmaStorage(DataInputStream reader) throws IOException {
 		lines = new String[reader.readInt()];
-		final byte[] buf = new byte[36];
-		for (int i = 0, bufIndex = 0; i < lines.length; ++i, bufIndex = 0) {
-			for (byte j = reader.readByte(); !isEndl(j); j = reader.readByte(), ++bufIndex) {
-				buf[bufIndex] = j;
-			}
-			lines[i] = stringFromBytes(Arrays.copyOf(buf, bufIndex));
+		for (int i = 0; i < lines.length; ++i) {
+			lines[i] = readLine(reader);
 		}
 	}
 

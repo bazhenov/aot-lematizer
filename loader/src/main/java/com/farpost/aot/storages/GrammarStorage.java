@@ -1,11 +1,13 @@
 package com.farpost.aot.storages;
 
 import com.farpost.aot.data.GrammarInfo;
-import com.farpost.aot.readers.TabReader;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.farpost.aot.readers.BufferedReaderFabric.createUtf8Reader;
 
 /**
  * Хранилище грамматической информации
@@ -16,13 +18,25 @@ public class GrammarStorage {
 	private final Map<String, Integer> index = new HashMap<>();
 
 	public GrammarStorage() throws IOException {
-		final var reader = new TabReader();
-		for (var i = reader.readLine(); i != null; i = reader.readLine()) {
+		BufferedReader reader = createUtf8Reader("/tab");
+		for (var i = readLine(reader); i != null; i = readLine(reader)) {
 			allVariants.add(Arrays.stream(i.substring(5).split(" |,"))
 				.map(GrammarInfo::fromString)
 				.collect(Collectors.toList()));
 			index.put(i.substring(0, 2), allVariants.size() - 1);
 		}
+	}
+
+	private static String readLine(BufferedReader reader) throws IOException {
+		final var line = reader.readLine();
+		if (line == null) {
+			return null;
+		}
+		// отбрасываем комментарии и пустые строки
+		if (line.isEmpty() || line.startsWith("//")) {
+			return readLine(reader);
+		}
+		return line;
 	}
 
 	/**

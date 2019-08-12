@@ -22,27 +22,27 @@ public class LemmaDictionaryTest {
 
 	@Test
 	public void dictionaryShouldBeAbleToFindExistentWords() throws IOException {
-		assertThat(d.lookup("краснеющий").size(), is(1));
-		assertThat(d.lookup("дорога").size(), is(2));
-		assertThat(d.lookup("клавиатура").size(), is(1));
+		assertThat(d.lookup("краснеющий"), hasSize(1));
+		assertThat(d.lookup("дорога"), hasSize(2));
+		assertThat(d.lookup("клавиатура"), hasSize(1));
 	}
 
 	@Test
 	public void dictionaryShouldNotFindNotRealWords() throws IOException {
-		assertThat(d.lookup("фентифлюшка").size(), is(0));
+		assertThat(d.lookup("фентифлюшка"), hasSize(0));
 	}
 
 	@Test
 	public void testEmptyWordBases() throws IOException {
-		assertThat(d.lookup("человек").size(), is(1));
-		assertThat(d.lookup("люди").size(), is(1));
-		assertThat(d.lookup("ребёнок").size(), is(1));
-		assertThat(d.lookup("дети").size(), is(1));
+		assertThat(d.lookup("человек"), hasSize(1));
+		assertThat(d.lookup("люди"), hasSize(1));
+		assertThat(d.lookup("ребёнок"), hasSize(1));
+		assertThat(d.lookup("дети"), hasSize(1));
 	}
 
 	@Test
 	public void shouldNotThrowExceptionIfWordHasUnknownCharacter() throws IOException {
-		assertThat(d.lookup("super#starnge@string").size(), is(0));
+		assertThat(d.lookup("super#starnge@string"), hasSize(0));
 	}
 
 
@@ -63,7 +63,7 @@ public class LemmaDictionaryTest {
 
 	@Test
 	public void regression3() {
-		assertThat(d.lookup("и").size(), is(2));
+		assertThat(d.lookup("и"), hasSize(2));
 	}
 
 

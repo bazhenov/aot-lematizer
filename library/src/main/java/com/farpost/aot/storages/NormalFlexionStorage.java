@@ -22,24 +22,9 @@ public class NormalFlexionStorage {
 
 		for (int i = 0; i < block.length; i += 12) {
 
-			int lem = intFromBytes(
-				block[i],
-				block[i + 1],
-				block[i + 2],
-				block[i + 3]
-			);
-			int grm = intFromBytes(
-				block[i + 4],
-				block[i + 5],
-				block[i + 6],
-				block[i + 7]
-			);
-			int hsh = intFromBytes(
-				block[i + 8],
-				block[i + 9],
-				block[i + 10],
-				block[i + 11]
-			);
+			int lem = intFromByteArray(block, i);
+			int grm = intFromByteArray(block, i + 4);
+			int hsh = intFromByteArray(block, i + 8);
 
 			final int[] oldValue = normalFlexions.get(hsh);
 
@@ -57,12 +42,11 @@ public class NormalFlexionStorage {
 
 	}
 
-
-	private static int intFromBytes(byte a, byte b, byte c, byte d) {
-		return d & 0xFF |
-			(c & 0xFF) << 8 |
-			(b & 0xFF) << 16 |
-			(a & 0xFF) << 24;
+	private static int intFromByteArray(byte[] arr, final int from) {
+		return arr[from + 3] & 0xFF |
+			(arr[from + 2] & 0xFF) << 8 |
+			(arr[from + 1] & 0xFF) << 16 |
+			(arr[from] & 0xFF) << 24;
 	}
 
 	public int[] get(final int hash) {

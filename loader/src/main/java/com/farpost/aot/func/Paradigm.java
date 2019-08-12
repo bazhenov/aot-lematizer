@@ -4,9 +4,10 @@ import com.farpost.aot.data.Flexion;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class Paradigm {
+public class Paradigm implements Function<String, List<Flexion>> {
 
 	private final Collection<Mod> mods;
 

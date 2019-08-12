@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.stream.Collectors.joining;
+
 /**
  * Главное хранилище инкапсулирует остальные
  */
@@ -40,11 +42,7 @@ public class FlexionStorage {
 			// !!! вывод всех неоднозначностей
 			if (flex.size() > 2 && flex.get(0).source.equals(flex.get(1).source)) {
 				System.out.println("!! Unexpected paradigm for base: " + toks[0].toLowerCase().replace('ё', 'е'));
-				for (final var j : flex) {
-					System.out.print(j.source);
-					System.out.print(' ');
-				}
-				System.out.println();
+				System.out.println(flex.stream().map(x -> x.source).collect(joining(" ")));
 			}
 			// !!! вывод всех неоднозначностей
 
