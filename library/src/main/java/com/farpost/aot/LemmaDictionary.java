@@ -10,6 +10,7 @@ import com.farpost.aot.storages.NormalFlexionStorage;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class LemmaDictionary {
@@ -32,8 +33,7 @@ public class LemmaDictionary {
 	}
 
 	private List<LemmaInfo> lookup(final int[] indexes) {
-
-		final List<LemmaInfo> res = new ArrayList<>();
+		List<LemmaInfo> res = new ArrayList<>();
 		for (int i = 0; i < indexes.length; i += 2) {
 
 			boolean notFound = true;
