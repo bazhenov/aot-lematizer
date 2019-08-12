@@ -12,28 +12,15 @@ import static com.farpost.aot.func.Decompiler.stringFromBytes;
  */
 public class LemmaStorage {
 
-	//private final byte[][] lines;
 	private final String[] lines;
 
 	public LemmaStorage(DataInputStream reader) throws IOException {
-		/*lines = new byte[reader.readInt()][];
-		
-		final byte[] buf = new byte[36];
-		for (int i = 0, bufIndex = 0; i < lines.length; ++i, bufIndex = 0) {
-			for (byte j = reader.readByte(); !isEndl(j); j = reader.readByte(), ++bufIndex) {
-				buf[bufIndex] = j;
-			}
-			//!!
-			lines[i] = Arrays.copyOf(buf, bufIndex);
-		}*/
-
 		lines = new String[reader.readInt()];
 		final byte[] buf = new byte[36];
 		for (int i = 0, bufIndex = 0; i < lines.length; ++i, bufIndex = 0) {
 			for (byte j = reader.readByte(); !isEndl(j); j = reader.readByte(), ++bufIndex) {
 				buf[bufIndex] = j;
 			}
-			//!!
 			lines[i] = stringFromBytes(Arrays.copyOf(buf, bufIndex));
 		}
 	}
@@ -45,7 +32,6 @@ public class LemmaStorage {
 	 * @return лемма
 	 */
 	public String get(final int requestedIndex) {
-		//return stringFromBytes(lines[requestedIndex]);
 		return lines[requestedIndex];
 	}
 }

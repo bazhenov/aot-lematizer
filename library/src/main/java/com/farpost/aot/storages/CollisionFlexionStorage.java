@@ -54,7 +54,6 @@ public class CollisionFlexionStorage {
 	 * @return индексы лемм и грамматической информации
 	 */
 	public int[] get(final String flexion) {
-		//return map.get(flexion);
-		return map.getOrDefault(flexion, new int[0]);
+		return map.get(flexion);
 	}
 }
