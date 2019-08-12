@@ -66,6 +66,7 @@ public class NormalFlexionStorage {
 	}
 
 	public int[] get(final int hash) {
-		return normalFlexions.get(hash);
+		//return normalFlexions.get(hash);
+		return normalFlexions.getOrDefault(hash, new int[0]);
 	}
 }

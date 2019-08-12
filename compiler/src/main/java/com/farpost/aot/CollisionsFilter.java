@@ -6,14 +6,24 @@ import com.farpost.aot.data.Flexion;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toSet;
+
 public class CollisionsFilter {
 
 	public static class Result {
 
-		public final List<Flexion> removedCollisions;
-		public final Set<Integer> collisionHashes;
+		private final Collection<Flexion> removedCollisions;
+		private final Collection<Integer> collisionHashes;
 
-		private Result(List<Flexion> flex, Set<Integer> hash) {
+		public Collection<Flexion> getRemovedCollisions() {
+			return removedCollisions;
+		}
+
+		public Collection<Integer> getCollisionHashes() {
+			return collisionHashes;
+		}
+
+		private Result(Collection<Flexion> flex, Collection<Integer> hash) {
 			removedCollisions = flex;
 			collisionHashes = hash;
 		}
@@ -22,7 +32,7 @@ public class CollisionsFilter {
 	private static boolean isCollision(List<Flexion> flexionsWithOneHash) {
 		return flexionsWithOneHash.stream()
 			.map(x -> x.source)
-			.collect(Collectors.toSet())
+			.collect(toSet())
 			.size() > 1;
 	}
 

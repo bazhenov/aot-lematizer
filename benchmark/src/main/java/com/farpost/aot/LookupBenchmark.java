@@ -59,9 +59,9 @@ public class LookupBenchmark {
 	@State(Benchmark)
 	public static class WordList {
 
-		final List<String> words = new ArrayList<>();
-		final AtomicInteger wordId = new AtomicInteger(0);
-		String nextWord;
+		private  final List<String> words = new ArrayList<>();
+		private final AtomicInteger wordId = new AtomicInteger(0);
+		private String nextWord;
 
 		public WordList() {
 			try (InputStream is = getClass().getResourceAsStream("/random-words.txt.gz");

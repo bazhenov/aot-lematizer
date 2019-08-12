@@ -36,17 +36,17 @@ public class LemmaDictionary {
 		List<LemmaInfo> res = new ArrayList<>();
 		for (int i = 0; i < indexes.length; i += 2) {
 
-			boolean notFound = true;
+			boolean existsLemma = false;
 
 			for (final LemmaInfo info : res) {
 				if (info.lemmaIndex == indexes[i]) {
 					info.flexions.add(new FlexionInfo(gramStore.get(indexes[i + 1])));
-					notFound = false;
+					existsLemma = true;
 					break;
 				}
 			}
 
-			if (notFound) {
+			if (!existsLemma) {
 				LemmaInfo info = new LemmaInfo(indexes[i], lemStore.get(indexes[i]));
 				info.flexions.add(new FlexionInfo(gramStore.get(indexes[i + 1])));
 				res.add(info);
@@ -57,7 +57,8 @@ public class LemmaDictionary {
 
 	public List<LemmaInfo> lookup(String flexion) {
 		flexion = flexion.replace('ё', 'е');
-		final int[] nor = norFlex.get(flexion.hashCode());
+
+		/*final int[] nor = norFlex.get(flexion.hashCode());
 		if (nor != null) {
 			return lookup(nor);
 		}
@@ -65,6 +66,10 @@ public class LemmaDictionary {
 		if (col != null) {
 			return lookup(col);
 		}
-		return new ArrayList<>();
+		return new ArrayList<>();*/
+
+		List<LemmaInfo> defaultResult = lookup(norFlex.get(flexion.hashCode()));
+		return defaultResult.isEmpty()? lookup(colFlex.get(flexion)): defaultResult;
+
 	}
 }

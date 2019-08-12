@@ -1,6 +1,6 @@
 package com.farpost.aot.func;
 
-import com.farpost.aot.data.GrammarTag;
+import com.farpost.aot.data.MorphologyTag;
 
 import static me.bazhenov.aot.Utils.byteToChar;
 
@@ -18,7 +18,7 @@ public final class Decompiler {
 	 * @param bytes байты русской кодировки
 	 * @return юникодная строка
 	 */
-	public static String stringFromBytes(final byte[] bytes) {
+	public static synchronized String stringFromBytes(final byte[] bytes) {
 		for(int i = 0; i < bytes.length; ++i) {
 			resultBuffer[i] = byteToChar(bytes[i]);
 		}
@@ -32,8 +32,8 @@ public final class Decompiler {
 	 * @param i байт
 	 * @return экземпляр перечисления с грамматической информацией
 	 */
-	public static GrammarTag infoFromByte(final byte i) {
-		return GrammarTag.values()[i];
+	public static MorphologyTag infoFromByte(final byte i) {
+		return MorphologyTag.values()[i];
 	}
 
 	/**

@@ -1,61 +1,87 @@
 package com.farpost.aot;
 
+import com.farpost.aot.data.Flexion;
 import com.farpost.aot.data.GrammarInfo;
 import me.bazhenov.Utils;
 
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 
 final class Compiler {
+
 	public static void main(String[] args) throws IOException {
-		System.out.println("Парсим /mrd . . .");
-		final var store = new FlexionStorage();
-		final var normal = store.getAllFlexion();
-		System.out.println(String.format("Всех флексий %d", normal.size()));
-		System.out.println("Извлекаем коллизии . . .");
-		final var removed = CollisionsFilter.extractCollisions(normal).removedCollisions;
-		System.out.println(String.format("Извлечено колизионных флексий %d", removed.size()));
-		System.out.println(String.format("Осталось нормальных флексий %d", normal.size()));
-		System.out.println(String.format("Всех флексий теперь %d", removed.size() + normal.size()));
-		System.out.print("Компилируем /mrd");
-		try (final var writer = new DataOutputStream(new FileOutputStream("library/src/main/resources/MRD.BIN"))) {
-			writer.writeInt(removed.size());
-			for (final var wrongFlexion : removed) {
-				writer.writeInt(wrongFlexion.lemmaIndex);
-				writer.writeInt(wrongFlexion.grammarIndex);
-				writer.write(bytesFromString(wrongFlexion.source));
-			}
-			System.out.print(" .");
-			writer.writeInt(normal.size());
-			for (final var normFlexion : normal) {
-				writer.writeInt(normFlexion.lemmaIndex);
-				writer.writeInt(normFlexion.grammarIndex);
-				writer.writeInt(normFlexion.source.hashCode());
-			}
-			System.out.print(" .");
-			writer.writeInt(store.getAllLemmas().size());
-			for (final var lemma : store.getAllLemmas()) {
-				writer.write(bytesFromString(lemma));
-			}
-			System.out.print(" .");
-			writer.writeInt(store.getAllGrammarVariants().size());
-			for (final var gram : store.getAllGrammarVariants()) {
-				writer.write(bytesFromGrammars(gram));
-			}
+		var data = InputData.prepare();
+		System.out.print("Compiling /mrd");
+		try (var writer = new DataOutputStream(new FileOutputStream("library/src/main/resources/MRD.BIN"))) {
+
+			compileWrongFlexions(writer, data.getCollisionFlexions());
+			compileNormalFlexions(writer, data.getNormalFlexions());
+			compileLemmas(writer, data.getAllLemmas());
+			compileGrammar(writer, data.getGrammarInfoVariants());
+
 		}
-		System.out.println("\nКомпиляция успешно завершена: library/src/main/resources/MRD.BIN");
+		System.out.println("\nCompilation completed successfully: library/src/main/resources/MRD.BIN");
 	}
+
+
+	private static void compileWrongFlexions(DataOutputStream writer, Collection<Flexion> removed) throws IOException {
+		writer.writeInt(removed.size());
+		for (var wrongFlexion : removed) {
+			writer.writeInt(wrongFlexion.lemmaIndex);
+			writer.writeInt(wrongFlexion.grammarIndex);
+			writer.write(bytesFromString(wrongFlexion.source));
+		}
+		System.out.print(" .");
+	}
+
+
+	private static void compileNormalFlexions(DataOutputStream writer, Collection<Flexion> normal) throws IOException {
+		writer.writeInt(normal.size());
+		for (var normFlexion : normal) {
+			writer.writeInt(normFlexion.lemmaIndex);
+			writer.writeInt(normFlexion.grammarIndex);
+			writer.writeInt(normFlexion.source.hashCode());
+		}
+		System.out.print(" .");
+	}
+
+
+	private static void compileLemmas(DataOutputStream writer, Collection<String> lemmas) throws IOException {
+		writer.writeInt(lemmas.size());
+		for (var lemma : lemmas) {
+			writer.write(bytesFromString(lemma));
+		}
+		System.out.print(" .");
+	}
+
+
+	private static void compileGrammar(DataOutputStream writer, Collection<List<GrammarInfo>> grammar)
+		throws IOException {
+		writer.writeInt(grammar.size());
+		for (var gram : grammar) {
+			writer.write(bytesFromGrammars(gram));
+		}
+	}
+
 
 	private static byte byteFromChar(final char n) {
 		return n == '\n' ? 100 : Utils.safeCharToByte(n);
 	}
 
-	private static byte[] bytesFromGrammars(final List<GrammarInfo> line) {
-		final var res = new byte[line.size() + 1];
+
+	private static byte[] bytesFromGrammars(final List<GrammarInfo> line) throws UncheckedIOException {
+
+		if(GrammarInfo.values().length >= 100) {
+			throw new UncheckedIOException(new IOException("GrammarInfo.values() >= 100"));
+		}
+
+		var res = new byte[line.size() + 1];
 		for (var i = 0; i < (res.length - 1); ++i) {
 			res[i] = (byte) Arrays.binarySearch(GrammarInfo.values(), line.get(i));
 		}
@@ -63,8 +89,9 @@ final class Compiler {
 		return res;
 	}
 
+
 	private static byte[] bytesFromString(final String s) {
-		final var res = new byte[s.length() + 1];
+		var res = new byte[s.length() + 1];
 		for (var i = 0; i < (res.length - 1); ++i) {
 			res[i] = byteFromChar(s.charAt(i));
 		}

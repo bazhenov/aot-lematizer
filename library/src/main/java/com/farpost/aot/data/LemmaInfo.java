@@ -2,25 +2,37 @@ package com.farpost.aot.data;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class LemmaInfo {
 
 	// индекс леммы в хранилище лемм (по сути, id)
-	public final int lemmaIndex;
+	private final int lemmaIndex;
 	// каждая флексия совпадает по строке с искомой
-	public final List<FlexionInfo> flexions = new ArrayList<>();
+	private final List<FlexionInfo> flexions = new ArrayList<>();
 	// лемма
-	public final String lemma;
+	private final String lemma;
 
 	public LemmaInfo(final int lemmaIndex, final String lemma) {
 		this.lemmaIndex = lemmaIndex;
 		this.lemma = lemma;
 	}
 
-	// часть речи
 	public PartOfSpeech getPartOfSpeech() {
-		return flexions.get(0).partOfSpeech;
+		return flexions.get(0).getPartOfSpeech();
+	}
+
+	public int getId() {
+		return lemmaIndex;
+	}
+
+	public Collection<FlexionInfo> getFlexions() {
+		return flexions;
+	}
+
+	public String getLemma() {
+		return lemma;
 	}
 
 	@Override

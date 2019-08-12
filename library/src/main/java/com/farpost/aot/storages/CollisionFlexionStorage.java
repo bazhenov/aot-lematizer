@@ -19,14 +19,6 @@ public class CollisionFlexionStorage {
 
 	private final Map<String, int[]> map = new HashMap<>();
 
-	/**
-	 * @param flexion строка с колизионным хешем
-	 * @return индексы лемм и грамматической информации
-	 */
-	public int[] get(final String flexion) {
-		return map.get(flexion);
-	}
-
 	public CollisionFlexionStorage(DataInputStream reader) throws IOException {
 		final int count = reader.readInt();
 		for (int i = 0; i < count; ++i) {
@@ -55,5 +47,14 @@ public class CollisionFlexionStorage {
 				map.put(javaString, joinedValue);
 			}
 		}
+	}
+
+	/**
+	 * @param flexion строка с колизионным хешем
+	 * @return индексы лемм и грамматической информации
+	 */
+	public int[] get(final String flexion) {
+		//return map.get(flexion);
+		return map.getOrDefault(flexion, new int[0]);
 	}
 }

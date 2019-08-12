@@ -5,12 +5,16 @@ import java.util.List;
 
 public class FlexionInfo {
 
-	public final PartOfSpeech partOfSpeech;
-	private final GrammarTag[] allGrammarTags;
+	private final PartOfSpeech partOfSpeech;
+	private final MorphologyTag[] allMorphologyTags;
 
-	public FlexionInfo(final GrammarTag[] allGrammarTags) {
-		this.partOfSpeech = PartOfSpeech.from(allGrammarTags);
-		this.allGrammarTags = allGrammarTags;
+	public FlexionInfo(final MorphologyTag[] allMorphologyTags) {
+		this.partOfSpeech = PartOfSpeech.from(allMorphologyTags);
+		this.allMorphologyTags = allMorphologyTags;
+	}
+
+	public PartOfSpeech getPartOfSpeech() {
+		return partOfSpeech;
 	}
 
 	/**
@@ -18,8 +22,8 @@ public class FlexionInfo {
 	 *
 	 * @return список тегов
 	 */
-	public List<GrammarTag> getAllTags() {
-		return Arrays.asList(allGrammarTags);
+	public List<MorphologyTag> getAllTags() {
+		return Arrays.asList(allMorphologyTags);
 
 	}
 
@@ -29,8 +33,8 @@ public class FlexionInfo {
 	 *
 	 * @param info грамматическая характеристика
 	 */
-	public boolean is(final GrammarTag info) {
-		for (GrammarTag i : allGrammarTags) {
+	public boolean is(final MorphologyTag info) {
+		for (MorphologyTag i : allMorphologyTags) {
 			if (i == info) {
 				return true;
 			}
@@ -43,7 +47,7 @@ public class FlexionInfo {
 	 *
 	 * @param info набор грамматической информации
 	 */
-	public boolean is(final GrammarTag... info) {
+	public boolean allOf(final MorphologyTag... info) {
 		return Arrays.stream(info).allMatch(this::is);
 	}
 
@@ -53,7 +57,7 @@ public class FlexionInfo {
 	 *
 	 * @param info грамматическая характеристика
 	 */
-	public boolean isNot(final GrammarTag info) {
+	public boolean isNot(final MorphologyTag info) {
 		return !is(info);
 	}
 
@@ -63,12 +67,12 @@ public class FlexionInfo {
 	 *
 	 * @param info набор грамматической информации
 	 */
-	public boolean isNot(final GrammarTag... info) {
+	public boolean notAnyOf(final MorphologyTag... info) {
 		return Arrays.stream(info).allMatch(this::isNot);
 	}
 
 	@Override
 	public String toString() {
-		return Arrays.toString(allGrammarTags);
+		return Arrays.toString(allMorphologyTags);
 	}
 }

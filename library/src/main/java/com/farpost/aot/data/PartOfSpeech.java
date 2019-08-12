@@ -24,7 +24,7 @@ public enum PartOfSpeech {
 	Idiom,
 	Union;
 
-	public static PartOfSpeech from(GrammarTag tag) {
+	public static PartOfSpeech from(MorphologyTag tag) {
 		switch (tag) {
 			case Pronoun:
 				return Pronoun;
@@ -75,8 +75,8 @@ public enum PartOfSpeech {
 		}
 	}
 
-	public static PartOfSpeech from(GrammarTag[] tags) {
-		for (GrammarTag tag : tags) {
+	public static PartOfSpeech from(MorphologyTag[] tags) {
+		for (MorphologyTag tag : tags) {
 			PartOfSpeech maybe = from(tag);
 			if (maybe != null) {
 				return maybe;
