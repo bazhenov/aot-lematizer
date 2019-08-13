@@ -67,7 +67,7 @@ class Flexion {
 	/**
 	 * Набор флексий (где первая - лемма остальных) из базы + парадигмы склонения
 	 */
-	public static Collection<Flexion> from(String base, String paradigm, Map<String, Collection<MorphologyTag>> morphMap) {
+	static Collection<Flexion> from(String base, String paradigm, Map<String, Collection<MorphologyTag>> morphMap) {
 		var sources = Arrays.stream(paradigm.split("%")).filter(s -> !s.isBlank()).collect(toList());
 		var lemma = from(base, sources.get(0), morphMap, null);
 		return Stream.concat(
