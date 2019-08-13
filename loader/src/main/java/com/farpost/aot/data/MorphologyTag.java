@@ -4,7 +4,7 @@ package com.farpost.aot.data;
  * В этом перечислении ни в коем случае нельзя менять порядок элементов.
  * От этого зависит корректность компиляции и декомпиляции.
  */
-public enum GrammarInfo {
+public enum MorphologyTag {
 
 	Plural("мн"),
 	Male("мр"),
@@ -80,7 +80,7 @@ public enum GrammarInfo {
 
 	private final String token;
 
-	GrammarInfo(final String token) {
+	MorphologyTag(final String token) {
 		this.token = token;
 	}
 
@@ -89,7 +89,7 @@ public enum GrammarInfo {
 		return token;
 	}
 
-	public static GrammarInfo fromString(final String token) {
+	public static MorphologyTag fromString(final String token) {
 		for (final var info : values()) {
 			if (info.token.equals(token)) {
 				return info;

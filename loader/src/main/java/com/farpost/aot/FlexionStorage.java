@@ -1,7 +1,7 @@
 package com.farpost.aot;
 
 import com.farpost.aot.data.Flexion;
-import com.farpost.aot.data.GrammarInfo;
+import com.farpost.aot.data.MorphologyTag;
 import com.farpost.aot.readers.MrdReader;
 import com.farpost.aot.storages.GrammarStorage;
 import com.farpost.aot.storages.ParadigmStorage;
@@ -9,6 +9,8 @@ import com.farpost.aot.storages.ParadigmStorage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.System.*;
 
 import static java.util.stream.Collectors.joining;
 
@@ -41,8 +43,10 @@ public class FlexionStorage {
 
 			// !!! вывод всех неоднозначностей
 			if (flex.size() > 2 && flex.get(0).source.equals(flex.get(1).source)) {
-				System.out.println("!! Unexpected paradigm for base: " + toks[0].toLowerCase().replace('ё', 'е'));
-				System.out.println(flex.stream().map(x -> x.source).collect(joining(" ")));
+				out.println("!! Unexpected paradigm for base: "
+					+ toks[0].toLowerCase().replace('ё', 'е'));
+				out.println(flex.stream()
+					.map(x -> x.source).collect(joining(" ")));
 			}
 			// !!! вывод всех неоднозначностей
 
@@ -55,7 +59,7 @@ public class FlexionStorage {
 		}
 	}
 
-	public List<List<GrammarInfo>> getAllGrammarVariants() {
+	public List<List<MorphologyTag>> getAllGrammarVariants() {
 		return gram.getAllVariants();
 	}
 

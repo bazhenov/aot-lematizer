@@ -21,10 +21,6 @@ public class LemmaInfo {
 		this.lemma = requireNonNull(lemma);
 	}
 
-	public PartOfSpeech getPartOfSpeech() {
-		return flexions.get(0).getPartOfSpeech();
-	}
-
 	public int getId() {
 		return lemmaIndex;
 	}

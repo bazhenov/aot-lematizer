@@ -1,7 +1,7 @@
 package com.farpost.aot;
 
 import com.farpost.aot.data.Flexion;
-import com.farpost.aot.data.GrammarInfo;
+import com.farpost.aot.data.MorphologyTag;
 import me.bazhenov.Utils;
 
 import java.io.DataOutputStream;
@@ -61,7 +61,7 @@ final class Compiler {
 	}
 
 
-	private static void compileGrammar(DataOutputStream writer, Collection<List<GrammarInfo>> grammar)
+	private static void compileGrammar(DataOutputStream writer, Collection<List<MorphologyTag>> grammar)
 		throws IOException {
 		writer.writeInt(grammar.size());
 		for (var gram : grammar) {
@@ -75,15 +75,15 @@ final class Compiler {
 	}
 
 
-	private static byte[] bytesFromGrammars(final List<GrammarInfo> line) throws UncheckedIOException {
+	private static byte[] bytesFromGrammars(final List<MorphologyTag> line) throws UncheckedIOException {
 
-		if(GrammarInfo.values().length >= 100) {
+		if(MorphologyTag.values().length >= 100) {
 			throw new UncheckedIOException(new IOException("GrammarInfo.values() >= 100"));
 		}
 
 		var res = new byte[line.size() + 1];
 		for (var i = 0; i < (res.length - 1); ++i) {
-			res[i] = (byte) Arrays.binarySearch(GrammarInfo.values(), line.get(i));
+			res[i] = (byte) Arrays.binarySearch(MorphologyTag.values(), line.get(i));
 		}
 		res[line.size()] = byteFromChar('\n');
 		return res;
