@@ -4,10 +4,10 @@
 				 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>aot-lematizer</artifactId>
+	<artifactId>platform</artifactId>
 	<groupId>com.farpost.aot</groupId>
 	<packaging>pom</packaging>
-	<version>3.0</version>
+	<version>3.1</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,6 +32,7 @@
 		<module>testapp</module>
 		<module>compiler</module>
 		<module>loader</module>
+		<module>new-compiler</module>
 	</modules>
 
 	<dependencies>
