@@ -32,7 +32,6 @@
 		<module>testapp</module>
 		<module>compiler</module>
 		<module>loader</module>
-		<module>new-compiler</module>
 	</modules>
 
 	<dependencies>
