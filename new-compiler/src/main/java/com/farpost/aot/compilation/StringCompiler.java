@@ -3,7 +3,7 @@ import java.io.*;
 
 public class StringCompiler implements Closeable {
 
-	private final DataOutputStream file = new DataOutputStream(new FileOutputStream("bin/tmp/str.bin"));
+	private final DataOutputStream file = new DataOutputStream(new FileOutputStream("STRINGS.BIN"));
 	// максимальная длина строки (подсчитано)
 	private final byte[] buffer = new byte[37];
 	private int bufIndex = -1;
