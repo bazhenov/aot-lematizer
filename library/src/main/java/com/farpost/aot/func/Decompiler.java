@@ -1,7 +1,7 @@
 package com.farpost.aot.func;
 
 import com.farpost.aot.data.MorphologyTag;
-import me.bazhenov.aot.Utils;
+import me.bazhenov.aot.aot.Utils;
 
 import java.io.DataInputStream;
 import java.io.IOException;

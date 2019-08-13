@@ -2,7 +2,7 @@ package com.farpost.aot;
 
 import com.farpost.aot.data.Flexion;
 import com.farpost.aot.data.MorphologyTag;
-import me.bazhenov.Utils;
+import me.bazhenov.aot.Utils;
 
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
