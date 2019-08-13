@@ -7,8 +7,8 @@
 
 	<parent>
 		<groupId>com.farpost.aot</groupId>
-		<artifactId>aot-lematizer</artifactId>
-		<version>3.0</version>
+		<artifactId>platform</artifactId>
+		<version>3.1</version>
 	</parent>
 
 	<artifactId>testapp</artifactId>
@@ -17,7 +17,7 @@
 		<dependency>
 			<groupId>com.farpost.aot</groupId>
 			<artifactId>library</artifactId>
-			<version>3.0</version>
+			<version>3.1</version>
 		</dependency>
 	</dependencies>
 

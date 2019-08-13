@@ -6,8 +6,8 @@
 
 	<parent>
 		<groupId>com.farpost.aot</groupId>
-		<artifactId>aot-lematizer</artifactId>
-		<version>3.0</version>
+		<artifactId>platform</artifactId>
+		<version>3.1</version>
 	</parent>
 
 	<artifactId>library</artifactId>
