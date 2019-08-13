@@ -1,6 +1,5 @@
 package com.farpost.aot;
 
-import com.farpost.aot.data.LemmaInfo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,7 +11,7 @@ public class TestApplication {
 
 	public static void main(String[] args) throws IOException {
 
-		final LemmaDictionary d = new LemmaDictionary();
+		/*final LemmaDictionary d = new LemmaDictionary();
 		try (final BufferedReader reader = new BufferedReader(
 			new InputStreamReader(System.in)
 		)) {
@@ -26,6 +25,6 @@ public class TestApplication {
 					System.out.println(i);
 				}
 			}
-		}
+		}*/
 	}
 }

@@ -36,7 +36,7 @@ public class LookupBenchmark {
 
 	}
 
-	@Benchmark
+/*	@Benchmark
 	public void lookup(WordList list, Holder holder) {
 		holder.storage.lookup(list.nextWord);
 	}
@@ -53,7 +53,7 @@ public class LookupBenchmark {
 				throw new UncheckedIOException(e);
 			}
 		}
-	}
+	}*/
 
 
 	@State(Benchmark)
