@@ -1,6 +1,6 @@
 package com.farpost.aot.storages;
 
-import com.farpost.aot.data.GrammarInfo;
+import com.farpost.aot.data.MorphologyTag;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,14 +14,14 @@ import static com.farpost.aot.readers.BufferedReaderFabric.createUtf8Reader;
  */
 public class GrammarStorage {
 
-	private final List<List<GrammarInfo>> allVariants = new ArrayList<>();
+	private final List<List<MorphologyTag>> allVariants = new ArrayList<>();
 	private final Map<String, Integer> index = new HashMap<>();
 
 	public GrammarStorage() throws IOException {
 		BufferedReader reader = createUtf8Reader("/tab");
 		for (var i = readLine(reader); i != null; i = readLine(reader)) {
 			allVariants.add(Arrays.stream(i.substring(5).split(" |,"))
-				.map(GrammarInfo::fromString)
+				.map(MorphologyTag::fromString)
 				.collect(Collectors.toList()));
 			index.put(i.substring(0, 2), allVariants.size() - 1);
 		}
@@ -42,7 +42,7 @@ public class GrammarStorage {
 	/**
 	 * @return список всех наборов грамматической информации
 	 */
-	public List<List<GrammarInfo>> getAllVariants() {
+	public List<List<MorphologyTag>> getAllVariants() {
 		return allVariants;
 	}
 

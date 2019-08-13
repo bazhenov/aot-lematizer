@@ -1,7 +1,7 @@
 package com.farpost.aot;
 
 import com.farpost.aot.data.Flexion;
-import com.farpost.aot.data.GrammarInfo;
+import com.farpost.aot.data.MorphologyTag;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -12,13 +12,13 @@ public class InputData {
 	private final Collection<Flexion> collisionFlexions;
 	private final Collection<Flexion> normalFlexion;
 	private final Collection<String> allLemmas;
-	private final Collection<List<GrammarInfo>> grammarInfoVariants;
+	private final Collection<List<MorphologyTag>> grammarInfoVariants;
 
 	private InputData(
 		Collection<Flexion> collisionFlexions,
 		Collection<Flexion> normalFlexion,
 		Collection<String> allLemmas,
-		Collection<List<GrammarInfo>> grammarInfoVariants) {
+		Collection<List<MorphologyTag>> grammarInfoVariants) {
 
 		this.collisionFlexions = collisionFlexions;
 		this.normalFlexion = normalFlexion;
@@ -35,7 +35,7 @@ public class InputData {
 		return normalFlexion;
 	}
 
-	public Collection<List<GrammarInfo>> getGrammarInfoVariants() {
+	public Collection<List<MorphologyTag>> getGrammarInfoVariants() {
 		return grammarInfoVariants;
 	}
 

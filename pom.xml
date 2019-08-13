@@ -7,7 +7,7 @@
 	<artifactId>aot-lematizer</artifactId>
 	<groupId>com.farpost.aot</groupId>
 	<packaging>pom</packaging>
-	<version>2.9</version>
+	<version>3.0</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
