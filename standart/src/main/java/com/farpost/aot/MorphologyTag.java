@@ -90,7 +90,7 @@ public enum MorphologyTag {
 	}
 
 	public static MorphologyTag fromString(final String token) {
-		for (final var info : values()) {
+		for (MorphologyTag info : values()) {
 			if (info.token.equals(token)) {
 				return info;
 			}

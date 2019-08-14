@@ -31,6 +31,7 @@
 		<module>benchmark</module>
 		<module>testapp</module>
 		<module>compiler</module>
+		<module>standart</module>
 	</modules>
 
 	<dependencies>

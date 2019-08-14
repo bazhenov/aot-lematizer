@@ -27,6 +27,7 @@ public class LoadDictionaryBenchmark {
 	@Benchmark
 	@BenchmarkMode(Mode.AverageTime)
 	public void allDataLoading() throws IOException {
+		LemmasReader.readLemmas();
 		//new LemmaDictionary();
 	}
 }

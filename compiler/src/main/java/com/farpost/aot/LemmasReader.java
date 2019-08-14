@@ -6,12 +6,12 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
-final class FlexionsReader {
+final class LemmasReader {
 
 	private static BufferedReader bufferedReaderOfResource(String resourceName) {
 		return new BufferedReader(
 			new InputStreamReader(
-				FlexionsReader.class.getResourceAsStream(resourceName),
+				LemmasReader.class.getResourceAsStream(resourceName),
 				StandardCharsets.UTF_8
 			)
 		);
@@ -29,13 +29,14 @@ final class FlexionsReader {
 		return line;
 	}
 
-	private static Map<String, Collection<MorphologyTag>> readMorphology() throws IOException {
-		var result = new HashMap<String, Collection<MorphologyTag>>();
+	private static Map<String, MorphologyTag[]> readMorphology() throws IOException {
+		var result = new HashMap<String, MorphologyTag[]>();
 		try (var reader = bufferedReaderOfResource("/tab")) {
 			for (var line = readGramtabLine(reader); line != null; line = readGramtabLine(reader)) {
 				result.put(
 					line.substring(0, 2),
-					Arrays.stream(line.substring(5).split("[ ,]")).map(MorphologyTag::fromString).collect(toList())
+					Arrays.stream(line.substring(5).split("[ ,]"))
+						.map(MorphologyTag::fromString).toArray(MorphologyTag[]::new)
 				);
 			}
 		}
@@ -65,8 +66,8 @@ final class FlexionsReader {
 		return result;
 	}
 
-	static Collection<Collection<Flexion>> readFlexions() throws IOException {
-		var result = new ArrayList<Collection<Flexion>>();
+	public static Collection<Flexion[]> readLemmas() throws IOException {
+		var result = new ArrayList<Flexion[]>();
 		var morphMap = readMorphology();
 		try(var reader = bufferedReaderOfResource("/mrd")) {
 			var paradigms = readParadigmsSection(reader);

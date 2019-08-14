@@ -10,7 +10,15 @@
         <version>3.1</version>
     </parent>
 
-    <artifactId>resources-compiler</artifactId>
+    <artifactId>compiler</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.farpost.aot</groupId>
+            <artifactId>bytecode</artifactId>
+            <version>3.1</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
