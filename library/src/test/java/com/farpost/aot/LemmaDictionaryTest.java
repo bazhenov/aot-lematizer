@@ -5,11 +5,10 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 
 public class LemmaDictionaryTest {
 
@@ -32,6 +31,17 @@ public class LemmaDictionaryTest {
 	}
 
 	@Test
+	public void lowerCaseWorkingCorrectly() {
+		List<String> lemmas = d
+			.lookup("Германия")
+			.stream()
+			.map(LemmaInfo::getLemma)
+			.collect(toList());
+
+		assertThat(lemmas, containsInAnyOrder("германия", "германий"));
+	}
+
+	@Test
 	public void testEmptyWordBases() throws IOException {
 		assertThat(d.lookup("человек"), hasSize(1));
 		assertThat(d.lookup("люди"), hasSize(1));
@@ -46,7 +56,7 @@ public class LemmaDictionaryTest {
 
 
 	private static List<String> collectNorms(final List<LemmaInfo> l) {
-		return l.stream().map(LemmaInfo::getLemma).collect(Collectors.toList());
+		return l.stream().map(LemmaInfo::getLemma).collect(toList());
 	}
 
 	@Test

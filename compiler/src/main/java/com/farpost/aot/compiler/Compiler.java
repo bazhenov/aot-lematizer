@@ -2,7 +2,6 @@ package com.farpost.aot.compiler;
 
 import com.farpost.aot.data.Flexion;
 import com.farpost.aot.data.MorphologyTag;
-import com.farpost.aot.compiler.Utils;
 
 import java.io.*;
 import java.util.Arrays;
@@ -13,12 +12,12 @@ import java.util.List;
 public class Compiler {
 
 	public static void main(String[] args) throws IOException {
-		if(args.length == 0) {
+		if (args.length == 0) {
 			return;
 		}
 		var path = args[0];
-		if(new File(path).exists()) {
-			System.out.println("Mrd-file already compiled: "  +path);
+		if (new File(path).exists()) {
+			System.out.println("Mrd-file already compiled: " + path);
 			return;
 		}
 		var data = InputData.prepare();
@@ -82,7 +81,7 @@ public class Compiler {
 
 	private static byte[] bytesFromGrammars(final List<MorphologyTag> line) throws UncheckedIOException {
 
-		if(MorphologyTag.values().length >= 100) {
+		if (MorphologyTag.values().length >= 100) {
 			throw new UncheckedIOException(new IOException("GrammarInfo.values() >= 100"));
 		}
 

@@ -51,7 +51,7 @@ public class LemmaDictionary {
 	}
 
 	public List<LemmaInfo> lookup(String flexion) {
-		flexion = flexion.replace('ё', 'е');
+		flexion = flexion.toLowerCase().replace('ё', 'е');
 		final int[] nor = norFlex.get(flexion.hashCode());
 		if (nor != null) {
 			return lookup(nor);
