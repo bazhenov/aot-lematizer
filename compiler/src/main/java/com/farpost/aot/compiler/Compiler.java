@@ -16,12 +16,14 @@ public class Compiler {
 			return;
 		}
 		var path = args[0];
+
+
 		if (new File(path).exists()) {
-			System.out.println("Mrd-file already compiled: " + path);
+			System.out.println("Mrd-file already compiled: '" + path + "'");
 			return;
 		}
 		var data = InputData.prepare();
-		System.out.print("Compiling /mrd");
+		System.out.print("Compiling mrd-file to path '" + path + "'...");
 		try (var writer = new DataOutputStream(new FileOutputStream(path))) {
 
 			compileWrongFlexions(writer, data.getCollisionFlexions());
@@ -30,7 +32,7 @@ public class Compiler {
 			compileGrammar(writer, data.getGrammarInfoVariants());
 
 		}
-		System.out.println("\nCompilation completed successfully: " + path);
+		System.out.println("\nCompilation completed successfully: '" + path + "'");
 	}
 
 
@@ -41,7 +43,6 @@ public class Compiler {
 			writer.writeInt(wrongFlexion.grammarIndex);
 			writer.write(bytesFromString(wrongFlexion.source));
 		}
-		System.out.print(" .");
 	}
 
 
@@ -52,7 +53,6 @@ public class Compiler {
 			writer.writeInt(normFlexion.grammarIndex);
 			writer.writeInt(normFlexion.source.hashCode());
 		}
-		System.out.print(" .");
 	}
 
 
@@ -61,7 +61,6 @@ public class Compiler {
 		for (var lemma : lemmas) {
 			writer.write(bytesFromString(lemma));
 		}
-		System.out.print(" .");
 	}
 
 

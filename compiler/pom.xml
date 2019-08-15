@@ -32,7 +32,9 @@
 						</goals>
 						<configuration>
 							<mainClass>com.farpost.aot.compiler.Compiler</mainClass>
-							<arguments><argument>library/src/main/resources/MRD.BIN</argument></arguments>
+							<arguments>
+								<argument>${project.parent.basedir}/library/src/main/resources/MRD.BIN</argument>
+							</arguments>
 						</configuration>
 					</execution>
 

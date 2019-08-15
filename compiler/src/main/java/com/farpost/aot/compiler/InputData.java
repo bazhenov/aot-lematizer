@@ -46,11 +46,11 @@ public class InputData {
 
 	public static InputData prepare() throws IOException {
 
-		System.out.println("Parsing /mrd . . .");
+		System.out.println("Parsing mrd-file...");
 		var store = new FlexionStorage();
 		var allFlex = store.getAllFlexion();
 
-		System.out.println("Extracting collisions . . .");
+		System.out.println("Extracting collisions...");
 		var removed = CollisionsFilter.extractCollisions(allFlex).getRemovedCollisions();
 		System.out.println(String.format("Conflict flexions retrieved: %d", removed.size()));
 
