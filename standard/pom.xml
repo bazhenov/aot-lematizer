@@ -9,8 +9,7 @@
         <artifactId>platform</artifactId>
         <version>3.1</version>
     </parent>
-
-    <artifactId>bytecode</artifactId>
+    <artifactId>standard</artifactId>
 
     
 </project>

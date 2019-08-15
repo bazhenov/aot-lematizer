@@ -31,7 +31,7 @@ public class CollisionDetector {
 			.size() > 1;
 	}
 
-	public static HashCollisions findCollisions(Collection<Flexion[]> flexions) {
+	public static HashCollisions findCollisions(Collection<Collection<Flexion>> flexions) {
 		var hashToFlex = new HashMap<Integer, List<Flexion>>();
 		for (var i : flexions) {
 			for (var j : i) {

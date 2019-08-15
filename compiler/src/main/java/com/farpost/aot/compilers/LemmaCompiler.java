@@ -1,28 +1,26 @@
 package com.farpost.aot.compilers;
 
 import com.farpost.aot.Bytecode;
-import com.farpost.aot.CompilerFabric;
 import com.farpost.aot.Flexion;
 import com.farpost.aot.MorphologyTag;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * Компилятор наборов флексий (лемм)
  */
-public class LemmaCompiler extends Compiler<Flexion[]> {
-	private final Compiler<String>
-		flexionCompiler = CompilerFabric.createCompilerFor(String.class);
-	private final Compiler<MorphologyTag[]>
-		morphologyCompiler = CompilerFabric.createCompilerFor(MorphologyTag[].class);
+public class LemmaCompiler extends Compiler<Collection<Flexion>> {
+	private final Compiler<String> flexionCompiler = new FlexionStringsCompiler();
+	private final Compiler<Set<MorphologyTag>> morphologyCompiler = new MorphologyTagCompiler();
 
 	public LemmaCompiler() throws IOException {
 		super("target/LEMMAS.BIN");
 	}
 
 	@Override
-	protected int pushBytes(Flexion[] line) throws IOException {
+	protected int pushBytes(Collection<Flexion> line) throws IOException {
 		int bytesCounter = 0;
 		for(var flexion: line) {
 			writer.writeInt(flexionCompiler.compile(flexion.getString()));

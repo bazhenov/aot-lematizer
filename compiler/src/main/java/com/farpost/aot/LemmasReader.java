@@ -3,8 +3,9 @@ package com.farpost.aot;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 final class LemmasReader {
 
@@ -29,14 +30,14 @@ final class LemmasReader {
 		return line;
 	}
 
-	private static Map<String, MorphologyTag[]> readMorphology() throws IOException {
-		var result = new HashMap<String, MorphologyTag[]>();
+	private static Map<String, Set<MorphologyTag>> readMorphology() throws IOException {
+		var result = new HashMap<String, Set<MorphologyTag>>();
 		try (var reader = bufferedReaderOfResource("/tab")) {
 			for (var line = readGramtabLine(reader); line != null; line = readGramtabLine(reader)) {
 				result.put(
 					line.substring(0, 2),
 					Arrays.stream(line.substring(5).split("[ ,]"))
-						.map(MorphologyTag::fromString).toArray(MorphologyTag[]::new)
+						.map(MorphologyTag::fromString).collect(toSet())
 				);
 			}
 		}
@@ -66,8 +67,8 @@ final class LemmasReader {
 		return result;
 	}
 
-	public static Collection<Flexion[]> readLemmas() throws IOException {
-		var result = new ArrayList<Flexion[]>();
+	public static Collection<Collection<Flexion>> readLemmas() throws IOException {
+		var result = new ArrayList<Collection<Flexion>>();
 		var morphMap = readMorphology();
 		try(var reader = bufferedReaderOfResource("/mrd")) {
 			var paradigms = readParadigmsSection(reader);
@@ -82,7 +83,7 @@ final class LemmasReader {
 					continue;
 				}
 				var tokens = line.split(" ");
-				result.add(Flexion.from(tokens[0], paradigms.get(Integer.parseInt(tokens[1])), morphMap));
+				result.add(FlexionFabric.createFlexions(tokens[0], paradigms.get(Integer.parseInt(tokens[1])), morphMap));
 			}
 		}
 		return result;

@@ -7,6 +7,7 @@ import java.io.IOException;
 
 /**
  * Компилятор морфологических сущностей
+ *
  * @param <T> тип для компиляции
  */
 public abstract class Compiler<T> implements Closeable {
@@ -18,8 +19,6 @@ public abstract class Compiler<T> implements Closeable {
 	protected final DataOutputStream writer;
 
 	/**
-	 * Конструктор
-	 *
 	 * @param resultPath путь где должен быть расположен скомпилированный бинарный файл
 	 */
 	public Compiler(String resultPath) throws IOException {
@@ -29,6 +28,7 @@ public abstract class Compiler<T> implements Closeable {
 
 	/**
 	 * Метод компилирует объект и возвращает количество байт
+	 *
 	 * @param line объект который будет скомпилирован в байтовую строку в файле
 	 * @return количество байт занимаемых этой строкой
 	 */
@@ -46,27 +46,20 @@ public abstract class Compiler<T> implements Closeable {
 	}
 
 	/**
-	 * Метод возвращает путь к скомпилированному файлу
-	 *
 	 * @return путь к скомпилированному файлу
 	 */
 	public String getPathToCompiledFile() {
 		return path;
 	}
 
-
 	/**
-	 * Метод сообщает сколько байт лежит в компилируемом на данный момент файле
-	 *
-	 * @return количество байт
+	 * @return количество байт в компилируемом файле на данный момент
 	 */
 	public int getBytesCounter() {
 		return bytesCounter;
 	}
 
 	/**
-	 * Возвращает количество скомпилированных строк
-	 *
 	 * @return количество скомпилированных строк
 	 */
 	public int getLinesCounter() {

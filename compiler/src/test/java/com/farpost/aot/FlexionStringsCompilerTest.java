@@ -1,6 +1,7 @@
 package com.farpost.aot;
 
 import com.farpost.aot.compilers.Compiler;
+import com.farpost.aot.compilers.FlexionStringsCompiler;
 import org.testng.annotations.Test;
 
 import java.io.FileInputStream;
@@ -16,12 +17,14 @@ public class FlexionStringsCompilerTest {
 
 		final int normalSize = ("яблоко" + "Варенье" + "мёд").length() + 3; // +3 символа \n
 
-		try (var c = CompilerFabric.createCompilerFor(String.class)) {
-			c.compile("яблоко");
-			c.compile("Варенье");
-			c.compile("мёд");
-			assertThat(c.getBytesCounter(), equalTo(normalSize));
-			try (var reader = new FileInputStream(c.getPathToCompiledFile())) {
+		try (var strCompiler = new FlexionStringsCompiler()) {
+			strCompiler.compile("яблоко");
+			strCompiler.compile("Варенье");
+			strCompiler.compile("мёд");
+
+			assertThat(strCompiler.getBytesCounter(), equalTo(normalSize));
+
+			try (var reader = new FileInputStream(strCompiler.getPathToCompiledFile())) {
 				assertThat(reader.readAllBytes().length, equalTo(normalSize));
 			}
 		}
