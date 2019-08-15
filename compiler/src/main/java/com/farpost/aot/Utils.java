@@ -1,4 +1,4 @@
-package com.farpost.aot.compiler;
+package com.farpost.aot;
 
 public class Utils {
 

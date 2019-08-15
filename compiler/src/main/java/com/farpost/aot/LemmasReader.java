@@ -1,6 +1,4 @@
-package com.farpost.aot.compiler;
-
-import com.farpost.aot.MorphologyTag;
+package com.farpost.aot;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +6,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toList;
 
 final class LemmasReader {
 
@@ -33,14 +31,14 @@ final class LemmasReader {
 		return line;
 	}
 
-	private static Map<String, Set<MorphologyTag>> readMorphology() throws IOException {
-		var result = new HashMap<String, Set<MorphologyTag>>();
+	private static Map<String, List<MorphologyTag>> readMorphology() throws IOException {
+		var result = new HashMap<String, List<MorphologyTag>>();
 		try (var reader = bufferedReaderOfResource("/tab")) {
 			for (var line = readGramtabLine(reader); line != null; line = readGramtabLine(reader)) {
 				result.put(
 					line.substring(0, 2),
 					Arrays.stream(line.substring(5).split("[ ,]"))
-						.map(MorphologyTag::fromString).collect(toSet())
+						.map(MorphologyTag::fromString).collect(toList())
 				);
 			}
 		}
@@ -70,8 +68,8 @@ final class LemmasReader {
 		return result;
 	}
 
-	public static Collection<Collection<Flexion>> readLemmas() throws IOException {
-		var result = new ArrayList<Collection<Flexion>>();
+	public static Collection<List<CompilerFlexion>> readLemmas() throws IOException {
+		var result = new ArrayList<List<CompilerFlexion>>();
 		var morphMap = readMorphology();
 		try(var reader = bufferedReaderOfResource("/mrd")) {
 			var paradigms = readParadigmsSection(reader);

@@ -1,20 +1,15 @@
 package com.farpost.aot;
 
-import com.farpost.aot.compiler.FlexionStringsCompiler;
 import org.testng.annotations.Test;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 
 public class FlexionStringsCompilerTest {
 
 	@Test
 	public void compilationIsCorrect() throws IOException {
 
-		final int normalSize = ("яблоко" + "Варенье" + "мёд").length() + 3; // +3 символа \n
+		/*final int normalSize = ("яблоко" + "Варенье" + "мёд").length() + 3; // +3 символа \n
 
 		try (var strCompiler = new FlexionStringsCompiler()) {
 			strCompiler.compile("яблоко");
@@ -26,6 +21,6 @@ public class FlexionStringsCompilerTest {
 			try (var reader = new FileInputStream(strCompiler.getPathToCompiledFile())) {
 				assertThat(reader.readAllBytes().length, equalTo(normalSize));
 			}
-		}
+		}*/
 	}
 }

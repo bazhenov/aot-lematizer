@@ -1,7 +1,5 @@
-package com.farpost.aot.compiler;
+package com.farpost.aot;
 
-
-import com.farpost.aot.Flexion;
 
 import java.util.*;
 
@@ -26,15 +24,15 @@ public class CollisionDetector {
 		}
 	}
 
-	private static boolean isCollision(Collection<Flexion> flexionsWithOneHash) {
+	private static boolean isCollision(Collection<CompilerFlexion> flexionsWithOneHash) {
 		return flexionsWithOneHash.stream()
-			.map(Flexion::getString)
+			.map(CompilerFlexion::getString)
 			.collect(toSet())
 			.size() > 1;
 	}
 
-	public static HashCollisions findCollisions(Collection<Collection<Flexion>> flexions) {
-		var hashToFlex = new HashMap<Integer, List<Flexion>>();
+	public static HashCollisions findCollisions(Collection<List<CompilerFlexion>> flexions) {
+		var hashToFlex = new HashMap<Integer, List<CompilerFlexion>>();
 		for (var i : flexions) {
 			for (var j : i) {
 				hashToFlex

@@ -1,13 +1,13 @@
 package com.farpost.aot;
 
-import java.util.Set;
+import java.util.List;
 
 public class Flexion {
 	private final String string;
-	private final Set<MorphologyTag> morphologyTags;
+	private final List<MorphologyTag> morphologyTags;
 	private final Flexion lemma;
 
-	public Flexion(String string, Set<MorphologyTag> tags, Flexion lemma) {
+	public Flexion(String string, List<MorphologyTag> tags, Flexion lemma) {
 		this.string = string;
 		morphologyTags = tags;
 		this.lemma = lemma == null ? this : lemma; // если леммы нет, то лемма - это сама флексия
@@ -21,7 +21,7 @@ public class Flexion {
 		return lemma;
 	}
 
-	public Set<MorphologyTag> getTags() {
+	public List<MorphologyTag> getTags() {
 		return morphologyTags;
 	}
 }

@@ -1,6 +1,6 @@
 package com.farpost.aot;
 
-public final class Bytecode {
+public class Bytecode {
 
 	public static final byte endOfCompiledLine = 100;
 
