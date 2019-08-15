@@ -13,7 +13,10 @@ import java.util.List;
 public class Compiler {
 
 	public static void main(String[] args) throws IOException {
-		var path = "library/src/main/resources/MRD.BIN";
+		if(args.length == 0) {
+			return;
+		}
+		var path = args[0];
 		if(new File(path).exists()) {
 			System.out.println("Mrd-file already compiled: "  +path);
 			return;

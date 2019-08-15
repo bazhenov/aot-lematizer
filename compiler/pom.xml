@@ -21,28 +21,33 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.6.0</version>
+
 				<executions>
+
 					<execution>
-						<id>on-test</id>
+						<id>compile-mrd-on-test</id>
 						<phase>generate-test-resources</phase>
 						<goals>
 							<goal>java</goal>
 						</goals>
 						<configuration>
 							<mainClass>com.farpost.aot.compiler.Compiler</mainClass>
+							<arguments><argument>library/src/main/resources/MRD.BIN</argument></arguments>
 						</configuration>
 					</execution>
 
 					<execution>
 						<phase>generate-test-resources</phase>
-						<id>on-package</id>
+						<id>compile-mrd-on-package</id>
 						<goals>
 							<goal>java</goal>
 						</goals>
 						<configuration>
 							<mainClass>com.farpost.aot.compiler.Compiler</mainClass>
+							<arguments><argument>library/src/main/resources/MRD.BIN</argument></arguments>
 						</configuration>
 					</execution>
+
 				</executions>
 			</plugin>
 
