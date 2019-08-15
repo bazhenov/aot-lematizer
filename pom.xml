@@ -7,7 +7,7 @@
 	<artifactId>platform</artifactId>
 	<groupId>com.farpost.aot</groupId>
 	<packaging>pom</packaging>
-	<version>3.1</version>
+	<version>3.2</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -27,10 +27,11 @@
 	</distributionManagement>
 
 	<modules>
+		<!--Этот модуль расположен перед модулем library не случайно, от этого зависит правильная генерация ресурсов library-->
+		<module>compiler</module>
 		<module>library</module>
 		<module>benchmark</module>
 		<module>testapp</module>
-		<module>compiler</module>
 		<module>loader</module>
 	</modules>
 

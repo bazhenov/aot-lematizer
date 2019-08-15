@@ -7,13 +7,45 @@
 	<parent>
 		<groupId>com.farpost.aot</groupId>
 		<artifactId>platform</artifactId>
-		<version>3.1</version>
+		<version>3.2</version>
 	</parent>
 
 	<artifactId>compiler</artifactId>
 
 	<build>
+
+
 		<plugins>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.6.0</version>
+				<executions>
+					<execution>
+						<id>on-test</id>
+						<phase>generate-test-resources</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<mainClass>com.farpost.aot.compiler.Compiler</mainClass>
+						</configuration>
+					</execution>
+
+					<execution>
+						<phase>generate-test-resources</phase>
+						<id>on-package</id>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<mainClass>com.farpost.aot.compiler.Compiler</mainClass>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -31,7 +63,7 @@
 		<dependency>
 			<groupId>com.farpost.aot</groupId>
 			<artifactId>loader</artifactId>
-			<version>3.1</version>
+			<version>3.2</version>
 		</dependency>
 	</dependencies>
 

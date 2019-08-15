@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.joining;
 
 public class LemmaInfo {
 
@@ -21,25 +22,32 @@ public class LemmaInfo {
 		this.lemma = requireNonNull(lemma);
 	}
 
+	/**
+	 * @return id леммы
+	 */
 	public int getId() {
 		return lemmaIndex;
 	}
 
+	/**
+	 * @return множество флексий
+	 */
 	public Collection<FlexionInfo> getFlexions() {
 		return flexions;
 	}
 
+	/**
+	 * @return исходная форма слова
+	 */
 	public String getLemma() {
 		return lemma;
 	}
 
 	@Override
 	public String toString() {
-		final StringBuilder builder = new StringBuilder()
-			.append('<').append(lemma);
-		for (final FlexionInfo i : flexions) {
-			builder.append(", ").append(i.toString());
-		}
-		return builder.append('>').toString();
+		String flexions = this.flexions.stream()
+			.map(Object::toString)
+			.collect(joining(", "));
+		return String.format("<%s %s>", lemma, flexions);
 	}
 }

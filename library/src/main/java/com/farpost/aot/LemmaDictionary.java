@@ -2,15 +2,10 @@ package com.farpost.aot;
 
 import com.farpost.aot.data.FlexionInfo;
 import com.farpost.aot.data.LemmaInfo;
-import com.farpost.aot.storages.CollisionFlexionStorage;
-import com.farpost.aot.storages.GrammarStorage;
-import com.farpost.aot.storages.LemmaStorage;
-import com.farpost.aot.storages.NormalFlexionStorage;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class LemmaDictionary {

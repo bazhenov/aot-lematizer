@@ -1,11 +1,11 @@
-package com.farpost.aot.storages;
+package com.farpost.aot;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.farpost.aot.func.Decompiler.readLine;
+import static com.farpost.aot.Decompiler.readLine;
 
 /**
  * Класс - хранилище служебной информации о флексиях,
@@ -13,7 +13,7 @@ import static com.farpost.aot.func.Decompiler.readLine;
  * не могут быть сохранены в основеном хранилище по хешу.
  * Здесь они хранятся напрямую по строке.
  */
-public class CollisionFlexionStorage {
+class CollisionFlexionStorage {
 
 	private final Map<String, int[]> map = new HashMap<>();
 

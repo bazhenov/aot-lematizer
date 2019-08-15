@@ -1,4 +1,4 @@
-package com.farpost.aot.storages;
+package com.farpost.aot;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Хранилище флексий
  */
-public class NormalFlexionStorage {
+class NormalFlexionStorage {
 
 	private final Map<Integer, int[]> normalFlexions = new HashMap<>();
 

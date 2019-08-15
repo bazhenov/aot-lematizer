@@ -12,12 +12,12 @@ import static com.farpost.aot.readers.BufferedReaderFabric.createUtf8Reader;
 /**
  * Хранилище грамматической информации
  */
-public class GrammarStorage {
+public class GrammarStoragePrev {
 
 	private final List<List<MorphologyTag>> allVariants = new ArrayList<>();
 	private final Map<String, Integer> index = new HashMap<>();
 
-	public GrammarStorage() throws IOException {
+	public GrammarStoragePrev() throws IOException {
 		BufferedReader reader = createUtf8Reader("/tab");
 		for (var i = readLine(reader); i != null; i = readLine(reader)) {
 			allVariants.add(Arrays.stream(i.substring(5).split(" |,"))
@@ -53,6 +53,5 @@ public class GrammarStorage {
 	public int getVariantIndex(final String ancode) {
 		return index.get(ancode);
 	}
-
 
 }

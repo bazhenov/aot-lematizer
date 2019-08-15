@@ -1,24 +1,26 @@
-package com.farpost.aot;
+package com.farpost.aot.compiler;
 
 import com.farpost.aot.data.Flexion;
 import com.farpost.aot.data.MorphologyTag;
-import me.bazhenov.aot.Utils;
+import com.farpost.aot.compiler.Utils;
 
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.UncheckedIOException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 
-final class Compiler {
+public class Compiler {
 
 	public static void main(String[] args) throws IOException {
+		var path = "library/src/main/resources/MRD.BIN";
+		if(new File(path).exists()) {
+			System.out.println("Mrd-file already compiled: "  +path);
+			return;
+		}
 		var data = InputData.prepare();
 		System.out.print("Compiling /mrd");
-		try (var writer = new DataOutputStream(new FileOutputStream("library/src/main/resources/MRD.BIN"))) {
+		try (var writer = new DataOutputStream(new FileOutputStream(path))) {
 
 			compileWrongFlexions(writer, data.getCollisionFlexions());
 			compileNormalFlexions(writer, data.getNormalFlexions());
@@ -26,7 +28,7 @@ final class Compiler {
 			compileGrammar(writer, data.getGrammarInfoVariants());
 
 		}
-		System.out.println("\nCompilation completed successfully: library/src/main/resources/MRD.BIN");
+		System.out.println("\nCompilation completed successfully: " + path);
 	}
 
 

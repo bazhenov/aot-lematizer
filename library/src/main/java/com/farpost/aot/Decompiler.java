@@ -1,7 +1,7 @@
-package com.farpost.aot.func;
+package com.farpost.aot;
 
 import com.farpost.aot.data.MorphologyTag;
-import me.bazhenov.aot.Utils;
+import com.farpost.aot.Utils;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -10,19 +10,22 @@ import java.util.Arrays;
 /**
  * Класс хранит общую для всех информацию о преобразованиях из байтов в объекты
  */
-public final class Decompiler {
+final class Decompiler {
 
 	/**
 	 * оптимизация чтобы не выделять каждый раз память под буфер юникодных символов
 	 * 36 - длина наибольшей флексии, поэтому больше нам и не потребуется
 	 */
 	private static final char[] strBuf = new char[36];
+	/**
+	 * Аналогичная оптимизация для грамматики
+	 */
+	private static final MorphologyTag[] grmBuf = new MorphologyTag[12];
 
 	/**
 	 * Читает из потока байт юникодную строку
 	 * @param reader поток байт
 	 * @return строка
-	 * @throws IOException
 	 */
 	public static synchronized String readLine(DataInputStream reader) throws IOException {
 		int index = -1;
@@ -32,10 +35,7 @@ public final class Decompiler {
 		return String.valueOf(strBuf, 0, index + 1);
 	}
 
-	/**
-	 * Аналогичная оптимизация для грамматики
-	 */
-	private static final MorphologyTag[] grmBuf = new MorphologyTag[12];
+
 
 	/**
 	 * Читает из потока байт набор грамматики

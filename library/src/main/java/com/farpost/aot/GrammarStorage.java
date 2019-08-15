@@ -1,4 +1,4 @@
-package com.farpost.aot.storages;
+package com.farpost.aot;
 
 import com.farpost.aot.data.MorphologyTag;
 
@@ -7,12 +7,12 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static com.farpost.aot.func.Decompiler.*;
+import static com.farpost.aot.Decompiler.*;
 
 /**
  * Хранилище наборов грамматической информации, доступных по индексу.
  */
-public class GrammarStorage {
+class GrammarStorage {
 
 	private final MorphologyTag[][] lines;
 

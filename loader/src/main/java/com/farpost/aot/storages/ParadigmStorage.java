@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 public class ParadigmStorage {
 
 	private final List<Paradigm> pars = new ArrayList<>();
-	private final GrammarStorage gram;
+	private final GrammarStoragePrev gram;
 
-	public ParadigmStorage(final MrdReader reader, final GrammarStorage gram) throws IOException {
+	public ParadigmStorage(final MrdReader reader, final GrammarStoragePrev gram) throws IOException {
 		this.gram = gram;
 		final var len = reader.readLong();
 		for (var i = 0; i < len; ++i) {

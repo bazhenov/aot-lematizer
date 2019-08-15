@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>com.farpost.aot</groupId>
 		<artifactId>platform</artifactId>
-		<version>3.1</version>
+		<version>3.2</version>
 	</parent>
 
 	<artifactId>loader</artifactId>

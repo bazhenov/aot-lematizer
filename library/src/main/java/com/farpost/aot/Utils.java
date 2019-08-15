@@ -1,10 +1,6 @@
-package me.bazhenov.aot;
+package com.farpost.aot;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.util.function.Consumer;
-
-public class Utils {
+class Utils {
 
 	public static char safeByteToChar(byte b) {
 		char c = byteToChar(b);

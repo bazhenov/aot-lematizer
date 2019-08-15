@@ -1,4 +1,8 @@
-package me.bazhenov.aot;
+package com.farpost.aot.compiler;
+
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.util.function.Consumer;
 
 public class Utils {
 

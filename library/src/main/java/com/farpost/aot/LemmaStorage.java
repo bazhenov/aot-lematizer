@@ -1,15 +1,15 @@
-package com.farpost.aot.storages;
+package com.farpost.aot;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static com.farpost.aot.func.Decompiler.readLine;
+import static com.farpost.aot.Decompiler.readLine;
 
 /**
  * Хранилище лемм, доступных по индексу
  */
-public class LemmaStorage {
+class LemmaStorage {
 
 	private final String[] lines;
 

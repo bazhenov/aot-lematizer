@@ -1,7 +1,9 @@
 package com.farpost.aot.data;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class FlexionInfo {
 
@@ -13,18 +15,18 @@ public class FlexionInfo {
 		this.allMorphologyTags = allMorphologyTags;
 	}
 
+	/**
+	 * @return часть речи
+	 */
 	public PartOfSpeech getPartOfSpeech() {
 		return partOfSpeech;
 	}
 
 	/**
-	 * Возвращает иммутабельную коллекцию тегов
-	 *
-	 * @return список тегов
+	 * @return множество морфологических тегов
 	 */
-	public List<MorphologyTag> getAllTags() {
-		return Arrays.asList(allMorphologyTags);
-
+	public Set<MorphologyTag> getAllTags() {
+		return new HashSet<>(Arrays.asList(allMorphologyTags));
 	}
 
 	/**

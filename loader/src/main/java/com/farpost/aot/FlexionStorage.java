@@ -3,7 +3,7 @@ package com.farpost.aot;
 import com.farpost.aot.data.Flexion;
 import com.farpost.aot.data.MorphologyTag;
 import com.farpost.aot.readers.MrdReader;
-import com.farpost.aot.storages.GrammarStorage;
+import com.farpost.aot.storages.GrammarStoragePrev;
 import com.farpost.aot.storages.ParadigmStorage;
 
 import java.io.IOException;
@@ -19,7 +19,7 @@ import static java.util.stream.Collectors.joining;
  */
 public class FlexionStorage {
 
-	private final GrammarStorage gram = new GrammarStorage();
+	private final GrammarStoragePrev gram = new GrammarStoragePrev();
 	private final List<String> lemmas = new ArrayList<>();
 	private final List<Flexion> flexions = new ArrayList<>();
 
