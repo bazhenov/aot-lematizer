@@ -1,12 +1,10 @@
-package com.farpost.aot.compilers;
+package com.farpost.aot.compiler;
 
 import com.farpost.aot.Bytecode;
 import com.farpost.aot.MorphologyTag;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 /**

@@ -1,4 +1,4 @@
-package com.farpost.aot.compilers;
+package com.farpost.aot.compiler;
 
 import java.io.Closeable;
 import java.io.DataOutputStream;

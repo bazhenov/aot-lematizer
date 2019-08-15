@@ -1,4 +1,4 @@
-package com.farpost.aot.compilers;
+package com.farpost.aot.compiler;
 
 import com.farpost.aot.Bytecode;
 import com.farpost.aot.Flexion;

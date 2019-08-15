@@ -1,8 +1,8 @@
-package com.farpost.aot.compilers;
+package com.farpost.aot.compiler;
 
 import com.farpost.aot.Bytecode;
 
-import java.io.*;
+import java.io.IOException;
 
 /**
  * Компилятор строк флексий
@@ -18,7 +18,7 @@ public class FlexionStringsCompiler extends Compiler<String> {
 	protected int pushBytes(String s) throws IOException {
 		var bytes = new byte[s.length() + 1];
 		for(var i = 0; i < s.length(); ++i) {
-			bytes[i] = me.bazhenov.aot.Utils.charToByte(s.charAt(i));
+			bytes[i] = Utils.charToByte(s.charAt(i));
 		}
 		bytes[s.length()] = Bytecode.endOfCompiledLine;
 		writer.write(bytes);

@@ -1,4 +1,4 @@
-package com.farpost.aot;
+package com.farpost.aot.compiler;
 
 import java.io.IOException;
 

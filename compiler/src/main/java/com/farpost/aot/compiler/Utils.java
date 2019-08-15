@@ -1,4 +1,4 @@
-package me.bazhenov.aot;
+package com.farpost.aot.compiler;
 
 public class Utils {
 

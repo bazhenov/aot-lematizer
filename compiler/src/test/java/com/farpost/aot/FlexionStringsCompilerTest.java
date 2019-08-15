@@ -1,14 +1,13 @@
 package com.farpost.aot;
 
-import com.farpost.aot.compilers.Compiler;
-import com.farpost.aot.compilers.FlexionStringsCompiler;
+import com.farpost.aot.compiler.FlexionStringsCompiler;
 import org.testng.annotations.Test;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
 
 public class FlexionStringsCompilerTest {
 

@@ -1,9 +1,12 @@
-package com.farpost.aot;
+package com.farpost.aot.compiler;
 
-import java.io.*;
+import com.farpost.aot.MorphologyTag;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -83,7 +86,7 @@ final class LemmasReader {
 					continue;
 				}
 				var tokens = line.split(" ");
-				result.add(FlexionFabric.createFlexions(tokens[0], paradigms.get(Integer.parseInt(tokens[1])), morphMap));
+				result.add(FlexionFabric.createFlexions(tokens[0], paradigms.get(Integer.parseInt(tokens[1])), morphMap, result.size()));
 			}
 		}
 		return result;
