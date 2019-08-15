@@ -20,20 +20,20 @@ public class LemmaDictionaryTest {
 
 	@Test
 	public void dictionaryShouldBeAbleToFindExistentWords() throws IOException {
-		assertThat(d.lookup("краснеющий"), hasSize(1));
-		assertThat(d.lookup("дорога"), hasSize(2));
-		assertThat(d.lookup("клавиатура"), hasSize(1));
+		assertThat(d.preLookup("краснеющий"), hasSize(1));
+		assertThat(d.preLookup("дорога"), hasSize(2));
+		assertThat(d.preLookup("клавиатура"), hasSize(1));
 	}
 
 	@Test
 	public void dictionaryShouldNotFindNotRealWords() throws IOException {
-		assertThat(d.lookup("фентифлюшка"), hasSize(0));
+		assertThat(d.preLookup("фентифлюшка"), hasSize(0));
 	}
 
 	@Test
 	public void lowerCaseWorkingCorrectly() {
 		List<String> lemmas = d
-			.lookup("Германия")
+			.preLookup("Германия")
 			.stream()
 			.map(LemmaInfo::getLemma)
 			.collect(toList());
@@ -43,15 +43,15 @@ public class LemmaDictionaryTest {
 
 	@Test
 	public void testEmptyWordBases() throws IOException {
-		assertThat(d.lookup("человек"), hasSize(1));
-		assertThat(d.lookup("люди"), hasSize(1));
-		assertThat(d.lookup("ребёнок"), hasSize(1));
-		assertThat(d.lookup("дети"), hasSize(1));
+		assertThat(d.preLookup("человек"), hasSize(1));
+		assertThat(d.preLookup("люди"), hasSize(1));
+		assertThat(d.preLookup("ребёнок"), hasSize(1));
+		assertThat(d.preLookup("дети"), hasSize(1));
 	}
 
 	@Test
 	public void shouldNotThrowExceptionIfWordHasUnknownCharacter() throws IOException {
-		assertThat(d.lookup("super#starnge@string"), hasSize(0));
+		assertThat(d.preLookup("super#starnge@string"), hasSize(0));
 	}
 
 
@@ -61,29 +61,29 @@ public class LemmaDictionaryTest {
 
 	@Test
 	public void dictionaryShouldBeAbleToReturnWordNorms() throws IOException {
-		assertThat(collectNorms(d.lookup("дорога")), hasItems("дорога", "дорогой"));
-		assertThat(collectNorms(d.lookup("черномырдину")), hasItems("черномырдин"));
+		assertThat(collectNorms(d.preLookup("дорога")), hasItems("дорога", "дорогой"));
+		assertThat(collectNorms(d.preLookup("черномырдину")), hasItems("черномырдин"));
 	}
 
 	@Test
 	public void regression1() {
-		assertThat(collectNorms(d.lookup("замок")), hasItems("замок", "замокнуть"));
+		assertThat(collectNorms(d.preLookup("замок")), hasItems("замок", "замокнуть"));
 	}
 
 	@Test
 	public void regression3() {
-		assertThat(d.lookup("и"), hasSize(2));
+		assertThat(d.preLookup("и"), hasSize(2));
 	}
 
 
 	@Test
 	public void regression2() throws IOException {
-		assertThat(collectNorms(d.lookup("придет")), hasItems("прийти"));
+		assertThat(collectNorms(d.preLookup("придет")), hasItems("прийти"));
 	}
 
 	@Test
 	public void dictionaryShouldBeAbleToReturnWordNormsForEmptyBases() throws IOException {
-		List<String> norms = collectNorms(d.lookup("люди"));
+		List<String> norms = collectNorms(d.preLookup("люди"));
 		assertThat(norms, hasSize(1));
 		assertThat(norms, hasItems("человек"));
 	}

@@ -38,7 +38,7 @@ public class LookupBenchmark {
 
 	@Benchmark
 	public void lookup(WordList list, Holder holder) {
-		holder.storage.lookup(list.nextWord);
+		holder.storage.preLookup(list.nextWord);
 	}
 
 	@State(Benchmark)

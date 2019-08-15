@@ -2,7 +2,6 @@ package com.farpost.aot.data;
 
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
@@ -32,7 +31,7 @@ public class LemmaInfo {
 	/**
 	 * @return множество флексий
 	 */
-	public Collection<FlexionInfo> getFlexions() {
+	public List<FlexionInfo> getFlexions() {
 		return flexions;
 	}
 

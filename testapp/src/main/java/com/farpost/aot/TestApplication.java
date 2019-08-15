@@ -17,7 +17,7 @@ public class TestApplication {
 			new InputStreamReader(System.in)
 		)) {
 			while (!currentThread().isInterrupted()) {
-				final var res = d.lookup(reader.readLine());
+				final var res = d.preLookup(reader.readLine());
 				if (res.isEmpty()) {
 					System.out.println(res);
 					continue;

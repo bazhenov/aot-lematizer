@@ -50,22 +50,29 @@ public class LemmaDictionary {
 		return res;
 	}
 
-	public List<LemmaInfo> lookup(String flexion) {
+	private static boolean isInvalidSymbol(char j) {
+		return !((j >= 'а' && j <= 'я') || j == '-');
+	}
 
-		//TODO: сделать более мощную проверку на вхождение всех символов в диапазон (маленькие буквы кириллицы + символ '-').
+	public List<LemmaInfo> preLookup(String flexion) {
 
-		// В новой версии библиотеки (с поиском всех флексий каждой леммы по одной входной флексии) этого недостатка не будет вообще.
+
+		flexion = flexion.toLowerCase().replace('ё', 'е');
 
 		//чтобы не было коллизий хеша с теми строками,
 		// которых нет среди флексий вообще,
 		// отфильтровываем строки которые не могут быть словами
+		// В новой версии библиотеки этого недостатка не будет.
 		for (int i = 0; i < flexion.length(); ++i) {
-			if (Character.isDigit(flexion.charAt(i))) {
+			if (isInvalidSymbol(flexion.charAt(i))) {
 				return new ArrayList<>();
 			}
 		}
 
-		flexion = flexion.toLowerCase().replace('ё', 'е');
+		// Исправить ошибки с совпадением хеша с "левыми" словами
+		//туманка
+		//<тулянка [С, жр, ед, им]>
+
 		final int[] nor = norFlex.get(flexion.hashCode());
 		if (nor != null) {
 			return lookup(nor);
@@ -76,4 +83,5 @@ public class LemmaDictionary {
 		}
 		return new ArrayList<>();
 	}
+
 }
