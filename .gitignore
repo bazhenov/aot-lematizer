@@ -3,3 +3,9 @@
 /target
 /library/src/main/resources/MRD.BIN
 /bin
+/testapp/pom.xml.versionsBackup
+/benchmark/pom.xml.versionsBackup
+/loader/pom.xml.versionsBackup
+/library/pom.xml.versionsBackup
+/pom.xml.versionsBackup
+/compiler/pom.xml.versionsBackup

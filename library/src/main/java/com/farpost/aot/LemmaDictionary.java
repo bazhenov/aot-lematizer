@@ -51,6 +51,20 @@ public class LemmaDictionary {
 	}
 
 	public List<LemmaInfo> lookup(String flexion) {
+
+		//TODO: сделать более мощную проверку на вхождение всех символов в диапазон (маленькие буквы кириллицы + символ '-').
+
+		// В новой версии библиотеки (с поиском всех флексий каждой леммы по одной входной флексии) этого недостатка не будет вообще.
+
+		//чтобы не было коллизий хеша с теми строками,
+		// которых нет среди флексий вообще,
+		// отфильтровываем строки которые не могут быть словами
+		for (int i = 0; i < flexion.length(); ++i) {
+			if (Character.isDigit(flexion.charAt(i))) {
+				return new ArrayList<>();
+			}
+		}
+
 		flexion = flexion.toLowerCase().replace('ё', 'е');
 		final int[] nor = norFlex.get(flexion.hashCode());
 		if (nor != null) {
