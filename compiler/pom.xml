@@ -23,6 +23,43 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+
+                <executions>
+
+                    <execution>
+                        <id>compile-mrd-if-test</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>com.farpost.aot.Main</mainClass>
+                            <arguments>
+                                <argument>${project.parent.basedir}/lematizer/src/main/resources/MRD.BIN</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <phase>generate-test-resources</phase>
+                        <id>compile-mrd-if-package</id>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>com.farpost.aot.Main</mainClass>
+                            <arguments>
+                                <argument>lematizer/src/main/resources/MRD.BIN</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>

@@ -1,6 +1,4 @@
-package com.farpost.aot.compiler;
-
-import com.farpost.aot.MorphologyTag;
+package com.farpost.aot;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,14 +8,17 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toSet;
 
+/**
+ * Класс считывает из ресурсов набор лемм
+ */
 final class LemmasReader {
 
 	private static BufferedReader bufferedReaderOfResource(String resourceName) {
 		return new BufferedReader(
-			new InputStreamReader(
-				LemmasReader.class.getResourceAsStream(resourceName),
-				StandardCharsets.UTF_8
-			)
+				new InputStreamReader(
+						LemmasReader.class.getResourceAsStream(resourceName),
+						StandardCharsets.UTF_8
+				)
 		);
 	}
 
@@ -38,9 +39,9 @@ final class LemmasReader {
 		try (var reader = bufferedReaderOfResource("/tab")) {
 			for (var line = readGramtabLine(reader); line != null; line = readGramtabLine(reader)) {
 				result.put(
-					line.substring(0, 2),
-					Arrays.stream(line.substring(5).split("[ ,]"))
-						.map(MorphologyTag::fromString).collect(toSet())
+						line.substring(0, 2),
+						Arrays.stream(line.substring(5).split("[ ,]"))
+								.map(MorphologyTag::fromString).collect(toSet())
 				);
 			}
 		}
@@ -70,8 +71,8 @@ final class LemmasReader {
 		return result;
 	}
 
-	public static Collection<Collection<Flexion>> readLemmas() throws IOException {
-		var result = new ArrayList<Collection<Flexion>>();
+	public static List<List<Flexion>> readLemmas() throws IOException {
+		var result = new ArrayList<List<Flexion>>();
 		var morphMap = readMorphology();
 		try(var reader = bufferedReaderOfResource("/mrd")) {
 			var paradigms = readParadigmsSection(reader);
@@ -86,7 +87,7 @@ final class LemmasReader {
 					continue;
 				}
 				var tokens = line.split(" ");
-				result.add(FlexionFabric.createFlexions(tokens[0], paradigms.get(Integer.parseInt(tokens[1])), morphMap, result.size()));
+				result.add(FlexionFabric.createLemma(tokens[0], paradigms.get(Integer.parseInt(tokens[1])), morphMap));
 			}
 		}
 		return result;

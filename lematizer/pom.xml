@@ -12,5 +12,13 @@
 
     <artifactId>lematizer</artifactId>
 
-    
+    <dependencies>
+        <dependency>
+            <groupId>com.farpost.aot</groupId>
+            <artifactId>standard</artifactId>
+            <version>3.1</version>
+        </dependency>
+    </dependencies>
+
+
 </project>
