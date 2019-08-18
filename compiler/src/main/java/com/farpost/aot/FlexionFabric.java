@@ -3,16 +3,19 @@ package com.farpost.aot;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
+import java.util.Set;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
+/**
+ * Класс инкапсулирует способы создания
+ */
 public class FlexionFabric {
 
 	/**
 	 * Конструирование из готового набора
 	 */
-	private static CompilerFlexion createFlexion(String prefix, String base, String postfix, List<MorphologyTag> tags, CompilerFlexion lemma, int lemmaId) {
+	private static Flexion createFlexion(String prefix, String base, String postfix, Set<MorphologyTag> tags) {
 		var sourceBuilder = new StringBuilder();
 		if (prefix != null) {
 			sourceBuilder.append(prefix);
@@ -20,7 +23,7 @@ public class FlexionFabric {
 		if (base.charAt(0) != '#') {
 			sourceBuilder.append(base);
 		}
-		return new CompilerFlexion(sourceBuilder.append(postfix).toString(), tags, lemma, lemmaId);
+		return new Flexion(sourceBuilder.append(postfix).toString(), tags, null);
 	}
 
 	private static String normalize(String token) {
@@ -30,27 +33,29 @@ public class FlexionFabric {
 	/**
 	 * Разбор кода из словаря
 	 */
-	private static CompilerFlexion createFlexion(String base, String source, Map<String, List<MorphologyTag>> morphMap, CompilerFlexion lemma, int lemmaId) {
+	private static Flexion createFlexion(String base, String source, Map<String, Set<MorphologyTag>> morphMap) {
 		var args = source.split("\\*");
 		return createFlexion(
-			args.length == 2 ? null : normalize(args[2]),
-			normalize(base),
-			normalize(args[0]),
-			morphMap.get(args[1]),
-			lemma,
-			lemmaId
+				args.length == 2 ? null : normalize(args[2]),
+				normalize(base),
+				normalize(args[0]),
+				morphMap.get(args[1])
 		);
 	}
 
 	/**
-	 * Набор флексий (где первая - лемма остальных) из базы + парадигмы склонения
+	 *
+	 * @param base база
+	 * @param paradigm парадигма склонения
+	 * @param morphMap морфологический словарь
+	 * @return лемма (содержит флексии, первая флексия собственно лемма остальных)
 	 */
-	static List<CompilerFlexion> createFlexions(String base, String paradigm, Map<String, List<MorphologyTag>> morphMap, int id) {
-		var sources = Arrays.stream(paradigm.split("%")).filter(s -> !s.isBlank()).collect(toList());
-		var lemma = createFlexion(base, sources.get(0), morphMap, null, id);
-		return Stream.concat(
-			Stream.of(lemma),
-			sources.stream().skip(1).map(src -> createFlexion(base, src, morphMap, lemma, id))
-		).collect(toList());
+	static List<Flexion> createLemma(String base, String paradigm, Map<String, Set<MorphologyTag>> morphMap) {
+		return Arrays.stream(paradigm.split("%"))
+				.filter(s -> !s.isBlank())
+				.map(src ->
+						createFlexion(base, src, morphMap)
+				)
+				.collect(toUnmodifiableList());
 	}
 }

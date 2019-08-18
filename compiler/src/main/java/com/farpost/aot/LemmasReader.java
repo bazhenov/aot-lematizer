@@ -6,16 +6,19 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
+/**
+ * Класс считывает из ресурсов набор лемм
+ */
 final class LemmasReader {
 
 	private static BufferedReader bufferedReaderOfResource(String resourceName) {
 		return new BufferedReader(
-			new InputStreamReader(
-				LemmasReader.class.getResourceAsStream(resourceName),
-				StandardCharsets.UTF_8
-			)
+				new InputStreamReader(
+						LemmasReader.class.getResourceAsStream(resourceName),
+						StandardCharsets.UTF_8
+				)
 		);
 	}
 
@@ -31,14 +34,14 @@ final class LemmasReader {
 		return line;
 	}
 
-	private static Map<String, List<MorphologyTag>> readMorphology() throws IOException {
-		var result = new HashMap<String, List<MorphologyTag>>();
+	private static Map<String, Set<MorphologyTag>> readMorphology() throws IOException {
+		var result = new HashMap<String, Set<MorphologyTag>>();
 		try (var reader = bufferedReaderOfResource("/tab")) {
 			for (var line = readGramtabLine(reader); line != null; line = readGramtabLine(reader)) {
 				result.put(
-					line.substring(0, 2),
-					Arrays.stream(line.substring(5).split("[ ,]"))
-						.map(MorphologyTag::fromString).collect(toList())
+						line.substring(0, 2),
+						Arrays.stream(line.substring(5).split("[ ,]"))
+								.map(MorphologyTag::fromString).collect(toSet())
 				);
 			}
 		}
@@ -68,8 +71,8 @@ final class LemmasReader {
 		return result;
 	}
 
-	public static Collection<List<CompilerFlexion>> readLemmas() throws IOException {
-		var result = new ArrayList<List<CompilerFlexion>>();
+	public static List<List<Flexion>> readLemmas() throws IOException {
+		var result = new ArrayList<List<Flexion>>();
 		var morphMap = readMorphology();
 		try(var reader = bufferedReaderOfResource("/mrd")) {
 			var paradigms = readParadigmsSection(reader);
@@ -84,7 +87,7 @@ final class LemmasReader {
 					continue;
 				}
 				var tokens = line.split(" ");
-				result.add(FlexionFabric.createFlexions(tokens[0], paradigms.get(Integer.parseInt(tokens[1])), morphMap, result.size()));
+				result.add(FlexionFabric.createLemma(tokens[0], paradigms.get(Integer.parseInt(tokens[1])), morphMap));
 			}
 		}
 		return result;
