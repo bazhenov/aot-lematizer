@@ -6,7 +6,13 @@ import java.util.Arrays;
 
 import static com.farpost.aot.Bytecode.isContent;
 
-public class Reader {
+public class ByteReader {
+
+    private static int readContent(byte[] block, byte[] res, int currIndex) {
+
+        return currIndex;
+    }
+
     /**
      * оптимизация чтобы не выделять каждый раз память под буфер юникодных символов
      * 36 - длина наибольшей флексии, поэтому больше нам и не потребуется

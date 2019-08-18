@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
-import static com.farpost.aot.Reader.readMorphLine;
-import static com.farpost.aot.Reader.readStringLine;
+import static com.farpost.aot.ByteReader.readMorphLine;
+import static com.farpost.aot.ByteReader.readStringLine;
 
 public class HashDictionary {
     private final MorphologyTag[][] morph;
