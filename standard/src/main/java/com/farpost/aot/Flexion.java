@@ -1,6 +1,6 @@
 package com.farpost.aot;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Флексия - фариант леммы
