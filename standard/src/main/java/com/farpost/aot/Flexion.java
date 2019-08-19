@@ -10,30 +10,30 @@ import static java.util.Arrays.asList;
  */
 public class Flexion {
 
-    private final String word;
-    private final PartOfSpeech pos;
-    private final MorphologyTag[] morphologyTags;
+	private final String word;
+	private final PartOfSpeech pos;
+	private final MorphologyTag[] morphologyTags;
 
-    public Flexion(String word, MorphologyTag[] tags) {
-        this.word = word;
-        morphologyTags = tags;
-        pos = PartOfSpeech.from(morphologyTags);
-    }
+	public Flexion(String word, MorphologyTag[] tags) {
+		this.word = word;
+		morphologyTags = tags;
+		pos = PartOfSpeech.from(morphologyTags);
+	}
 
-    public String getWord() {
-        return word;
-    }
+	public String getWord() {
+		return word;
+	}
 
-    public List<MorphologyTag> getTags() {
-        return asList(morphologyTags);
-    }
+	public List<MorphologyTag> getTags() {
+		return asList(morphologyTags);
+	}
 
-    @Override
-    public String toString() {
-        return word + Arrays.toString(morphologyTags);
-    }
+	@Override
+	public String toString() {
+		return word + Arrays.toString(morphologyTags);
+	}
 
-    public PartOfSpeech getPartOfSpeech() {
-        return pos;
-    }
+	public PartOfSpeech getPartOfSpeech() {
+		return pos;
+	}
 }
