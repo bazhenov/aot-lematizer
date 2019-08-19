@@ -14,9 +14,10 @@ public class TestApplication {
 		var d = new HashDictionary();
 		try (var reader = new BufferedReader(new InputStreamReader(System.in))) {
 			while (!currentThread().isInterrupted()) {
-				for (var i : d.lookup(reader.readLine())) {
-					System.out.println(i);
-				}
+
+				System.out.println(d.lookup(reader.readLine()));
+
+
 			}
 		}
 	}

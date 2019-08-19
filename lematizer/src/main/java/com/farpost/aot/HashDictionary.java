@@ -3,11 +3,10 @@ package com.farpost.aot;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 
 
 public class HashDictionary {
@@ -28,31 +27,33 @@ public class HashDictionary {
 	}
 
 
-	public List<List<Flexion>> lookup(String word) {
+	private Lemma lookupLemma(int[] links, String word) {
+		Flexion[] res = new Flexion[links.length / 2];
+		for (int i = 0, j = 0; i < res.length; ++i, j += 2) {
+			res[i] = new Flexion(strings[links[j]], morph[links[j + 1]]);
+		}
+		for (Flexion i : res) {
+			if (i.getWord().equals(word)) {
+				return new Lemma(res);
+			}
+		}
+		return null;
+	}
+
+	private List<Lemma> lookupLemmas(int[] refs, String word) {
+		List<Lemma> result = new ArrayList<>();
+		for (int ref : refs) {
+			Lemma currentLemma = lookupLemma(lemmas[ref], word);
+			if (currentLemma != null) {
+				result.add(currentLemma);
+			}
+		}
+		return result;
+	}
+
+	public List<Lemma> lookup(String word) {
 		word = word.toLowerCase().replace('ё', 'е');
 		int[] refs = this.refs.get(word.hashCode());
-		if (refs == null) {
-			return Collections.emptyList();
-		}
-		List<List<Flexion>> res = new ArrayList<>();
-		for (int i = 0; i < refs.length; ++i) {
-			int[] encodedLemma = lemmas[refs[i]];
-			Flexion[] normalLemma = new Flexion[encodedLemma.length / 2];
-			boolean equalityWithWord = false;
-			for (int j = 0, k = 0; j < encodedLemma.length; j += 2, ++k) {
-				normalLemma[k] = new Flexion(strings[encodedLemma[j]], morph[encodedLemma[j + 1]]);
-				if (equalityWithWord) {
-					continue;
-				}
-				if (normalLemma[k].getString().equals(word)) {
-					equalityWithWord = true;
-				}
-			}
-			if (equalityWithWord) {
-				res.add(asList(normalLemma));
-			}
-
-		}
-		return res;
+		return refs == null ? emptyList() : lookupLemmas(refs, word);
 	}
 }

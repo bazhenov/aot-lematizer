@@ -1,7 +1,7 @@
 package com.farpost.aot;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.List;
 
 import static java.util.Arrays.asList;
 
@@ -10,24 +10,24 @@ import static java.util.Arrays.asList;
  */
 public class Flexion {
 
-    private final String string;
+    private final String word;
     private final MorphologyTag[] morphologyTags;
 
-    public Flexion(String string, MorphologyTag[] tags) {
-        this.string = string;
+    public Flexion(String word, MorphologyTag[] tags) {
+        this.word = word;
         morphologyTags = tags;
     }
 
-    public String getString() {
-        return string;
+    public String getWord() {
+        return word;
     }
 
-    public Set<MorphologyTag> getTags() {
-        return new HashSet<>(asList(morphologyTags));
+    public List<MorphologyTag> getTags() {
+        return asList(morphologyTags);
     }
 
     @Override
     public String toString() {
-        return getString() + getTags();
+        return word + Arrays.toString(morphologyTags);
     }
 }

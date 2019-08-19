@@ -18,8 +18,8 @@ public class Zip {
 	private static List<MiniFlexion> zip(List<Flexion> lemma, UniqueValues index) {
 		return lemma.stream()
 			.map(f -> new MiniFlexion(
-					index.indexOf(f.getString()),
-					index.indexOf(f.getTags())
+				index.indexOf(f.getWord()),
+				index.indexOf(new HashSet<>(f.getTags()))
 				)
 			)
 			.collect(toUnmodifiableList());
