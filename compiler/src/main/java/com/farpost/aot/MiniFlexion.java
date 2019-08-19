@@ -4,11 +4,12 @@ package com.farpost.aot;
  * Минифицированная флексия
  */
 public class MiniFlexion {
-    private final int grammarIndex;
+
+	private final int morphIndex;
     private final int stringIndex;
 
-    public MiniFlexion(int stringIndex, int grammarIndex) {
-        this.grammarIndex = grammarIndex;
+	public MiniFlexion(int stringIndex, int morphIndex) {
+		this.morphIndex = morphIndex;
         this.stringIndex = stringIndex;
     }
 
@@ -16,7 +17,7 @@ public class MiniFlexion {
         return stringIndex;
     }
 
-    public int getGrammarIndex() {
-        return grammarIndex;
+	public int getMorphIndex() {
+		return morphIndex;
     }
 }

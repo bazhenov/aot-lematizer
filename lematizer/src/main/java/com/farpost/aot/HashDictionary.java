@@ -2,41 +2,57 @@ package com.farpost.aot;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import static com.farpost.aot.ByteReader.readMorphLine;
-import static com.farpost.aot.ByteReader.readStringLine;
+import static java.util.Arrays.asList;
+
 
 public class HashDictionary {
-    private final MorphologyTag[][] morph;
-    private final String[] strings;
-    private final MiniFlexion[][] lemmas;
-    private final Map<Integer, Set<Integer>> hashToIndexOfLemma;
+
+	private final MorphologyTag[][] morph;
+	private final String[] strings;
+	private final int[][] lemmas;
+	private final Map<Integer, int[]> refs;
 
 
-    public HashDictionary() throws IOException {
-        try (DataInputStream file = new DataInputStream(getClass().getResourceAsStream("/MRD.BIN"))) {
-            morph = readMorph(file);
-            strings = readStrings(file);
-        }
-    }
+	public HashDictionary() throws IOException {
+		try (DataInputStream file = new DataInputStream(getClass().getResourceAsStream("/MRD.BIN"))) {
+			morph = Reader.readMorph(ByteBlock.readBlockFrom(file));
+			strings = Reader.readStrings(ByteBlock.readBlockFrom(file));
+			lemmas = Reader.readLemmas(ByteBlock.readBlockFrom(file));
+			refs = Reader.readRefs(ByteBlock.readBlockFrom(file));
+		}
+	}
 
-    private static MorphologyTag[][] readMorph(DataInputStream file) throws IOException {
-        MorphologyTag[][] res = new MorphologyTag[file.readInt()][];
-        for (int i = 0; i < res.length; ++i) {
-            res[i] = readMorphLine(file);
-        }
-        return res;
-    }
 
-    private static String[] readStrings(DataInputStream file) throws IOException {
-        String[] res = new String[file.readInt()];
-        for (int i = 0; i < res.length; ++i) {
-            res[i] = readStringLine(file);
-        }
-        return res;
-    }
+	public List<List<Flexion>> lookup(String word) {
+		word = word.toLowerCase().replace('ё', 'е');
+		int[] refs = this.refs.get(word.hashCode());
+		if (refs == null) {
+			return Collections.emptyList();
+		}
+		List<List<Flexion>> res = new ArrayList<>();
+		for (int i = 0; i < refs.length; ++i) {
+			int[] encodedLemma = lemmas[refs[i]];
+			Flexion[] normalLemma = new Flexion[encodedLemma.length / 2];
+			boolean equalityWithWord = false;
+			for (int j = 0, k = 0; j < encodedLemma.length; j += 2, ++k) {
+				normalLemma[k] = new Flexion(strings[encodedLemma[j]], morph[encodedLemma[j + 1]]);
+				if (equalityWithWord) {
+					continue;
+				}
+				if (normalLemma[k].getString().equals(word)) {
+					equalityWithWord = true;
+				}
+			}
+			if (equalityWithWord) {
+				res.add(asList(normalLemma));
+			}
 
-    private static
+		}
+		return res;
+	}
 }

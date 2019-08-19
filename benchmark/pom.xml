@@ -25,11 +25,11 @@
 		</dependency>
 
 
-			<dependency>
-				<groupId>com.farpost.aot</groupId>
-				<artifactId>compiler</artifactId>
-				<version>3.1</version>
-			</dependency>
+		<dependency>
+			<groupId>com.farpost.aot</groupId>
+			<artifactId>lematizer</artifactId>
+			<version>3.1</version>
+		</dependency>
 
 
 	</dependencies>

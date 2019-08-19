@@ -11,20 +11,13 @@ public class TestApplication {
 
 	public static void main(String[] args) throws IOException {
 
-		/*final LemmaDictionary d = new LemmaDictionary();
-		try (final BufferedReader reader = new BufferedReader(
-			new InputStreamReader(System.in)
-		)) {
+		var d = new HashDictionary();
+		try (var reader = new BufferedReader(new InputStreamReader(System.in))) {
 			while (!currentThread().isInterrupted()) {
-				final var res = d.lookup(reader.readLine());
-				if (res.isEmpty()) {
-					System.out.println(res);
-					continue;
-				}
-				for (final LemmaInfo i : res) {
+				for (var i : d.lookup(reader.readLine())) {
 					System.out.println(i);
 				}
 			}
-		}*/
+		}
 	}
 }

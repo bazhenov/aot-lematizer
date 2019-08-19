@@ -6,8 +6,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-import static java.util.stream.Collectors.toSet;
-
 /**
  * Класс считывает из ресурсов набор лемм
  */
@@ -15,10 +13,10 @@ final class LemmasReader {
 
 	private static BufferedReader bufferedReaderOfResource(String resourceName) {
 		return new BufferedReader(
-				new InputStreamReader(
-						LemmasReader.class.getResourceAsStream(resourceName),
-						StandardCharsets.UTF_8
-				)
+			new InputStreamReader(
+				LemmasReader.class.getResourceAsStream(resourceName),
+				StandardCharsets.UTF_8
+			)
 		);
 	}
 
@@ -34,14 +32,14 @@ final class LemmasReader {
 		return line;
 	}
 
-	private static Map<String, Set<MorphologyTag>> readMorphology() throws IOException {
-		var result = new HashMap<String, Set<MorphologyTag>>();
+	private static Map<String, MorphologyTag[]> readMorphology() throws IOException {
+		var result = new HashMap<String, MorphologyTag[]>();
 		try (var reader = bufferedReaderOfResource("/tab")) {
 			for (var line = readGramtabLine(reader); line != null; line = readGramtabLine(reader)) {
 				result.put(
-						line.substring(0, 2),
-						Arrays.stream(line.substring(5).split("[ ,]"))
-								.map(MorphologyTag::fromString).collect(toSet())
+					line.substring(0, 2),
+					Arrays.stream(line.substring(5).split("[ ,]"))
+						.map(MorphologyTag::fromString).toArray(MorphologyTag[]::new)
 				);
 			}
 		}
@@ -52,7 +50,7 @@ final class LemmasReader {
 		return Integer.parseInt(reader.readLine());
 	}
 
-	private  static void skipLines(BufferedReader reader, int count) throws IOException {
+	private static void skipLines(BufferedReader reader, int count) throws IOException {
 		for (var i = 0; i < count; ++i) {
 			reader.readLine();
 		}
@@ -65,7 +63,7 @@ final class LemmasReader {
 	private static List<String> readParadigmsSection(BufferedReader reader) throws IOException {
 		var result = new ArrayList<String>();
 		var len = readInt(reader);
-		for(var i = 0; i < len; ++i) {
+		for (var i = 0; i < len; ++i) {
 			result.add(reader.readLine());
 		}
 		return result;
@@ -74,13 +72,13 @@ final class LemmasReader {
 	public static List<List<Flexion>> readLemmas() throws IOException {
 		var result = new ArrayList<List<Flexion>>();
 		var morphMap = readMorphology();
-		try(var reader = bufferedReaderOfResource("/mrd")) {
+		try (var reader = bufferedReaderOfResource("/mrd")) {
 			var paradigms = readParadigmsSection(reader);
 			skipSection(reader);
 			skipSection(reader);
 			skipSection(reader);
 			var len = readInt(reader);
-			for(var i = 0; i < len; ++i) {
+			for (var i = 0; i < len; ++i) {
 				var line = reader.readLine();
 				// фильтр метапостфиксов
 				if (line.startsWith("-")) {

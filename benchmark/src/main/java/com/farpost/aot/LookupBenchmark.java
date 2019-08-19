@@ -36,7 +36,7 @@ public class LookupBenchmark {
 
 	}
 
-/*	@Benchmark
+	@Benchmark
 	public void lookup(WordList list, Holder holder) {
 		holder.storage.lookup(list.nextWord);
 	}
@@ -44,16 +44,16 @@ public class LookupBenchmark {
 	@State(Benchmark)
 	public static class Holder {
 
-		LemmaDictionary storage;
+		HashDictionary storage;
 
 		public Holder() {
 			try {
-				storage = new LemmaDictionary();
+				storage = new HashDictionary();
 			} catch (IOException e) {
 				throw new UncheckedIOException(e);
 			}
 		}
-	}*/
+	}
 
 
 	@State(Benchmark)
