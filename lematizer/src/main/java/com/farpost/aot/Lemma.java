@@ -32,4 +32,8 @@ public class Lemma {
 		}
 		return result.append("}").toString();
 	}
+
+	public PartOfSpeech getPartOfSpeech() {
+		return arr[0].getPartOfSpeech();
+	}
 }

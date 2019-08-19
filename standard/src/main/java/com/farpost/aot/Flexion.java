@@ -11,11 +11,13 @@ import static java.util.Arrays.asList;
 public class Flexion {
 
     private final String word;
+    private final PartOfSpeech pos;
     private final MorphologyTag[] morphologyTags;
 
     public Flexion(String word, MorphologyTag[] tags) {
         this.word = word;
         morphologyTags = tags;
+        pos = PartOfSpeech.from(morphologyTags);
     }
 
     public String getWord() {
@@ -29,5 +31,9 @@ public class Flexion {
     @Override
     public String toString() {
         return word + Arrays.toString(morphologyTags);
+    }
+
+    public PartOfSpeech getPartOfSpeech() {
+        return pos;
     }
 }

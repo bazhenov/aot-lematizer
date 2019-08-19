@@ -1,4 +1,4 @@
-/*package com.farpost.aot;
+package com.farpost.aot;
 
 import org.testng.annotations.Test;
 
@@ -34,7 +34,7 @@ public class HashDictionaryTest {
 		List<String> lemmas = d
 			.lookup("Германия")
 			.stream()
-			.map(x -> x.get(0).getString())
+			.map(Lemma::getWord)
 			.collect(toList());
 
 		assertThat(lemmas, containsInAnyOrder("германия", "германий"));
@@ -54,8 +54,10 @@ public class HashDictionaryTest {
 	}
 
 
-	private static List<String> collectNorms(final List<List<Flexion>> l) {
-		return l.stream().map(x -> x.get(0).getString()).collect(toList());
+	private static List<String> collectNorms(final List<Lemma> l) {
+		return l.stream()
+			.map(Lemma::getWord)
+			.collect(toList());
 	}
 
 	@Test
@@ -87,4 +89,4 @@ public class HashDictionaryTest {
 		assertThat(norms, hasItems("человек"));
 	}
 
-}*/
+}
