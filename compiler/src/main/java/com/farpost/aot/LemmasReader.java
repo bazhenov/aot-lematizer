@@ -69,8 +69,8 @@ final class LemmasReader {
 		return result;
 	}
 
-	public static List<List<Flexion>> readLemmas() throws IOException {
-		var result = new ArrayList<List<Flexion>>();
+	public static List<List<FullFlexion>> readLemmas() throws IOException {
+		var result = new ArrayList<List<FullFlexion>>();
 		var morphMap = readMorphology();
 		try (var reader = bufferedReaderOfResource("/mrd")) {
 			var paradigms = readParadigmsSection(reader);

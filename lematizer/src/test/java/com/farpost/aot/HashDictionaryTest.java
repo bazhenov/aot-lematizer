@@ -34,7 +34,7 @@ public class HashDictionaryTest {
 		List<String> lemmas = d
 			.lookup("Германия")
 			.stream()
-			.map(Lemma::getWord)
+			.map(w -> w.getLemma().toString())
 			.collect(toList());
 
 		assertThat(lemmas, containsInAnyOrder("германия", "германий"));
@@ -54,9 +54,9 @@ public class HashDictionaryTest {
 	}
 
 
-	private static List<String> collectNorms(final List<Lemma> l) {
+	private static List<String> collectNorms(final List<Word> l) {
 		return l.stream()
-			.map(Lemma::getWord)
+			.map(w -> w.getLemma().toString())
 			.collect(toList());
 	}
 

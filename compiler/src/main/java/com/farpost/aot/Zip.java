@@ -9,16 +9,16 @@ import static java.util.stream.Collectors.toUnmodifiableList;
  */
 public class Zip {
 
-	public static ZipResult zip(List<List<Flexion>> lemmas) {
+	public static ZipResult zip(List<List<FullFlexion>> lemmas) {
 		var index = new UniqueValues();
 		var miniLemmas = lemmas.stream().map(lemma -> zip(lemma, index)).collect(toUnmodifiableList());
 		return new ZipResult(miniLemmas, index.strings, index.tags);
 	}
 
-	private static List<MiniFlexion> zip(List<Flexion> lemma, UniqueValues index) {
+	private static List<MiniFlexion> zip(List<FullFlexion> lemma, UniqueValues index) {
 		return lemma.stream()
 			.map(f -> new MiniFlexion(
-				index.indexOf(f.getWord()),
+				index.indexOf(f.toString()),
 				index.indexOf(new HashSet<>(f.getTags()))
 				)
 			)

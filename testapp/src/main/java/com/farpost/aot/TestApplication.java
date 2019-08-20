@@ -23,10 +23,12 @@ public class TestApplication {
 
 				for (int counter = 1; counter <= res.size(); ++counter) {
 					var lemma = res.get(counter - 1).getFlexions();
-					System.out.println(counter + ". " + lemma.get(0));
+					System.out.println(counter + ". " + lemma.get(0) + lemma.get(0).getTags());
 					for (var flex : lemma) {
-						System.out.println("     " + flex);
+						System.out.print(flex.toString() + flex.getTags());
+						System.out.print(' ');
 					}
+					System.out.println();
 				}
 
 
