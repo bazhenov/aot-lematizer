@@ -28,9 +28,37 @@ public class Flexion {
 		return asList(morphologyTags);
 	}
 
+	public boolean is(MorphologyTag tag) {
+		if (tag == null) {
+			return true;
+		}
+		for (MorphologyTag i : morphologyTags) {
+			if (i == tag) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean isNot(MorphologyTag tag) {
+		return !is(tag);
+	}
+
+	public boolean allOf(MorphologyTag... info) {
+		return Arrays.stream(info).allMatch(this::is);
+	}
+
+	public boolean anyOf(MorphologyTag... info) {
+		return Arrays.stream(info).anyMatch(this::is);
+	}
+
+	public boolean notAnyOf(MorphologyTag... info) {
+		return !anyOf(info);
+	}
+
 	@Override
 	public String toString() {
-		return word + Arrays.toString(morphologyTags);
+		return word + ' ' + Arrays.toString(morphologyTags);
 	}
 
 	public PartOfSpeech getPartOfSpeech() {

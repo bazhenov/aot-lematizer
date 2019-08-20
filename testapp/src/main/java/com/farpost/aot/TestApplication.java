@@ -11,11 +11,23 @@ public class TestApplication {
 
 	public static void main(String[] args) throws IOException {
 
-		var d = new HashDictionary();
-		try (var reader = new BufferedReader(new InputStreamReader(System.in))) {
+		var dict = new HashDictionary();
+		try (var console = new BufferedReader(new InputStreamReader(System.in))) {
 			while (!currentThread().isInterrupted()) {
 
-				System.out.println(d.lookup(reader.readLine()));
+				var res = dict.lookup(console.readLine());
+				if (res.isEmpty()) {
+					System.out.println("[]");
+					continue;
+				}
+
+				for (int counter = 1; counter <= res.size(); ++counter) {
+					var lemma = res.get(counter - 1).getFlexions();
+					System.out.println(counter + ". " + lemma.get(0));
+					for (var flex : lemma) {
+						System.out.println("     " + flex);
+					}
+				}
 
 
 			}

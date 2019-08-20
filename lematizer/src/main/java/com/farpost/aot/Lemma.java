@@ -12,25 +12,41 @@ public class Lemma {
 		this.arr = arr;
 	}
 
-	public List<MorphologyTag> getMorphology() {
-		return arr[0].getTags();
+	public List<Flexion> getFlexions() {
+		return asList(arr);
 	}
 
 	public String getWord() {
 		return arr[0].getWord();
 	}
 
-	public List<Flexion> getFlexions() {
-		return asList(arr);
+	public List<MorphologyTag> getTags() {
+		return arr[0].getTags();
+	}
+
+	public boolean is(MorphologyTag tag) {
+		return arr[0].is(tag);
+	}
+
+	public boolean isNot(MorphologyTag tag) {
+		return arr[0].isNot(tag);
+	}
+
+	public boolean allOf(MorphologyTag... tag) {
+		return arr[0].allOf(tag);
+	}
+
+	public boolean anyOf(MorphologyTag... tag) {
+		return arr[0].anyOf(tag);
+	}
+
+	public boolean notAnyOf(MorphologyTag... tag) {
+		return arr[0].notAnyOf(tag);
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder result = new StringBuilder("{\n");
-		for (Flexion flex : arr) {
-			result.append("  ").append(flex).append("\n");
-		}
-		return result.append("}").toString();
+		return arr[0].toString();
 	}
 
 	public PartOfSpeech getPartOfSpeech() {

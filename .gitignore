@@ -4,3 +4,9 @@
 /library/src/main/resources/MRD.BIN
 /compiler/STRINGS.BIN
 /lematizer/src/main/resources/MRD.BIN
+/compiler/pom.xml.versionsBackup
+/pom.xml.versionsBackup
+/standard/pom.xml.versionsBackup
+/testapp/pom.xml.versionsBackup
+/benchmark/pom.xml.versionsBackup
+/lematizer/pom.xml.versionsBackup
