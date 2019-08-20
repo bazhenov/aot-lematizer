@@ -27,10 +27,11 @@
 	</distributionManagement>
 
 	<modules>
+		<!--компилятор должен быть перед lematizer-->
+		<module>compiler</module>
 		<module>lematizer</module>
 		<module>benchmark</module>
 		<module>testapp</module>
-		<module>compiler</module>
 		<module>standard</module>
 	</modules>
 
@@ -51,6 +52,7 @@
 
 	<build>
 		<plugins>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
