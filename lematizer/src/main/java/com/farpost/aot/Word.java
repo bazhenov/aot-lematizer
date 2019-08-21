@@ -9,32 +9,26 @@ import static java.util.Arrays.asList;
  * Слово. Содержит свою исходную форму, плюс все флексии
  */
 public class Word {
-	
-	private final int[] flexionsLinks;
 
-	private List<Flexion> flexions = null;
+	private final Flexion[] flexions;
 
 	Word(int[] flexionsLinks) {
-		this.flexionsLinks = flexionsLinks;
+		this.flexions = new Flexion[flexionsLinks.length / 2];
+		for (int i = 0, j = 0; i < flexions.length; ++i, j += 2) {
+			flexions[i] = new Flexion(flexionsLinks[j], flexionsLinks[j + 1]);
+		}
 	}
 
 	public List<Flexion> getFlexions() {
-		if(flexions != null) {
-			return flexions;
-		}
-		Flexion[] res = new Flexion[flexionsLinks.length / 2];
-		for(int i = 0, j = 0; i < res.length; ++i, j += 2) {
-			res[i] = new Flexion(flexionsLinks[j], flexionsLinks[j + 1]);
-		}
-		return (flexions = asList(res));
+		return asList(flexions);
 	}
 
 	public Flexion getLemma() {
-		return getFlexions().get(0);
+		return flexions[0];
 	}
 
-	public boolean hasFlexion(Predicate<Flexion> predicate) {
-		for (Flexion i : getFlexions()) {
+	public boolean hasFlexionWith(Predicate<Flexion> predicate) {
+		for (Flexion i : flexions) {
 			if (predicate.test(i)) {
 				return true;
 			}
@@ -43,14 +37,18 @@ public class Word {
 	}
 
 	public boolean hasFlexionWithTag(String flexionString, MorphologyTag good) {
-		return hasFlexion(flexionString, good, null);
+		return hasFlexionWith(flexionString, good, null);
 	}
 
 	public boolean hasFlexionWithoutTag(String flexionString, MorphologyTag bad) {
-		return hasFlexion(flexionString, null, bad);
+		return hasFlexionWith(flexionString, null, bad);
 	}
 
-	public boolean hasFlexion(String flexionString, MorphologyTag good, MorphologyTag bad) {
-		return hasFlexion(f -> f.toString().equals(flexionString) && (good == null || f.has(good)) && (bad == null || f.hasNot(bad)));
+	public boolean hasFlexionWith(String flexionString, MorphologyTag contained, MorphologyTag notContained) {
+		return hasFlexionWith(
+			f ->
+				f.toString().equals(flexionString)
+					&& (contained == null || f.has(contained))
+					&& (notContained == null || f.hasNot(notContained)));
 	}
 }

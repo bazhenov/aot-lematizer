@@ -2,12 +2,10 @@ package com.farpost.aot;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
-
 
 public class HashDictionary {
 
@@ -16,6 +14,8 @@ public class HashDictionary {
 
 	private final int[][] lemmas;
 	private final Map<Integer, int[]> refs;
+
+	//private final WordAllocator heap = new WordAllocator();
 
 	public HashDictionary() throws IOException {
 		try (DataInputStream file = new DataInputStream(getClass().getResourceAsStream("/MRD.BIN"))) {
@@ -28,8 +28,8 @@ public class HashDictionary {
 	}
 
 	private boolean isCollision(int[] links, String query) {
-		for(int i = 0; i < links.length; i += 2) {
-			if(allFlexionStrings[links[i]].equals(query)) {
+		for (int i = 0; i < links.length; i += 2) {
+			if (allFlexionStrings[links[i]].equals(query)) {
 				return false;
 			}
 		}
@@ -37,13 +37,14 @@ public class HashDictionary {
 	}
 
 	private List<Word> filterLemmas(int[] refs, String query) {
-		List<Word> result = new ArrayList<>();
+		Word[] res = new Word[refs.length]; //heap.getMemory();
+		int i = -1;
 		for (int ref : refs) {
-			if(!isCollision(lemmas[ref], query)) {
-				result.add(new Word(lemmas[ref]));
+			if (!isCollision(lemmas[ref], query)) {
+				res[++i] = new Word(lemmas[ref]);
 			}
 		}
-		return result;
+		return new ImmutableWordList(res, i + 1);
 	}
 
 	public List<Word> lookup(String query) {
