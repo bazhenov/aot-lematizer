@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>com.farpost.aot</groupId>
 		<artifactId>platform</artifactId>
-		<version>4.7.5</version>
+		<version>4.7.7</version>
 	</parent>
 
 	<artifactId>benchmark</artifactId>
@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>com.farpost.aot</groupId>
 			<artifactId>lematizer</artifactId>
-			<version>4.7.5</version>
+			<version>4.7.7</version>
 		</dependency>
 
 

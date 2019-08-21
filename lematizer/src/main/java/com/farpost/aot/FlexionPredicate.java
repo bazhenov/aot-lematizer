@@ -19,7 +19,7 @@ public final class FlexionPredicate {
 		return new PartOfSpeechEqualTo(pos);
 	}
 
-	public static Predicate<Flexion> partOfSpeechBotEqualTo(PartOfSpeech pos) {
+	public static Predicate<Flexion> partOfSpeechNotEqualTo(PartOfSpeech pos) {
 		return new PartOfSpeechNotEqualTo(pos);
 	}
 
