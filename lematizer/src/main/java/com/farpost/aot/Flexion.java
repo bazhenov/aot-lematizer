@@ -24,6 +24,10 @@ public class Flexion {
 	}
 
 	public boolean has(MorphologyTag tag) {
+		// пустой тег однозначно входит в множество тегов
+		if (tag == null) {
+			return true;
+		}
 		for (MorphologyTag i : db.allMorphologyTags[tagsIndex]) {
 			if (i == tag) {
 				return true;
