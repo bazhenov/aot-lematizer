@@ -11,7 +11,7 @@ class ByteBlock {
 	private final int linesCount;
 	private final byte[] bytes;
 
-	ByteBlock(int linesCount, byte[] bytes) {
+	private ByteBlock(int linesCount, byte[] bytes) {
 		this.linesCount = linesCount;
 		this.bytes = bytes;
 	}
