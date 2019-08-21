@@ -5,7 +5,7 @@ import com.farpost.aot.MorphologyTag;
 
 import java.util.function.Predicate;
 
-class HasNotTag implements Predicate<Flexion> {
+public class HasNotTag implements Predicate<Flexion> {
 
 	private final MorphologyTag[] tags;
 
