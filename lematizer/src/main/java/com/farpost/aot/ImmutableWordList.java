@@ -8,7 +8,7 @@ import java.util.ListIterator;
 /**
  * Чтобы не копировать лишний раз массивы
  */
-public class ImmutableWordList implements List<Word> {
+class ImmutableWordList implements List<Word> {
 
 	class Iter implements Iterator<Word> {
 
@@ -28,11 +28,10 @@ public class ImmutableWordList implements List<Word> {
 	private final Word[] arr;
 	private final int len;
 
-	public ImmutableWordList(Word[] arr, int len) {
+	ImmutableWordList(Word[] arr, int len) {
 		this.arr = arr;
 		this.len = len;
 	}
-
 
 	@Override
 	public int size() {
@@ -46,7 +45,7 @@ public class ImmutableWordList implements List<Word> {
 
 	@Override
 	public boolean contains(Object o) {
-		return indexOf(o, 0) != -1;
+		return indexOf(o) != -1;
 	}
 
 	@Override
@@ -126,11 +125,7 @@ public class ImmutableWordList implements List<Word> {
 
 	@Override
 	public int indexOf(Object o) {
-		return indexOf(o, 0);
-	}
-
-	private int indexOf(Object o, int from) {
-		for (int i = from; i < len; ++i) {
+		for (int i = 0; i < len; ++i) {
 			if (arr[i] == o) {
 				return i;
 			}

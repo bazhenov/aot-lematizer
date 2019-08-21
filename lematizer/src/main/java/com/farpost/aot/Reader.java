@@ -3,9 +3,9 @@ package com.farpost.aot;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Reader {
+class Reader {
 
-	public static MorphologyTag[][] readMorph(ByteBlock block) {
+	static MorphologyTag[][] readMorph(ByteBlock block) {
 		MorphologyTag[][] result = new MorphologyTag[block.getLinesCount()][];
 		for (int i = 0, pos = 0; i < block.getLinesCount(); ++i) {
 			int to = pos;
@@ -23,7 +23,7 @@ public class Reader {
 		return result;
 	}
 
-	public static String[] readStrings(ByteBlock block) {
+	static String[] readStrings(ByteBlock block) {
 		String[] result = new String[block.getLinesCount()];
 		for (int i = 0, pos = 0; i < block.getLinesCount(); ++i) {
 			int to = pos;
@@ -40,7 +40,7 @@ public class Reader {
 		return result;
 	}
 
-	public static int[][] readLemmas(ByteBlock block) {
+	static int[][] readLemmas(ByteBlock block) {
 		int[][] result = new int[block.getLinesCount()][];
 		for (int i = 0, pos = 0; i < block.getLinesCount(); ++i) {
 			int lemmaSize = intFromByteArray(block.getBytes(), pos);
@@ -54,7 +54,7 @@ public class Reader {
 		return result;
 	}
 
-	public static Map<Integer, int[]> readRefs(ByteBlock block) {
+	static Map<Integer, int[]> readRefs(ByteBlock block) {
 		Map<Integer, int[]> result = new HashMap<>();
 		for (int i = 0, pos = 0; i < block.getLinesCount(); ++i) {
 			int wordHash = intFromByteArray(block.getBytes(), pos);

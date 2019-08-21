@@ -37,7 +37,7 @@ public class HashDictionary {
 	}
 
 	private List<Word> filterLemmas(int[] refs, String query) {
-		Word[] res = new Word[refs.length]; //heap.getMemory();
+		Word[] res = new Word[refs.length];
 		int i = -1;
 		for (int ref : refs) {
 			if (!isCollision(lemmas[ref], query)) {

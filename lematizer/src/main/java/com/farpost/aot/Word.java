@@ -30,15 +30,18 @@ public class Word {
 		return flexions.get(0);
 	}
 
+	@SafeVarargs
 	private static Predicate<Flexion> joinPredicates(Predicate<Flexion>... predicate) {
 		return flex -> Arrays.stream(predicate).allMatch(p -> p.test(flex));
 	}
 
-	public boolean anyFlexion(Predicate<Flexion>... predicate) {
+	@SafeVarargs
+	public final boolean hasFlexion(Predicate<Flexion>... predicate) {
 		return flexions.stream().anyMatch(joinPredicates(predicate));
 	}
 
-	public List<Flexion> filterFlexions(Predicate<Flexion>... predicate) {
+	@SafeVarargs
+	public final List<Flexion> getFlexions(Predicate<Flexion>... predicate) {
 		return flexions.stream().filter(joinPredicates(predicate)).collect(toList());
 	}
 }

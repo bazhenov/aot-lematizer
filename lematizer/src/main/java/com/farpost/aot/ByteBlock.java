@@ -19,14 +19,14 @@ class ByteBlock {
 	/**
 	 * @return количество наборов байт разделенных \n в блоке
 	 */
-	public int getLinesCount() {
+	int getLinesCount() {
 		return linesCount;
 	}
 
 	/**
 	 * @return байты блока
 	 */
-	public byte[] getBytes() {
+	byte[] getBytes() {
 		return bytes;
 	}
 
@@ -34,7 +34,7 @@ class ByteBlock {
 	 * @param file файл
 	 * @return блок байт
 	 */
-	public static ByteBlock readBlockFrom(DataInputStream file) throws IOException {
+	static ByteBlock readBlockFrom(DataInputStream file) throws IOException {
 		int size = file.readInt();
 		byte[] bytes = new byte[file.readInt()];
 		file.readFully(bytes);

@@ -13,7 +13,7 @@ public class Flexion {
 	private final int strIndex, tagsIndex;
 	private final PartOfSpeech pos;
 
-	public Flexion(int source, int tags) {
+	Flexion(int source, int tags) {
 		this.strIndex = source;
 		this.tagsIndex = tags;
 		pos = PartOfSpeech.from(db.allMorphologyTags[tags]);
@@ -23,6 +23,10 @@ public class Flexion {
 		return asList(db.allMorphologyTags[tagsIndex]);
 	}
 
+	/**
+	 * @param tag тег
+	 * @return входит ли тег в множество тегов которыми помечена флексия
+	 */
 	public boolean has(MorphologyTag tag) {
 		// пустой тег однозначно входит в множество тегов
 		if (tag == null) {
