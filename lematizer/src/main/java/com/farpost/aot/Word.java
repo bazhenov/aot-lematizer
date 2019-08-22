@@ -36,7 +36,7 @@ public class Word {
 	}
 
 	@SafeVarargs
-	public final boolean hasFlexion(Predicate<Flexion>... predicate) {
+	public final boolean anyFlexion(Predicate<Flexion>... predicate) {
 		return flexions.stream().anyMatch(joinPredicates(predicate));
 	}
 
