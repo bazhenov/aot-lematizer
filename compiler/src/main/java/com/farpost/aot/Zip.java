@@ -7,9 +7,9 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 /**
  * Класс сжимает набор лемм
  */
-public class Zip {
+class Zip {
 
-	public static ZipResult zip(List<List<FullFlexion>> lemmas) {
+	static ZipResult zip(List<List<FullFlexion>> lemmas) {
 		var index = new UniqueValues();
 		var miniLemmas = lemmas.stream().map(lemma -> zip(lemma, index)).collect(toUnmodifiableList());
 		return new ZipResult(miniLemmas, index.strings, index.tags);

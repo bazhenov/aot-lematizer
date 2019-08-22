@@ -15,8 +15,6 @@ public class HashDictionary {
 	private final int[][] lemmas;
 	private final Map<Integer, int[]> refs;
 
-	//private final WordAllocator heap = new WordAllocator();
-
 	public HashDictionary() throws IOException {
 		try (DataInputStream file = new DataInputStream(getClass().getResourceAsStream("/MRD.BIN"))) {
 			allMorphologyTags = Reader.readMorph(ByteBlock.readBlockFrom(file));

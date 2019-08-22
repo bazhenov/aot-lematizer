@@ -9,7 +9,7 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 /**
  * Класс инкапсулирует способы создания
  */
-public class FlexionFabric {
+class FlexionFabric {
 
 	/**
 	 * Конструирование из готового набора

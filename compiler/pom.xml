@@ -3,15 +3,12 @@
 				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 				 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
 	<parent>
 		<groupId>com.farpost.aot</groupId>
 		<artifactId>platform</artifactId>
 		<version>5.1</version>
 	</parent>
-
 	<artifactId>compiler</artifactId>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.farpost.aot</groupId>
@@ -19,16 +16,13 @@
 			<version>5.1</version>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.6.0</version>
-
 				<executions>
-
 					<execution>
 						<id>compile-mrd-if-test</id>
 						<phase>generate-test-resources</phase>
@@ -42,7 +36,6 @@
 							</arguments>
 						</configuration>
 					</execution>
-
 					<execution>
 						<phase>generate-test-resources</phase>
 						<id>compile-mrd-if-package</id>
@@ -52,11 +45,10 @@
 						<configuration>
 							<mainClass>com.farpost.aot.Compiler</mainClass>
 							<arguments>
-								<argument>lematizer/src/main/resources/MRD.BIN</argument>
+								<argument>${project.parent.basedir}/lematizer/src/main/resources/MRD.BIN</argument>
 							</arguments>
 						</configuration>
 					</execution>
-
 				</executions>
 			</plugin>
 			<plugin>
@@ -70,6 +62,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-
 </project>

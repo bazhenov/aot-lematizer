@@ -16,7 +16,6 @@ public class HashDictionaryTest {
 	public HashDictionaryTest() throws IOException {
 	}
 
-
 	@Test
 	public void dictionaryShouldBeAbleToFindExistentWords() throws IOException {
 		assertThat(d.lookup("краснеющий"), hasSize(1));
@@ -88,5 +87,4 @@ public class HashDictionaryTest {
 		assertThat(norms, hasSize(1));
 		assertThat(norms, hasItems("человек"));
 	}
-
 }

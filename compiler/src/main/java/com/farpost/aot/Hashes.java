@@ -8,13 +8,13 @@ import java.util.Set;
 /**
  * Оптимизация
  */
-public class Hashes {
+class Hashes {
 
 	/**
 	 * @param zipped результат минификации
 	 * @return Словарь: хеш -> индексы лемм из списка (коллизии надо проверять)
 	 */
-	public static Map<Integer, Set<Integer>> calculate(ZipResult zipped) {
+	static Map<Integer, Set<Integer>> calculate(ZipResult zipped) {
 		var res = new HashMap<Integer, Set<Integer>>();
 		for (int i = 0; i < zipped.getLemmas().size(); ++i) {
 			var currLemma = zipped.getLemmas().get(i);
