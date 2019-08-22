@@ -38,7 +38,11 @@ public class LookupBenchmark {
 
 	@Benchmark
 	public void lookup(WordList list, Holder holder) {
-		holder.storage.lookup(list.nextWord);
+		//holder.storage.lookup(list.nextWord);
+		for (int i : holder.storage.lookupForLemmasIds(list.nextWord)) {
+			String l = holder.storage.getLemmaString(i);
+			MorphologyTag[] m = holder.storage.getLemmaTags(i);
+		}
 	}
 
 	@State(Benchmark)
