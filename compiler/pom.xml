@@ -6,14 +6,14 @@
 	<parent>
 		<groupId>com.farpost.aot</groupId>
 		<artifactId>platform</artifactId>
-		<version>5.1</version>
+		<version>5.7</version>
 	</parent>
 	<artifactId>compiler</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>com.farpost.aot</groupId>
 			<artifactId>standard</artifactId>
-			<version>5.1</version>
+			<version>5.7</version>
 		</dependency>
 	</dependencies>
 	<build>
